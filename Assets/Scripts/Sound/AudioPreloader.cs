@@ -16,7 +16,7 @@ namespace NSMB.Sound {
             QuantumEvent.Subscribe<EventGameStateChanged>(this, OnGameStateChanged);
 
             foreach (SoundEffect sfx in Enum.GetValues(typeof(SoundEffect))) {
-                CharacterAsset[] characters = GlobalController.Instance.config.CharacterDatas.Select(QuantumUnityDB.GetGlobalAsset).ToArray();
+                CharacterAsset[] characters = QuantumUnityDB.Global.GetAssets(new() { Type = typeof(CharacterAsset) }).Cast<CharacterAsset>().ToArray();
                 PreloadSoundEffect(sfx, characters);
             }
         }

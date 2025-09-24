@@ -1,8 +1,7 @@
-﻿using NSMB.Networking;
+﻿using NSMB.Addon;
+using NSMB.Networking;
 using NSMB.Quantum;
 using NSMB.UI.Loading;
-using NSMB.UI.MainMenu;
-using NSMB.UI.MainMenu.Submenus.Replays;
 using NSMB.UI.Options;
 using NSMB.UI.Translation;
 using NSMB.Utilities.Extensions;
@@ -12,9 +11,15 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
-using UnityEngine.Profiling;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
+using UnityEngine.Serialization;
+
+#if UNITY_STANDALONE
+using NSMB.UI.MainMenu;
+using NSMB.UI.MainMenu.Submenus.Replays;
+using UnityEngine.Profiling;
+#endif
 
 namespace NSMB {
     public class GlobalController : Singleton<GlobalController> {
@@ -26,11 +31,11 @@ namespace NSMB {
         public TranslationManager translationManager;
         public DiscordController discordController;
         public RumbleManager rumbleManager;
+        public AddonManager addonManager;
         public Gradient rainbowGradient;
         public Sprite[] pingIndicators;
-        public SimulationConfig config;
-
         public PauseOptionMenuManager optionsManager;
+        public SimulationConfig config;
 
         public ScriptableRendererFeature outlineFeature;
         public GameObject graphy, connecting;

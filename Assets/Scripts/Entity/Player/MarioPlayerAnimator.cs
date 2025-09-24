@@ -200,13 +200,10 @@ namespace NSMB.Entities.Player {
             var mario = f.Unsafe.GetPointer<MarioPlayer>(EntityRef);
 
             var playerData = QuantumUtils.GetPlayerData(f, mario->PlayerRef);
-            var palettes = GlobalController.Instance.config.Palettes;
+            var palettes = QuantumViewUtils.Palettes;
             int paletteIndex = Mathf.Clamp(playerData != null ? playerData->Palette : 0, 0, palettes.Length - 1);
 
-            if (QuantumUnityDB.TryGetGlobalAsset(palettes[paletteIndex], out var paletteSet)) {
-                skin = paletteSet.GetPaletteForCharacter(character);
-            }
-
+            skin = palettes[paletteIndex].GetPaletteForCharacter(character);
             GlowColor = Utils.GetPlayerColor(f, mario->PlayerRef);
 
             if (Game.PlayerIsLocal(mario->PlayerRef)) {
@@ -987,7 +984,7 @@ namespace NSMB.Entities.Player {
             if (e.Entity != EntityRef) {
                 return;
             }
-
+            
             if (!IsReplayFastForwarding) {
                 Vector3 particleOffset = e.HitboxExtents.ToUnityVector3() + (Vector3.back * 8);
                 Quaternion rot = Quaternion.identity;

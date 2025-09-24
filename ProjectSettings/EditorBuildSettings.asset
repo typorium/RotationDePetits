@@ -48,10 +48,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/CustomGhost.unity
     guid: 39b9f67bcc00dd640a5971ac500078e9
   - enabled: 0
-    path: Assets/Mountain/CustomMountain.unity
+    path: Assets/Addons/Mountain/CustomMountain.unity
     guid: efd97cf750145d149bb635d1af006ea3
   m_configObjects:
-    com.unity.addressableassets: {fileID: 11400000, guid: 6a9e742b2eed8514da62818bb8c5a654,
+    com.unity.addressableassets: {fileID: 11400000, guid: 089c0b7845b45284db115d78b78a26c4,
       type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 49335f30d253220488d2d332ade6e901,
       type: 2}

@@ -9993,7 +9993,6 @@ namespace Quantum.Core {
 
       for (int p = 0; p < f.MaxPlayerCount; p++) {
         var isPlayerConnected = (f.GetPlayerInputFlags(p) & Photon.Deterministic.DeterministicInputFlags.PlayerNotPresent) == 0;
-
         var playerLastConnectionStateRef = f.PlayerLastConnectionState;
         
         if (isPlayerConnected != playerLastConnectionStateRef.IsSet(p)) {

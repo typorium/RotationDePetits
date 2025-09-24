@@ -1,3 +1,4 @@
+using NSMB.Utilities;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using System;
@@ -63,8 +64,8 @@ namespace NSMB.UI.Loading {
                     }
                 }
 
-                var characters = f.SimulationConfig.CharacterDatas;
-                character = f.FindAsset(characters[characterIndex % characters.Length]);
+                var characters = QuantumViewUtils.Characters;
+                character = characters[Mathf.Clamp(characterIndex, 0, characters.Length - 1)];
             }
 
             mario.Initialize(character);

@@ -11,12 +11,12 @@ public class MvLEditorUtils : EditorWindow {
 
     private string mapName;
 
-    [MenuItem("MvLO/Create New Map")]
+    [MenuItem("Tools/MvLO/Create New Map")]
     public static void OpenCreateMapWindow() {
         GetWindow<MvLEditorUtils>();
     }
 
-    [MenuItem("MvLO/Find VersusStageData Asset")]
+    [MenuItem("Tools/MvLO/Find VersusStageData Asset")]
     public static void FindStageData() {
         QuantumMapData qmd = GameObject.FindFirstObjectByType<QuantumMapData>();
         if (!qmd) {
@@ -93,10 +93,12 @@ public class MvLEditorUtils : EditorWindow {
         EditorUtility.SetDirty(map);
         AssetDatabase.ImportAsset(destinationAssets[1], ImportAssetOptions.ForceUpdate);
 
+        /*
         SimulationConfig simulationConfig = QuantumDefaultConfigs.Global.SimulationConfig;
         Array.Resize(ref simulationConfig.AllStages, simulationConfig.AllStages.Length + 1);
         simulationConfig.AllStages[^1] = map;
         EditorUtility.SetDirty(simulationConfig);
+        */
 
         QuantumMapData mapHolder = FindFirstObjectByType<QuantumMapData>();
         mapHolder.AssetRef = map;

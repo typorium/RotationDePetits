@@ -1,4 +1,5 @@
 using JimmysUnityUtilities;
+using NSMB.Utilities;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using System;
@@ -22,7 +23,6 @@ namespace NSMB.UI.Intro {
 
         //---Private Variables
         private SoundEffectDataAttribute[] possibleSfx;
-        private CharacterAsset[] possibleCharacters;
         private Coroutine logoBounceRoutine;
 
         public void Start() {
@@ -32,12 +32,10 @@ namespace NSMB.UI.Intro {
                 .Select(se => se.GetSoundData())
                 .Where(sd => sd.Sound.Contains("{char}"))
                 .ToArray();
-            possibleCharacters = GlobalController.Instance.config.CharacterDatas
-                .Select(ar => QuantumUnityDB.GetGlobalAsset(ar))
-                .ToArray();
         }
 
         public void PlayRandomCharacterSound() {
+            var possibleCharacters = QuantumViewUtils.Characters;
             SoundEffectDataAttribute data = possibleSfx[UnityEngine.Random.Range(0, possibleSfx.Length)];
             CharacterAsset character = possibleCharacters[UnityEngine.Random.Range(0, possibleCharacters.Length)];
             int variant = data.Variants <= 1 ? 0 : UnityEngine.Random.Range(1, data.Variants + 1);

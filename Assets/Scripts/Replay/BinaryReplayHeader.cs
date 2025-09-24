@@ -31,6 +31,9 @@ namespace NSMB.Replay {
         public ReplayPlayerInformation[] PlayerInformation = Array.Empty<ReplayPlayerInformation>();
         public sbyte WinningTeam = -1;
 
+        // Addons
+        public string[] AddonKeys = Array.Empty<string>();
+
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ResetCachedVersion() {
@@ -57,6 +60,12 @@ namespace NSMB.Replay {
                 PlayerInformation[i].Serialize(writer);
             }
             writer.Write(WinningTeam);
+
+            // Addons
+            writer.Write(AddonKeys.Length);
+            for (int i = 0; i < AddonKeys.Length; i++) {
+                writer.Write(AddonKeys[i]);
+            }
 
             return writer.BaseStream.Length;
         }
@@ -92,6 +101,12 @@ namespace NSMB.Replay {
                     result.PlayerInformation[i] = ReplayPlayerInformation.Deserialize(reader);
                 }
                 result.WinningTeam = reader.ReadSByte();
+
+                // Addons
+                result.AddonKeys = new string[reader.ReadInt32()];
+                for (int i = 0; i < result.AddonKeys.Length; i++) {
+                    result.AddonKeys[i] = reader.ReadString();
+                }
             } catch {
                 return ReplayParseResult.ParseFailure;
             }

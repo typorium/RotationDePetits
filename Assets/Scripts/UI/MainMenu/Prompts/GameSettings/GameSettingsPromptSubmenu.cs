@@ -1,6 +1,7 @@
 using NSMB.Networking;
 using NSMB.UI.MainMenu.Submenus.InRoom;
 using NSMB.UI.Translation;
+using NSMB.Utilities;
 using Photon.Client;
 using Photon.Realtime;
 using Quantum;
@@ -65,8 +66,8 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
             horizontalTemplate.SetActive(false);
             stageSelectionButtonTemplate.gameObject.SetActive(false);
 
-            var stages = GlobalController.Instance.config.AllStages;
-            var stageGroups = stages.Select(QuantumUnityDB.GetGlobalAsset)
+            var stages = QuantumViewUtils.Maps;
+            var stageGroups = stages
                 .Select(m => (m, m ? (VersusStageData) QuantumUnityDB.GetGlobalAsset(m.UserAsset) : null))
                 .Where(vsd => vsd.Item2)
                 .GroupBy(vsd => vsd.Item2.GroupingTranslationKey).OrderBy(g => IndexOfNullIsMax(headerOrder, g.Key));

@@ -1,4 +1,5 @@
 using NSMB.UI.Elements;
+using NSMB.Utilities;
 using Quantum;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,8 +42,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
             int palettesPerRow = template.transform.parent.GetComponent<GridLayoutGroup>().constraintCount;
 
-            PaletteSet[] palettes = GlobalController.Instance.config.Palettes
-                .Select(QuantumUnityDB.GetGlobalAsset)
+            PaletteSet[] palettes = QuantumViewUtils.Palettes
                 .OrderBy(ps => ps ? ps.order : int.MinValue)
                 .ToArray();
 
@@ -100,11 +100,11 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         public void ChangePaletteButton(int index) {
             selectedPaletteIndex = index;
-            AssetRef<PaletteSet>[] palettes = GlobalController.Instance.config.Palettes;
+            var palettes = QuantumViewUtils.Palettes;
             PaletteSet palette = null;
 
             if (index >= 0 && index < palettes.Length) {
-                palette = QuantumUnityDB.GetGlobalAsset(palettes[index]);
+                palette = palettes[index];
             }
 
             if (palette) {
@@ -127,7 +127,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
 
             QuantumGame game = QuantumRunner.DefaultGame;
-            int newIndex = game.Configurations.Simulation.Palettes.IndexOf(pbar => pbar == selectedButton.palette);
+            int newIndex = QuantumViewUtils.Palettes.IndexOf(pbar => pbar == selectedButton.palette);
 
             foreach (var slot in game.GetLocalPlayerSlots()) {
                 game.SendCommand(slot, new CommandChangePlayerData { 
@@ -153,7 +153,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             canvas.PlayCursorSound();
 
             QuantumGame game = QuantumRunner.DefaultGame;
-            var selectedPalette = game.Configurations.Simulation.Palettes[selectedPaletteIndex];
+            var selectedPalette = QuantumViewUtils.Palettes[selectedPaletteIndex];
             var selectedPaletteButton = paletteButtons.FirstOrDefault(pb => pb.palette == selectedPalette);
 
             if (selectedPaletteButton == null) {

@@ -19,10 +19,6 @@ namespace Quantum {
             } else {
                 f.Events.GameStateChanged(f.Global->GameState);
             }
-
-
-            // wouldn't exist if codegen didn't run.
-            f.Global->Test = 0;
         }
 
         public override void Update(Frame f) {
@@ -237,7 +233,7 @@ namespace Quantum {
             newData->RealTeam = 255;
 
             // Get team counts
-            int teams = f.SimulationConfig.Teams.Length;
+            int teams = f.Context.Teams.Length;
             Span<byte> teamCounts = stackalloc byte[teams];
             var playerDatas = f.ResolveDictionary(f.Global->PlayerDatas);
             foreach ((PlayerRef otherPlayer, EntityRef otherEntity) in playerDatas) {
@@ -374,8 +370,8 @@ namespace Quantum {
                     continue;
                 }
 
-                int characterIndex = FPMath.Clamp(data->Character, 0, config.CharacterDatas.Length - 1);
-                CharacterAsset character = f.FindAsset(config.CharacterDatas[characterIndex]);
+                int characterIndex = FPMath.Clamp(data->Character, 0, f.Context.CharacterDatas.Length - 1);
+                CharacterAsset character = f.Context.CharacterDatas[characterIndex];
 
                 EntityRef newPlayer = f.Create(character.Prototype);
                 var mario = f.Unsafe.GetPointer<MarioPlayer>(newPlayer);

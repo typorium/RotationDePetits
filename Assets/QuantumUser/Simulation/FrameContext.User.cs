@@ -5,6 +5,12 @@ using static Quantum.InteractionSystem;
 namespace Quantum {
     public partial class FrameContextUser {
 
+        //---Static Assets
+        public Map[] AllStages;
+        public CharacterAsset[] CharacterDatas;
+        public PaletteSet[] Palettes;
+        public TeamAsset[] Teams;
+
         //---Physics
         public LayerMask ExcludeEntityAndPlayerMask, PlayerOnlyMask;
         public Shape2D CircleRadiusTwo;

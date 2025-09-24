@@ -229,12 +229,12 @@ namespace NSMB.Utilities {
         }
 
         public static Color GetTeamColor(Frame f, int team, float s = 1, float v = 1) {
-            var teams = f.SimulationConfig.Teams;
+            var teams = f.Context.Teams;
             if (team < 0 || team >= teams.Length) {
                 return spectatorColor;
             }
 
-            Color color = f.FindAsset(teams[team]).color;
+            Color color = teams[team].color;
             Color.RGBToHSV(color, out float hue, out float saturation, out float value);
             return Color.HSVToRGB(hue, saturation * s, value * v);
         }

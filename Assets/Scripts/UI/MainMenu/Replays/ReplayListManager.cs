@@ -636,16 +636,16 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         }
 
         public int SortByStage(ReplayListEntry a, ReplayListEntry b) {
-            var allStages = GlobalController.Instance.config.AllStages;
+            var allMaps = QuantumViewUtils.Maps;
 
             if (sortAscending) {
                 return
-                    allStages.IndexOf(map => map == a.ReplayFile.Header.Rules.Stage)
-                    - allStages.IndexOf(map => map == b.ReplayFile.Header.Rules.Stage);
+                    allMaps.IndexOf(map => map == a.ReplayFile.Header.Rules.Stage)
+                    - allMaps.IndexOf(map => map == b.ReplayFile.Header.Rules.Stage);
             } else {
                 return
-                    allStages.IndexOf(map => map == b.ReplayFile.Header.Rules.Stage)
-                    - allStages.IndexOf(map => map == a.ReplayFile.Header.Rules.Stage);
+                    allMaps.IndexOf(map => map == b.ReplayFile.Header.Rules.Stage)
+                    - allMaps.IndexOf(map => map == a.ReplayFile.Header.Rules.Stage);
             }
         }
 

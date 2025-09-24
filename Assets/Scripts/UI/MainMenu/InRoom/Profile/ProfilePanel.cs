@@ -1,5 +1,6 @@
 using NSMB.Networking;
 using NSMB.UI.Elements;
+using NSMB.Utilities;
 using Quantum;
 using UnityEngine;
 using UnityEngine.UI;
@@ -90,8 +91,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 characterButtonLogos[index].color = enabledCharacterButtonLogoColor;
             }
 
-            var allCharacters = f.SimulationConfig.CharacterDatas;
-            CharacterAsset characterAsset = f.FindAsset(allCharacters[Mathf.Clamp(index, 0, allCharacters.Length)]);
+            var allCharacters = QuantumViewUtils.Characters;
+            var characterAsset = allCharacters[Mathf.Clamp(index, 0, allCharacters.Length)];
             paletteChooser.ChangeCharacter(characterAsset);
 
             if (changed) {

@@ -158,9 +158,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
 
             int characterIndex = playerData->Character;
-            var allCharacters = f.SimulationConfig.CharacterDatas;
-            characterIndex %= allCharacters.Length;
-            CharacterAsset character = f.FindAsset(allCharacters[characterIndex]);
+            var allCharacters = QuantumViewUtils.Characters;
+            var character = allCharacters[Mathf.Clamp(characterIndex, 0, allCharacters.Length - 1)];
             builder.Append(character.UiString);
 
             if (f.Global->Rules.TeamsEnabled && Settings.Instance.GraphicsColorblind && !playerData->ManualSpectator) {
