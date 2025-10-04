@@ -7,13 +7,13 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MvLEditorUtils : EditorWindow {
+public class MvLMapCreateWindow : EditorWindow {
 
     private string mapName;
 
     [MenuItem("Tools/MvLO/Create New Map")]
     public static void OpenCreateMapWindow() {
-        GetWindow<MvLEditorUtils>();
+        GetWindow<MvLMapCreateWindow>();
     }
 
     [MenuItem("Tools/MvLO/Find VersusStageData Asset")]

@@ -19,4 +19,4 @@ MonoBehaviour:
     m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.SceneProvider
   externalCatalogs:
-  - {fileID: 11400000, guid: 7c7367b13503c1e45a31b78a9f5292ce, type: 2}
+  - {fileID: 11400000, guid: e345bb78eb176b249a84d8faf130a559, type: 2}

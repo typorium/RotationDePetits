@@ -27,8 +27,17 @@ namespace NSMB.Addon {
         private List<LoadedAddon> loadedAddons = new();
 
         public async void Start() {
-            // TEST
-            var addon = await LoadAddonByName("mountain-v0.1");
+            var before = QuantumUnityDB.Global.FindAssetGuids(new AssetObjectQuery { Type = typeof(Map) });
+            Debug.LogWarning("Maps before loading addon: " + before.Count);
+
+            var mountain = await LoadAddonByName("Mountain-v1.1");
+            
+            var after = QuantumUnityDB.Global.FindAssetGuids(new AssetObjectQuery { Type = typeof(Map) });
+            Debug.LogWarning("Maps after loading addon: " + after.Count);
+
+            // await UnloadAddon(mountain);
+            // var afterUnload = QuantumUnityDB.Global.FindAssetGuids(new AssetObjectQuery { Type = typeof(Map) });
+            // Debug.LogWarning("Maps after unloading addon: " + afterUnload.Count);
         }
 
         public async Task<bool> LoadAddonList(List<string> requestedAddons) {
@@ -53,14 +62,31 @@ namespace NSMB.Addon {
         public async Task<LoadedAddon> LoadAddonByName(string addonName) {
             // Primary: check through all addons.
             if (Directory.Exists(LocalFolderPath)) {
-                foreach (var addonDef in Directory.GetFiles(LocalFolderPath, "addon.json", SearchOption.AllDirectories)) {
-                    string rootFolderFullPath = Path.GetDirectoryName(addonDef);
-                    string rootFolderName = Path.GetFileName(rootFolderFullPath);
-
-                    if (rootFolderName.Equals(addonName, StringComparison.InvariantCultureIgnoreCase)) {
+                // Check for extracted addons
+                foreach (var path in Directory.EnumerateDirectories(LocalFolderPath, addonName, new EnumerationOptions { RecurseSubdirectories = true })) {
+                    // This is a folder with the {addonName}. Check for addon.json.
+                    if (File.Exists(Path.Combine(path, "addon.json"))) {
                         // We already have this addon locally. Cool beans.
-                        Debug.Log($"Loading addon \"{addonName}\" from local source ({rootFolderFullPath})");
-                        return await LoadAddonByPath(rootFolderFullPath);
+                        Debug.Log($"[Addon] Loading addon \"{addonName}\" from local source ({path})");
+                        return await LoadAddonByPath(path);
+                    }
+                }
+
+                // Check for .zip files.
+                foreach (var zippedPath in Directory.EnumerateFiles(LocalFolderPath, addonName + ".zip", new EnumerationOptions { RecurseSubdirectories = true })) {
+                    bool valid = false;
+                    using (var zipArchive = ZipFile.Open(zippedPath, ZipArchiveMode.Read)) {
+                        valid = zipArchive.GetEntry("addon.json") != null;
+                    }
+
+                    if (valid) {
+                        // We already have this addon within this zip file. Cool beans.
+                        Debug.Log($"[Addon] Found zipped addon at {zippedPath}. Extracting...");
+                        string path = Path.Combine(Path.GetDirectoryName(zippedPath), addonName);
+                        ZipFile.ExtractToDirectory(zippedPath, path);
+
+                        Debug.Log($"[Addon] Loading addon \"{addonName}\" from local source ({path})");
+                        return await LoadAddonByPath(path);
                     }
                 }
             }
@@ -68,7 +94,7 @@ namespace NSMB.Addon {
             // Fallback: check the remote repository.
             string downloadedPath = await DownloadAddonByName(addonName);
             if (downloadedPath == null) {
-                Debug.Log($"Failed to automatically download addon \"{addonName}\"");
+                Debug.Log($"[Addon] Failed to automatically download addon \"{addonName}\"");
                 return null;
             }
             // Success!
@@ -81,10 +107,28 @@ namespace NSMB.Addon {
             AddonDefinition addonDef = JsonConvert.DeserializeObject<AddonDefinition>(addonDefJson);
 
             // Catalog
-            string platformFolder = GetFolderForPlatform();
-            string catalogPath = Path.Combine(pathToFolder, platformFolder, "catalog.json");
+            string platformFolderName = GetFolderForPlatform();
+            string platformFolderPath = Path.Combine(pathToFolder, platformFolderName);
+            if (!Directory.Exists(platformFolderPath)) {
+                Debug.LogError($"[Addon] Failed to load addon at path {pathToFolder}, it does not seem to support our platform ({platformFolderName})!");
+                return null;
+            }
+            string catalogPath = Directory.GetFiles(platformFolderPath, "*.json").FirstOrDefault();
+            if (catalogPath == null) {
+                // No catalog?
+                Debug.LogError($"[Addon] Failed to load addon at path {pathToFolder}, it does not seem to support our platform ({platformFolderName})!");
+                return null;
+            }
 
-            var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
+            // Resolve paths + create a copy of the catalog.
+            string catalogAsString = await File.ReadAllTextAsync(catalogPath);
+            catalogAsString = catalogAsString.Replace("{MOD_PATH}", platformFolderPath.Replace(@"\", @"\\")); // JSON expects double escaped backslashes
+
+            string tempCatalogPath = Path.Combine(Application.temporaryCachePath, $"catalog_{addonDef.FullName}.json");
+            await File.WriteAllTextAsync(tempCatalogPath, catalogAsString);
+
+            // Read temp catalog
+            var catalogHandle = Addressables.LoadContentCatalogAsync(tempCatalogPath);
             var resourceLocator = await catalogHandle.Task;
 
             if (catalogHandle.Status == AsyncOperationStatus.Succeeded) {
@@ -95,8 +139,10 @@ namespace NSMB.Addon {
                     foreach (var assetObject in assetObjects) {
                         try {
                             QuantumUnityDB.Global.AddAsset(assetObject);
-                        } catch { 
+                            Debug.Log($"[Addon] Successfully registered asset {assetObject.name} ({assetObject.Guid})");
+                        } catch {
                             // Already added? Doesn't matter... ignore.
+                            Debug.Log($"[Addon] Failed to register asset {assetObject.name} ({assetObject.Guid})");
                         }
                     }
                 }
@@ -112,48 +158,45 @@ namespace NSMB.Addon {
                 return newAddon;
             }
 
+            Debug.LogError($"[Addon] Failed to load addon at path {pathToFolder}");
             return null;
         }
 
         public async Task<string> DownloadAddonByName(string addonName) {
             string targetFileUrl = CombineUrl(RemoteRepoUrl, addonName + ".zip");
-            Debug.Log($"Attempting to download addon {addonName} from remote source ({targetFileUrl})");
+            Debug.Log($"[Addon] Attempting to download addon {addonName} from remote source ({targetFileUrl})");
 
             using UnityWebRequest zippedAddonRequest = UnityWebRequest.Get(targetFileUrl);
             zippedAddonRequest.SetRequestHeader("Accept", "*/*");
             zippedAddonRequest.SetRequestHeader("UserAgent", "ipodtouch0218/NSMB-MarioVsLuigi");
             await zippedAddonRequest.SendWebRequest();
             if (zippedAddonRequest.result != UnityWebRequest.Result.Success) {
-                Debug.Log($"Download failed: {zippedAddonRequest.error} ({zippedAddonRequest.responseCode})");
+                Debug.Log($"[Addon] Download failed: {zippedAddonRequest.error} ({zippedAddonRequest.responseCode})");
                 return null;
             }
 
             string finalPath = Path.Combine(LocalFolderDownloadedPath, addonName);
-            string platformFolder = GetFolderForPlatform();
-            using (MemoryStream memoryStream = new(zippedAddonRequest.downloadHandler.data)) {
-                using ZipArchive zipFile = new(memoryStream);
-                if (zipFile.GetEntry(platformFolder + "/catalog.json") == null) {
-                    // Our platform doesn't support this mod... oh well
-                    Debug.Log($"Download failed: {addonName} doesn't support our platform ({platformFolder})");
-                    return null;
-                }
-                zipFile.ExtractToDirectory(finalPath);
-                Debug.Log(finalPath);
-            }
+            string platformFolderName = GetFolderForPlatform();
 
-#if !UNITY_EDITOR || true
-            // Remove other platforms
-            foreach (var subdirectory in Directory.EnumerateDirectories(finalPath)) {
-                if (!Path.GetFileName(subdirectory).Equals(platformFolder)) {
-                    Directory.Delete(subdirectory, true);
-                }
-            }
-#endif 
+            using MemoryStream memoryStream = new(zippedAddonRequest.downloadHandler.data);
+            using ZipArchive zipFile = new(memoryStream);
 
+            if (zipFile.GetEntry(platformFolderName + "/catalog.json") == null) {
+                // Our platform doesn't support this mod... oh well
+                Debug.Log($"[Addon] Download failed: {addonName} doesn't support our platform ({platformFolderName})");
+                return null;
+            }
+            zipFile.ExtractToDirectory(finalPath);
+            Debug.Log($"[Addon] Successfully downloaded addon to {finalPath}");
+            
             return finalPath;
         }
 
         public async Task UnloadAddon(LoadedAddon addon) {
+            if (addon == null) {
+                throw new ArgumentNullException("Tried to unload a null addon!");
+            }
+
             if (!addon.AllAssetObjectsHandle.IsDone) {
                 await addon.AllAssetObjectsHandle.Task;
             }
@@ -161,7 +204,7 @@ namespace NSMB.Addon {
             foreach (var assetObject in addon.AllAssetObjectsHandle.Result) {
                 QuantumUnityDB.Global.DisposeAsset(assetObject.Guid, true);
                 QuantumUnityDB.Global.RemoveSource(assetObject.Guid);
-                Debug.Log($"Unloaded {assetObject.name}");
+                Debug.Log($"[Addon] Unloaded asset {assetObject.name} ({assetObject.Guid})");
             }
 
             OnAddonUnloaded?.Invoke(addon);
@@ -170,7 +213,7 @@ namespace NSMB.Addon {
             loadedAddons.Remove(addon);
         }
 
-        private static string GetFolderForPlatform() {
+        public static string GetFolderForPlatform() {
 #if UNITY_EDITOR
             return UnityEditor.EditorUserBuildSettings.activeBuildTarget.ToString();
 #else

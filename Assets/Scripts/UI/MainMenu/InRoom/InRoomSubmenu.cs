@@ -79,12 +79,17 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
 
             QuantumCallback.Subscribe<CallbackLocalPlayerAddConfirmed>(this, OnLocalPlayerAddConfirmed);
+            QuantumCallback.Subscribe<CallbackLocalPlayerAddFailed>(this, OnLocalPlayerAddFailed);
             QuantumCallback.Subscribe<CallbackGameDestroyed>(this, OnGameDestroyed);
             QuantumEvent.Subscribe<EventStartingCountdownChanged>(this, OnStartingCountdownChanged);
             QuantumEvent.Subscribe<EventGameStateChanged>(this, OnGameStateChanged);
             QuantumEvent.Subscribe<EventHostChanged>(this, OnHostChanged);
             QuantumEvent.Subscribe<EventCountdownTick>(this, OnCountdownTick);
             QuantumEvent.Subscribe<EventPlayerDataChanged>(this, OnPlayerDataChanged);
+        }
+
+        private void OnLocalPlayerAddFailed(CallbackLocalPlayerAddFailed callback) {
+            Debug.Log(callback.Message);
         }
 
         public void OnEnable() {

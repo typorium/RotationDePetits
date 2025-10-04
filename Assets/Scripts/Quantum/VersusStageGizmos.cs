@@ -25,7 +25,7 @@ namespace NSMB.Quantum {
                 return;
             }
 
-            var stage = QuantumUnityDB.GetGlobalAsset<VersusStageData>(mapData.GetAsset(true).UserAsset.Id);
+            var stage = QuantumUnityDB.GetGlobalAsset<VersusStageData>(mapData.GetAsset(false).UserAsset.Id);
 
             if (!stage) {
                 return;

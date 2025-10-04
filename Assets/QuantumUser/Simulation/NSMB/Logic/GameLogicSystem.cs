@@ -215,6 +215,7 @@ namespace Quantum {
         }
 
         public void OnPlayerAdded(Frame f, PlayerRef player, bool firstTime) {
+            UnityEngine.Debug.Log(player);
             RuntimePlayer runtimePlayer = f.GetPlayerData(player);
 
             var bans = f.ResolveList(f.Global->BannedPlayerIds);
@@ -233,7 +234,7 @@ namespace Quantum {
             newData->RealTeam = 255;
 
             // Get team counts
-            int teams = f.Context.Teams.Length;
+            int teams = f.SimulationConfig.Teams.Length;
             Span<byte> teamCounts = stackalloc byte[teams];
             var playerDatas = f.ResolveDictionary(f.Global->PlayerDatas);
             foreach ((PlayerRef otherPlayer, EntityRef otherEntity) in playerDatas) {

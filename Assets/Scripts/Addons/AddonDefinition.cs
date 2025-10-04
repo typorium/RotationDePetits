@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace NSMB.Addon {
     [System.Serializable]
     public class AddonDefinition {
@@ -5,5 +7,8 @@ namespace NSMB.Addon {
         public string Author { get; set; }
         public string Version { get; set; }
         public string Description { get; set; }
+
+        [JsonIgnore]
+        public string FullName => Name + "-" + Version;
     }
 }

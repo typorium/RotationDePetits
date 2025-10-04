@@ -153,9 +153,8 @@ namespace NSMB.Quantum {
                 return default;
             }
 
-            StageTile existingTile = QuantumUnityDB.FindGlobalAssetGuids(new AssetObjectQuery(typeof(StageTile)))
-                .Select(guid => new AssetRef<StageTile>(guid))
-                .Select(QuantumUnityDB.GetGlobalAssetEditorInstance)
+            StageTile existingTile = QuantumUnityDB.Global.GetAssets(new AssetObjectQuery { Type = typeof(StageTile) })
+                .Cast<StageTile>()
                 .FirstOrDefault(st => st.Tile == tile);
 
             if (existingTile) {

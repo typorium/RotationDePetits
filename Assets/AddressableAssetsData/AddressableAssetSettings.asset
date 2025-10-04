@@ -15,13 +15,13 @@ MonoBehaviour:
   m_DefaultGroup: 4d087ae4c291a7147b2c19263ae6576d
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: 9410172e8df5ac0f67e388c963581aaa
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
   m_CatalogRequestsTimeout: 0
   m_DisableCatalogUpdateOnStart: 0
-  m_InternalIdNamingMode: 0
+  m_InternalIdNamingMode: 2
   m_InternalBundleIdMode: 0
   m_AssetLoadMode: 0
   m_BundledAssetProviderType:
@@ -43,10 +43,10 @@ MonoBehaviour:
   m_SharedBundleSettings: 0
   m_SharedBundleSettingsCustomGroupIndex: 1
   m_ContiguousBundles: 1
-  m_StripUnityVersionFromBundleBuild: 0
+  m_StripUnityVersionFromBundleBuild: 1
   m_DisableVisibleSubAssetRepresentations: 0
   m_BuiltInBundleNaming: 1
-  mBuiltInBundleCustomNaming: 
+  mBuiltInBundleCustomNaming: MvLOMod
   m_MonoScriptBundleNaming: 1
   m_CheckForContentUpdateRestrictionsOption: 0
   m_MonoScriptBundleCustomNaming: 
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
-  - {fileID: 11400000, guid: 1ee9f5a9d4828304d80874bad3c58b88, type: 2}
+  - {fileID: 11400000, guid: d195fab4e8724014f96002eee32a737e, type: 2}
   - {fileID: 11400000, guid: 192dfaf0286df4142a86d083d2483e5b, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
@@ -73,23 +73,33 @@ MonoBehaviour:
       m_Values:
       - m_Id: 109fe15bba24c0248b681e262bb70121
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: 13f32c46ecdcbbc4998e5b6eb0026f73
+        m_Value: '{MOD_PATH}'
       - m_Id: 2f63148ccd139f645b616f2df2da1e73
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
       - m_Id: 51a37bcf817b7834b9ad9edabc51dc8b
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 8978d9faa5e72fc45be2b69cf78975e0
+        m_Value: ExportedAddons/StandaloneWindows64/mountain
       - m_Id: cbc3e4af4c8efaa418ca785b75861074
-        m_Value: 'ExportedAddons/[BuildTarget]'
+        m_Value: 'ServerData/[BuildTarget]'
       - m_Id: dd6891f29467fc74d97303b892db7f7b
-        m_Value: '{NSMB.Addon.AddonManager.RemoteRepoUrl}/XYZ/[BuildTarget]'
+        m_Value: <undefined>
     m_ProfileEntryNames:
     - m_Id: 109fe15bba24c0248b681e262bb70121
       m_Name: Local.LoadPath
+      m_InlineUsage: 0
+    - m_Id: 13f32c46ecdcbbc4998e5b6eb0026f73
+      m_Name: mountain-LoadPath
       m_InlineUsage: 0
     - m_Id: 2f63148ccd139f645b616f2df2da1e73
       m_Name: BuildTarget
       m_InlineUsage: 0
     - m_Id: 51a37bcf817b7834b9ad9edabc51dc8b
       m_Name: Local.BuildPath
+      m_InlineUsage: 0
+    - m_Id: 8978d9faa5e72fc45be2b69cf78975e0
+      m_Name: mountain-BuildPath
       m_InlineUsage: 0
     - m_Id: cbc3e4af4c8efaa418ca785b75861074
       m_Name: Remote.BuildPath
@@ -108,10 +118,10 @@ MonoBehaviour:
   m_CertificateHandlerType:
     m_AssemblyName: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     m_ClassName: NSMB.Networking.MvLCertificateHandler
-  m_ActivePlayerDataBuilderIndex: 3
+  m_ActivePlayerDataBuilderIndex: 0
   m_DataBuilders:
+  - {fileID: 11400000, guid: dcebf0ee44bc0d54a953a50c02edce4c, type: 2}
   - {fileID: 11400000, guid: 78588c6b60c50db4392a2a4c2b30f89f, type: 2}
   - {fileID: 11400000, guid: cc6ac8e09e79a6446a1ce849d01c1a3d, type: 2}
   - {fileID: 11400000, guid: f68cf974f58945245ab4665c8fa1267a, type: 2}
-  - {fileID: 11400000, guid: dcebf0ee44bc0d54a953a50c02edce4c, type: 2}
   m_ActiveProfileId: 44a4ab066ff04334389982b391cbab9e
