@@ -15,7 +15,7 @@ namespace Quantum {
     /// <summary>
     /// Access the runner id of it's runner or null if it does not exist.
     /// </summary>
-    public string RunnerId => Runner ? Runner.Id : null;
+    public string RunnerId => Runner?.Id;
     /// <summary>
     /// The Input object to toggle on or off.
     /// </summary>
@@ -138,10 +138,8 @@ namespace Quantum {
       ShutdownHandler?.Dispose();
       ShutdownHandler = null;
 
-      if (MainPlayer != null) {
-        MainPlayer.LocalPlayers.Remove(this);
-        MainPlayer = null;
-      }
+      MainPlayer?.LocalPlayers.Remove(this);
+      MainPlayer = null;
 
       if (_ui != null) {
         Destroy(_ui.gameObject);
@@ -158,9 +156,7 @@ namespace Quantum {
         _evu = null;
       }
 
-      if (this != null) {
-        Destroy(gameObject);
-      }
+      Destroy(gameObject);
     }
 
     private void OnInputToggle(bool isEnabled) {

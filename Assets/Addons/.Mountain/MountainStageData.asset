@@ -22,7 +22,8 @@ MonoBehaviour:
   TranslationKey: levels.custom.mountain
   GroupingTranslationKey: 
   DiscordStageImage: 
-  Icon: {fileID: 0}
+  Icon: {fileID: 1797115516003371073, guid: 84406200d32f9b54394a2d0e5ab286ad, type: 3}
+  MainMenuPreviewPrefab: {fileID: 0}
   OverrideAutomaticTilemapSettings: 0
   TileDimensions:
     X: 32

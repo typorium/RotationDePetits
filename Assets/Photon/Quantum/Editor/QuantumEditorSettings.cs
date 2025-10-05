@@ -2,7 +2,6 @@ namespace Quantum {
   using System;
   using System.Collections.Generic;
   using Editor;
-  using JetBrains.Annotations;
   using UnityEditor;
   using UnityEngine;
   using UnityEngine.Serialization;
@@ -255,19 +254,6 @@ namespace Quantum {
       
       QuantumEditorLog.TraceImport($"Hash for {nameof(AssetGuidOverrides)}: {hash} (took {sw.Elapsed})");
       AssetDatabaseUtils.RegisterCustomDependencyWithMppmWorkaround(AssetGuidOverrideDependency, hash);
-    }
-    
-    [CanBeNull]
-    internal string GetAssetLookupRoot() {
-      // do packages need to be searched for?
-      foreach (var path in AssetSearchPaths) {
-        if (!string.IsNullOrEmpty(path) && !path.StartsWith("Assets", StringComparison.Ordinal)) {
-          // not rooted in Assets, will perform a project-wide search for assets (which is slower)
-          return null;
-        }
-      }
-
-      return "Assets";
     }
   }
 

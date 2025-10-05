@@ -27,7 +27,7 @@ namespace Quantum {
 
             // Parse lobby commands
             var playerDataDictionary = f.ResolveDictionary(f.Global->PlayerDatas);
-            for (int i = 0; i < f.MaxPlayerCount; i++) {
+            for (int i = 0; i < f.PlayerCount; i++) {
                 if (f.GetPlayerCommand(i) is ILobbyCommand lobbyCommand) {
                     var playerData = QuantumUtils.GetPlayerData(f, i, playerDataDictionary);
                     if (playerData == null) {
@@ -215,7 +215,6 @@ namespace Quantum {
         }
 
         public void OnPlayerAdded(Frame f, PlayerRef player, bool firstTime) {
-            UnityEngine.Debug.Log(player);
             RuntimePlayer runtimePlayer = f.GetPlayerData(player);
 
             var bans = f.ResolveList(f.Global->BannedPlayerIds);

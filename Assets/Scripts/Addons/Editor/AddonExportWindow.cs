@@ -120,7 +120,11 @@ namespace NSMB.Addon {
                 }
 
                 // Zip folder + clean
-                ZipFile.CreateFromDirectory(exportFolder, Path.Combine("ExportedAddons", $"{addonName}-{version}.zip"));
+                string zipPath = Path.Combine("ExportedAddons", $"{addonName}-{version}.zip");
+                try {
+                    File.Delete(zipPath);
+                } catch { }
+                ZipFile.CreateFromDirectory(exportFolder, zipPath);
                 try {
                     Directory.Delete(exportFolder, true);
                 } catch { }

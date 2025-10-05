@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.custom.beach
   GroupingTranslationKey: level.header.custom
   DiscordStageImage: beach
+  SortOrder: 5
   Icon: {fileID: 21300000, guid: ca318a491eab4914286c260c3692e7b2, type: 3}
+  MainMenuPreviewPrefab: {fileID: 2838333242218743587, guid: ff240b5eb3be2f8438e80d934efb3719,
+    type: 3}
   OverrideAutomaticTilemapSettings: 0
   TileDimensions:
     X: 64

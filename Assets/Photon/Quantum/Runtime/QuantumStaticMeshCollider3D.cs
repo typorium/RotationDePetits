@@ -23,9 +23,8 @@ namespace Quantum {
 
     /// <summary>
     /// The physics solver will resolve sphere and capsule shapes against mesh collisions as if the mesh was a regular flat and smooth plane.
-    /// This setting is suited for flat or concave meshes (e.g. floors, bowls) and not suited for convex ones (e.g. boxes, hoops, spherical polyhedrons, etc).
     /// </summary>
-    [InlineHelp]
+    [InlineHelp, Header("Experimental")]
     public Boolean SmoothSphereMeshCollisions = false;
 
     [NonSerialized]

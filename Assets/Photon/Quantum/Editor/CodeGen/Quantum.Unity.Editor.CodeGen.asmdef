@@ -19,12 +19,6 @@
     ],
     "autoReferenced": false,
     "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "com.photonengine.quantum",
-            "expression": "1.0",
-            "define": "QUANTUM_UPM"
-        }
-    ],
+    "versionDefines": [],
     "noEngineReferences": false
 }

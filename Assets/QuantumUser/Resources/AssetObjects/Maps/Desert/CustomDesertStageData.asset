@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.custom.desert
   GroupingTranslationKey: level.header.custom
   DiscordStageImage: level-desert
+  SortOrder: 4
   Icon: {fileID: 21300000, guid: 8f78382475e08064f8dbe0c4d5897670, type: 3}
+  MainMenuPreviewPrefab: {fileID: 2712286418126858031, guid: 31c4189351ff1394eb5da0ea29ff13f5,
+    type: 3}
   OverrideAutomaticTilemapSettings: 1
   TileDimensions:
     X: 70

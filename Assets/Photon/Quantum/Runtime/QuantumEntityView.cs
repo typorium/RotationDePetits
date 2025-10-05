@@ -456,8 +456,7 @@ namespace Quantum {
       if ((ViewFlags & QuantumEntityViewFlags.DisableSearchChildrenForEntityViewComponents) > 0) {
         _viewComponents = GetComponents<IQuantumViewComponent>();
       } else {
-        _viewComponents = GetComponentsInChildren<IQuantumViewComponent>(
-          includeInactive: (ViewFlags & QuantumEntityViewFlags.DisableSearchInactiveForEntityViewComponents) == 0);
+        _viewComponents = GetComponentsInChildren<IQuantumViewComponent>();
       }
 
       EntityViewUpdater = entityViewUpdater;
@@ -465,9 +464,7 @@ namespace Quantum {
       OnInitialize();
 
       for (int i = 0; i < _viewComponents.Length; i++) {
-        if (_viewComponents[i].IsInitialized == false) {
-          _viewComponents[i].Initialize(contexts);
-        }
+        _viewComponents[i].Initialize(contexts);
       }
     }
 
@@ -753,7 +750,7 @@ namespace Quantum {
           case QuantumEntityViewTimeReference.ErrorCorrection:
             return false;
         }
-
+        //Debug.Log(frameNumber + " " + (InterolationBuffer == null));
         if (_interpolationBuffer.TryGet(out var data, frameNumber) && data.IsValid) {
           transform = data.Transform2D;
           if (data.Has2DVertical) {

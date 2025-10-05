@@ -84,8 +84,6 @@ namespace Photon.Realtime
 
 
         private bool didSendAcks;
-        private bool didWarnAboutMissingService;
-        private int timeWarnAboutMissingService = 5000;
         private readonly Stopwatch backgroundStopwatch = new Stopwatch();
 
         private Timer stateTimer;
@@ -179,7 +177,6 @@ namespace Photon.Realtime
             if (this.Client != null && this.Client.IsConnected)
             {
                 this.Client.Disconnect(DisconnectCause.ApplicationQuit);
-                this.Client.RealtimePeer.IsSimulationEnabled = false;
             }
         }
 
@@ -302,10 +299,6 @@ namespace Photon.Realtime
                 if (this.backgroundStopwatch.ElapsedMilliseconds > this.KeepAliveInBackground)
                 {
                     this.Client.Disconnect(DisconnectCause.ClientServiceInactivity);
-                    this.StopFallbackSendAckThread();
-                    #if SUPPORTED_UNITY
-                    Destroy(this);
-                    #endif
                     return;
                 }
 
@@ -313,18 +306,10 @@ namespace Photon.Realtime
                 this.didSendAcks = true;
                 this.CountSendAcksOnly++;
 
-                // one time logging to warn about lack of service calls after 5 sec
-                if (!this.didWarnAboutMissingService && this.backgroundStopwatch.ElapsedMilliseconds > this.timeWarnAboutMissingService)
+                // one time logging to warn about lack of service calls
+                if (this.CountSendAcksOnly == 200)
                 {
-                    this.didWarnAboutMissingService = true;
-                    if (this.Client.State == ClientState.Disconnecting)
-                    {
-                        Log.Warn($"The RealtimeClient is in Disconnecting state but DispatchIncomingCommands() wasn't called for > {timeWarnAboutMissingService} seconds. Continue to call DispatchIncomingCommands() after Disconnect() to get the OnDisconnected callback.", this.Client.LogLevel, this.Client.LogPrefix);
-                    }
-                    else
-                    {
-                        Log.Warn($"RealtimeClient.SendOutgoingCommands() was not called for > {timeWarnAboutMissingService} seconds. After the KeepAliveInBackground ({this.KeepAliveInBackground/1000}sec) this causes a disconnect.", this.Client.LogLevel, this.Client.LogPrefix);
-                    }
+                    Log.Warn($"RealtimeClient.SendOutgoing() was not called for {Math.Round(this.backgroundStopwatch.Elapsed.TotalSeconds)}sec. After the KeepAliveInBackground ({this.KeepAliveInBackground/1000}sec) this causes a disconnect.", this.Client.LogLevel, this.Client.LogPrefix);
                 }
 
                 this.Client.RealtimePeer.SendAcksOnly();

@@ -13,7 +13,6 @@ using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
-using UnityEngine.Serialization;
 
 #if UNITY_STANDALONE
 using NSMB.UI.MainMenu;

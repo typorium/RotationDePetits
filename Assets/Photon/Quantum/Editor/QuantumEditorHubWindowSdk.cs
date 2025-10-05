@@ -3,13 +3,9 @@ namespace Quantum.Editor {
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
-  using System.Reflection;
   using UnityEditor;
   using UnityEditor.PackageManager.Requests;
-  using UnityEditor.SceneManagement;
   using UnityEngine;
-  using UnityEngine.SceneManagement;
-  using Object = UnityEngine.Object;
 
   internal partial class QuantumEditorHubWindow {
     static partial void CreateWindowUser(ref QuantumEditorHubWindow window) {
@@ -18,7 +14,7 @@ namespace Quantum.Editor {
 
     static partial void CheckPopupConditionUser(ref bool shouldPopup, ref int page) {
       // Installation requires popup
-      if (QuantumEditorHubWindowSdk.AreImportantUserFilesInstalled == false) {
+      if (HubUtils.AreImportantUserFilesInstalled == false) {
         shouldPopup = true;
         page = 0;
         return;
@@ -32,26 +28,6 @@ namespace Quantum.Editor {
           break;
         }
       }
-
-      // Upgrade 3.0.3
-      if (HubUtils.HasGlobalScriptableObjectCached(typeof(QuantumLookupTables)) == false) {
-        page = Pages.FindIndex(p => p.Title.Equals("Installation"));
-        shouldPopup = page != -1;
-      }
-    }
-
-    static partial void OnImportPackageCompletedUser(string packageName) {
-      if (packageName == "TMP Essential Resources") {
-        // Workaround uninitialized TMP text after installing TMP essential resources
-        // Ask to reload current scene to fix the issue
-        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) {
-          try {
-            EditorSceneManager.OpenScene(SceneManager.GetActiveScene().path);
-          } catch {
-            // Fail silently
-          }
-        }
-      }
     }
 
     /// <summary>
@@ -60,7 +36,6 @@ namespace Quantum.Editor {
     public static void InstallAllUserFiles() {
       QuantumGlobalScriptableObjectUtils.EnsureAssetExists<PhotonServerSettings>();
       QuantumGlobalScriptableObjectUtils.EnsureAssetExists<QuantumEditorSettings>();
-      QuantumGlobalScriptableObjectUtils.EnsureAssetExists<QuantumLookupTables>();
       QuantumGlobalScriptableObjectUtils.EnsureAssetExists<QuantumDeterministicSessionConfigAsset>();
       QuantumGlobalScriptableObjectUtils.EnsureAssetExists<QuantumGameGizmosSettingsScriptableObject>();
       QuantumGlobalScriptableObjectUtils.EnsureAssetExists<QuantumDefaultConfigs>();
@@ -85,7 +60,7 @@ namespace Quantum.Editor {
         EditorSettings.projectGenerationUserExtensions = userExtensions;
       }
 
-      if (AssetDatabase.FindAssets("t:Map").Length == 0) {
+      if (AssetDatabase.FindAssets("t:Scene", new[] { QuantumEditorUserScriptGeneration.FolderPath }).Length == 0) {
         // Create Quantum game scene
         Directory.CreateDirectory($"{QuantumEditorUserScriptGeneration.FolderPath}/Scenes");
         QuantumEditorMenuCreateScene.CreateNewQuantumScene(
@@ -107,6 +82,7 @@ namespace Quantum.Editor {
     static partial void RegisterTypesUser(List<string> types) {
       types.Add(QuantumEditorHubWindowSdk.CustomWidgetTypes.SdkInstallationBox);
       types.Add(QuantumEditorHubWindowSdk.CustomWidgetTypes.CreateSimpleConnectionScene);
+      types.Add(QuantumEditorHubWindowSdk.CustomWidgetTypes.PingPhotonServerSettings);
       types.Add(QuantumEditorHubWindowSdk.CustomWidgetTypes.ClearQuantumPlayerPrefs);
     }
   }
@@ -119,9 +95,12 @@ namespace Quantum.Editor {
   }
 
   internal class QuantumEditorHubWindowSdk : QuantumEditorHubWindow {
+    static AddRequest MppmAddRequest;
+
     internal static class CustomWidgetTypes {
       internal const string SdkInstallationBox = "SdkInstallationBox";
       internal const string CreateSimpleConnectionScene = "CreateSimpleConnectionScene";
+      internal const string PingPhotonServerSettings = "PingPhotonServerSettings";
       internal const string ClearQuantumPlayerPrefs = "ClearQuantumPlayerPrefs";
     }
 
@@ -132,9 +111,10 @@ namespace Quantum.Editor {
 
     public override string AppId {
       get {
-        if (HubUtils.TryGetGlobalScriptableObjectCached<PhotonServerSettings>(out var global)) {
-          return global.AppSettings.AppIdQuantum;
-        } else {
+        try { 
+        var photonSettings = PhotonServerSettings.Global;
+        return photonSettings.AppSettings.AppIdQuantum;
+        } catch {
           return string.Empty;
         }
       }
@@ -146,28 +126,11 @@ namespace Quantum.Editor {
       }
     }
 
-    public override Object SdkAppSettingsAsset {
-      get {
-        HubUtils.TryGetGlobalScriptableObjectCached(out PhotonServerSettings global);
-        return global;
-      }
-    }
-
-    internal static bool AreImportantUserFilesInstalled {
-      get {
-        return HubUtils.HasGlobalScriptableObjectCached(typeof(PhotonServerSettings))
-          && HubUtils.HasGlobalScriptableObjectCached(typeof(QuantumDeterministicSessionConfigAsset))
-          && HubUtils.HasGlobalScriptableObjectCached(typeof(QuantumEditorSettings))
-          && HubUtils.HasGlobalScriptableObjectCached(typeof(QuantumUnityDB));
-      }
-    }
-
     public override GUIStyle GetBoxStyle => HubSkin.GetStyle("SteelBox");
     public override GUIStyle GetButtonPaneStyle => HubSkin.GetStyle("ButtonPane");
 
     static bool _statusInstallationComplete;
-    static bool _statusAnyQuantumMapFound;
-    static bool _statusAppIdSetup;
+    public static bool _statusAppIdSetup;
 
     protected override bool CustomConditionCheck(QuantumEditorHubCondition condition) {
       if (condition.Value == CustomConditions.AppIdCreated) {
@@ -188,6 +151,15 @@ namespace Quantum.Editor {
             QuantumEditorMenuCreateScene.CreateSimpleConnectionScene(widget.Scene);
             GUIUtility.ExitGUI();
           });
+
+      } else if (widget.WidgetMode.Value == CustomWidgetTypes.PingPhotonServerSettings) {
+
+        DrawButtonAction(widget.Icon, widget.Text, widget.Subtext,
+          statusIcon: widget.GetStatusIcon(this),
+          callback: () => {
+            EditorGUIUtility.PingObject(PhotonServerSettings.Global); Selection.activeObject = PhotonServerSettings.Global;
+          });
+
       } else if (widget.WidgetMode.Value == CustomWidgetTypes.ClearQuantumPlayerPrefs) {
 
         DrawButtonAction(widget.Icon, widget.Text, widget.Subtext,
@@ -197,14 +169,14 @@ namespace Quantum.Editor {
           });
 
       } else if (widget.WidgetMode.Value == CustomWidgetTypes.SdkInstallationBox) {
+
         DrawInstallationBox(widget);
       }
     }
 
     protected override void OnGuiHeartbeat() {
-      _statusInstallationComplete = AreImportantUserFilesInstalled;
+      _statusInstallationComplete = HubUtils.AreImportantUserFilesInstalled;
       _statusAppIdSetup = HubUtils.IsValidGuid(AppId);
-      _statusAnyQuantumMapFound = AssetDatabase.FindAssets("t:Map").Length > 0;
     }
 
     void ClearAllPlayerPrefs() {
@@ -223,25 +195,6 @@ namespace Quantum.Editor {
       PlayerPrefs.DeleteKey(PhotonServerSettings.Global.BestRegionSummaryKey);
       PlayerPrefs.DeleteKey("Quantum.ReconnectInformation");
     }
-    
-    void DrawGlobalObjectStatus<T>() where T : QuantumGlobalScriptableObject<T> {
-      var hasDefaultInstance = HubUtils.TryGetGlobalScriptableObjectCached<T>(out var defaultInstance);
-
-      var attribute = typeof(T).GetCustomAttribute<QuantumGlobalScriptableObjectAttribute>();
-      Debug.Assert(attribute != null);
-      Debug.Assert(attribute.DefaultPath.StartsWith("Assets/"));
-      var nicePath = PathUtils.GetPathWithoutExtension(attribute.DefaultPath.Substring("Assets/".Length));
-
-      using (new EditorGUILayout.HorizontalScope()) {
-        using (new EditorGUI.DisabledScope(!hasDefaultInstance)) {
-          if (GUILayout.Button(nicePath, HubSkin.label)) {
-            EditorGUIUtility.PingObject(defaultInstance);
-          }
-        }
-
-        GUILayout.Label(GetStatusIcon(hasDefaultInstance), GUILayout.Width(StatusIconWidthDefault.x), GUILayout.Height(StatusIconWidthDefault.y));
-      }
-    }
 
     // TODO: call after importing menu
     public static void ClearQuantumMenuPlayerPrefs() {
@@ -256,19 +209,6 @@ namespace Quantum.Editor {
       PlayerPrefs.DeleteKey("Photon.Menu.Resolution");
       PlayerPrefs.DeleteKey("Photon.Menu.VSync");
       PlayerPrefs.DeleteKey("Photon.Menu.QualityLevel");
-      PlayerPrefs.DeleteKey("Photon.StartUI.IsMuted");
-      PlayerPrefs.DeleteKey("Photon.StartUI.RegionName");
-      PlayerPrefs.DeleteKey("Photon.StartUI.PlayerName");
-      PlayerPrefs.DeleteKey("Quantum.ReconnectInformation");
-    }
-    
-    /// <summary>
-    /// Open the Fusion Hub window.
-    /// </summary>
-    [MenuItem("Window/Quantum/Quantum Hub")]
-    [MenuItem("Tools/Quantum/Quantum Hub %H", false, (int)QuantumEditorMenuPriority.TOP)]
-    public static void Open() {
-      OpenCurrentPage();
     }
 
     public void DrawInstallationBox(QuantumEditorHubWidget widget) {
@@ -277,8 +217,6 @@ namespace Quantum.Editor {
           statusIcon: GetStatusIcon(_statusInstallationComplete),
           callback: () => {
             InstallAllUserFiles();
-            OnGuiHeartbeat();
-            HubUtils.GlobalInstanceMissing.Clear();
           });
 
 
@@ -287,7 +225,6 @@ namespace Quantum.Editor {
           DrawGlobalObjectStatus<PhotonServerSettings>();
           DrawGlobalObjectStatus<QuantumDeterministicSessionConfigAsset>();
           DrawGlobalObjectStatus<QuantumUnityDB>();
-          DrawGlobalObjectStatus<QuantumLookupTables>();
           DrawGlobalObjectStatus<QuantumEditorSettings>();
           DrawGlobalObjectStatus<QuantumGameGizmosSettingsScriptableObject>();
           DrawGlobalObjectStatus<QuantumDefaultConfigs>();
@@ -312,18 +249,9 @@ namespace Quantum.Editor {
         }
 
         using (new EditorGUILayout.HorizontalScope()) {
-          var assetGuids = default(string[]);
-          if (_statusAnyQuantumMapFound) {
-            assetGuids = AssetDatabase.FindAssets("t:Scene QuantumGameScene", new[] { QuantumEditorUserScriptGeneration.FolderPath });
-          }
-          if (assetGuids != null && assetGuids.Length > 0) {
-            if (GUILayout.Button("QuantumUser Scene And Map", HubSkin.label)) {
-              EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath(assetGuids.Select(AssetDatabase.GUIDToAssetPath).FirstOrDefault(), typeof(UnityEngine.Object)));
-            }
-          } else {
-            GUILayout.Label("QuantumUser Scene And Map");
-          }
-          GUILayout.Label(GetStatusIcon(_statusAnyQuantumMapFound), GUILayout.Width(StatusIconWidthDefault.x), GUILayout.Height(StatusIconWidthDefault.y));
+          GUILayout.Label("QuantumUser Scenes");
+          var foundAnySceneInUserFolder = Directory.Exists(QuantumEditorUserScriptGeneration.FolderPath) && AssetDatabase.FindAssets("t:Scene", new[] { QuantumEditorUserScriptGeneration.FolderPath }).Length > 0;
+          GUILayout.Label(GetStatusIcon(foundAnySceneInUserFolder), GUILayout.Width(StatusIconWidthDefault.x), GUILayout.Height(StatusIconWidthDefault.y));
         }
 
         using (new EditorGUILayout.HorizontalScope()) {

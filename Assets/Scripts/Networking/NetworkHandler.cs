@@ -53,9 +53,6 @@ namespace NSMB.Networking {
             };
             realtimeClient.AddCallbackTarget(this);
 
-            QuantumCallback.Subscribe<CallbackLocalPlayerAddConfirmed>(this, (e) => Debug.Log("Confirmed"));
-            QuantumCallback.Subscribe<CallbackLocalPlayerAddFailed>(this, (e) => Debug.Log("Failed"));
-
             QuantumCallback.Subscribe<CallbackGameStarted>(this, OnGameStarted);
             QuantumCallback.Subscribe<CallbackPluginDisconnect>(this, OnPluginDisconnect);
             QuantumCallback.Subscribe<CallbackChecksumError>(this, OnChecksumError);
@@ -69,10 +66,6 @@ namespace NSMB.Networking {
         public void Update() {
             if (Client != null && Client.IsConnectedAndReady) {
                 Client.Service();
-            }
-            if (Runner) {
-                Debug.Log(Runner.Game.GetLocalPlayers().Count);
-                Debug.Log(Runner.Game.Frames.Predicted.Number);
             }
         }
 

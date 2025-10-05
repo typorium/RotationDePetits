@@ -14,13 +14,13 @@ namespace NSMB.Utilities {
         }
 
         private static Map[] _maps;
-        public static  Map[] Maps => LazyLoadAssetsOfType(ref _maps);
+        public static Map[] Maps => LazyLoadAssetsOfType(ref _maps);
         private static TeamAsset[] _teams;
-        public static  TeamAsset[] Teams => LazyLoadAssetsOfType(ref _teams);
+        public static TeamAsset[] Teams => LazyLoadAssetsOfType(ref _teams);
         private static CharacterAsset[] _characters;
-        public static  CharacterAsset[] Characters => LazyLoadAssetsOfType(ref _characters);
+        public static CharacterAsset[] Characters => LazyLoadAssetsOfType(ref _characters);
         private static PaletteSet[] _palettes;
-        public static  PaletteSet[] Palettes => LazyLoadAssetsOfType(ref _palettes);
+        public static PaletteSet[] Palettes => LazyLoadAssetsOfType(ref _palettes);
 
 
         public static bool IsReplay => QuantumRunner.Default?.Session.IsReplay ?? false;

@@ -53,9 +53,10 @@ namespace Quantum.Editor {
     /// The search paths to collect all simulation source files from.E.g. files that are included in the Quantum.Simulation.asmdef.
     /// </summary>
     [Header("Files and folders can either be marked with " + IncludeLabel + " label or included here.")]
-    public string[] IncludePaths = new[] { 
-      "Assets/QuantumUser/Simulation", 
-      QuantumUnityEditorPaths.Root + "/Simulation" };
+    public string[] IncludePaths = new[] {
+      "Assets/QuantumUser/Simulation",
+      "Assets/Photon/Quantum/Simulation"
+    };
 
     /// <summary>
     /// Export the non-Unity simulation project to <see cref="OutputProjectPath"/>.

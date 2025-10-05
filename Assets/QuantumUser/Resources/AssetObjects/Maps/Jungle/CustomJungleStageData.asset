@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.custom.jungle
   GroupingTranslationKey: level.header.custom
   DiscordStageImage: level-jungle
+  SortOrder: 0
   Icon: {fileID: 21300000, guid: 6987e74b8fb9963428ec6417fab82773, type: 3}
+  MainMenuPreviewPrefab: {fileID: 8799716311603346541, guid: 4a5312233b4b81342ab314fb1a13e0b9,
+    type: 3}
   OverrideAutomaticTilemapSettings: 1
   TileDimensions:
     X: 128

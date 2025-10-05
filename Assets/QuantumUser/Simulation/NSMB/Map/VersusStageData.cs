@@ -18,8 +18,10 @@ public unsafe class VersusStageData : AssetObject {
     public string TranslationKey;
     public string GroupingTranslationKey;
     public string DiscordStageImage;
+    public int SortOrder;
 #if QUANTUM_UNITY
     public Sprite Icon;
+    public GameObject MainMenuPreviewPrefab;
 #endif
 
     [Header("-- Tilemap")]

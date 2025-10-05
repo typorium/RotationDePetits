@@ -303,6 +303,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         private void OnLocalPlayerAddConfirmed(CallbackLocalPlayerAddConfirmed e) {
             UpdateStartButton(e.Game, e.Game.Frames.Predicted);
+            GlobalController.Instance.connecting.SetActive(false);
         }
 
         private void OnGameStateChanged(EventGameStateChanged e) {

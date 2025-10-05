@@ -23,26 +23,50 @@ namespace NSMB.Addon {
         private static string LocalFolderPath = Path.Combine(Application.dataPath, "addons");
         private static readonly string LocalFolderDownloadedPath = Path.Combine(LocalFolderPath, "download");
 
-        //---Private Variables
-        private List<LoadedAddon> loadedAddons = new();
+        //---Properties
+        public List<LoadedAddon> LoadedAddons { get; private set; } = new();
 
-        public async void Start() {
-            var before = QuantumUnityDB.Global.FindAssetGuids(new AssetObjectQuery { Type = typeof(Map) });
-            Debug.LogWarning("Maps before loading addon: " + before.Count);
+        public async Task<List<(string, AddonDefinition)>> GetAvailableAddons() {
+            HashSet<string> foundAddonNames = new();
+            List<(string, AddonDefinition)> results = new();
 
-            var mountain = await LoadAddonByName("Mountain-v1.1");
-            
-            var after = QuantumUnityDB.Global.FindAssetGuids(new AssetObjectQuery { Type = typeof(Map) });
-            Debug.LogWarning("Maps after loading addon: " + after.Count);
+            // Already extracted...
+            foreach (var path in Directory.EnumerateFiles(LocalFolderPath, "addon.json", new EnumerationOptions { RecurseSubdirectories = true })) {
+                try {
+                    // Looks good.
+                    var definition = JsonConvert.DeserializeObject<AddonDefinition>(await File.ReadAllTextAsync(path));
+                    if (foundAddonNames.Add(definition.FullName)) {
+                        results.Add((path, definition));
+                    }
+                } catch { }
+            }
 
-            // await UnloadAddon(mountain);
-            // var afterUnload = QuantumUnityDB.Global.FindAssetGuids(new AssetObjectQuery { Type = typeof(Map) });
-            // Debug.LogWarning("Maps after unloading addon: " + afterUnload.Count);
+            // Zipped
+            foreach (var path in Directory.EnumerateFiles(LocalFolderPath, "*.zip", new EnumerationOptions { RecurseSubdirectories = true })) {
+                try {
+                    byte[] bytes = await File.ReadAllBytesAsync(path);
+                    using MemoryStream ms = new(bytes);
+                    using ZipArchive archive = new(ms);
+                    var entry = archive.GetEntry("addon.json");
+                    if (entry != null) {
+                        using Stream entryStream = entry.Open();
+                        using StreamReader entryStreamReader = new(entryStream);
+
+                        // Looks good.
+                        var definition = JsonConvert.DeserializeObject<AddonDefinition>(await entryStreamReader.ReadToEndAsync());
+                        if (foundAddonNames.Add(definition.FullName)) {
+                            results.Add((path, definition));
+                        }
+                    }
+                } catch { }
+            }
+
+            return results;
         }
 
-        public async Task<bool> LoadAddonList(List<string> requestedAddons) {
+        public async Task<bool> LoadAllAddons(List<string> requestedAddons) {
             // Unload *ALL* addons. this is important as the order MATTERS.
-            foreach (var addon in loadedAddons.ToList()) {
+            foreach (var addon in LoadedAddons.ToList()) {
                 await UnloadAddon(addon);
             }
 
@@ -153,7 +177,7 @@ namespace NSMB.Addon {
                     AllAssetObjectsHandle = loadAssetObjectsHandle,
                     FullName = Path.GetFileName(pathToFolder),
                 };
-                loadedAddons.Add(newAddon);
+                LoadedAddons.Add(newAddon);
                 OnAddonLoaded?.Invoke(newAddon);
                 return newAddon;
             }
@@ -210,7 +234,7 @@ namespace NSMB.Addon {
             OnAddonUnloaded?.Invoke(addon);
             addon.AllAssetObjectsHandle.Release();
             addon.CatalogHandle.Release();
-            loadedAddons.Remove(addon);
+            LoadedAddons.Remove(addon);
         }
 
         public static string GetFolderForPlatform() {

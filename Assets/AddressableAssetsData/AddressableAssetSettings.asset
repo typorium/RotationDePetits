@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 4d087ae4c291a7147b2c19263ae6576d
   m_currentHash:
     serializedVersion: 2
-    Hash: 9410172e8df5ac0f67e388c963581aaa
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -80,7 +80,7 @@ MonoBehaviour:
       - m_Id: 51a37bcf817b7834b9ad9edabc51dc8b
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 8978d9faa5e72fc45be2b69cf78975e0
-        m_Value: ExportedAddons/StandaloneWindows64/mountain
+        m_Value: ExportedAddons/temp/StandaloneWindows
       - m_Id: cbc3e4af4c8efaa418ca785b75861074
         m_Value: 'ServerData/[BuildTarget]'
       - m_Id: dd6891f29467fc74d97303b892db7f7b

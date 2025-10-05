@@ -78,7 +78,7 @@ namespace Quantum.Prototypes {
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.BetterPhysicsObject))]
   public unsafe partial class BetterPhysicsObjectPrototype : ComponentPrototype<Quantum.BetterPhysicsObject> {
-    public Quantum.Shape2DConfig Shape;
+    public Shape2D Shape;
     public FPVector2 Gravity;
     public QBoolean ColliderDisabled;
     partial void MaterializeUser(Frame frame, ref Quantum.BetterPhysicsObject result, in PrototypeMaterializationContext context);
@@ -88,7 +88,7 @@ namespace Quantum.Prototypes {
         return f.Set(entity, component) == SetResult.ComponentAdded;
     }
     public void Materialize(Frame frame, ref Quantum.BetterPhysicsObject result, in PrototypeMaterializationContext context = default) {
-        this.Shape.Materialize(frame, ref result.Shape, in context);
+        result.Shape = this.Shape;
         result.Gravity = this.Gravity;
         result.ColliderDisabled = this.ColliderDisabled;
         MaterializeUser(frame, ref result, in context);

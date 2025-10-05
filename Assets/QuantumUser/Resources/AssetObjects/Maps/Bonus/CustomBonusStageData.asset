@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.custom.bonus
   GroupingTranslationKey: level.header.custom
   DiscordStageImage: level-bonus
+  SortOrder: 2
   Icon: {fileID: 21300000, guid: 204191df3a0fc884cb8fc1030f65465d, type: 3}
+  MainMenuPreviewPrefab: {fileID: 6036813371067703228, guid: 1c778b957abf06e49bd71e6262273b0d,
+    type: 3}
   OverrideAutomaticTilemapSettings: 0
   TileDimensions:
     X: 128

@@ -1,11 +1,11 @@
 using Quantum;
 using System;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 public class MvLMapCreateWindow : EditorWindow {
 
@@ -24,7 +24,15 @@ public class MvLMapCreateWindow : EditorWindow {
             return;
         }
 
-        EditorGUIUtility.PingObject(QuantumUnityDB.GetGlobalAsset(qmd.GetAsset(true).UserAsset));
+        EditorGUIUtility.PingObject(QuantumUnityDB.GetGlobalAsset(qmd.Asset.UserAsset));
+    }
+
+    [MenuItem("Tools/MvLO/Compress Selected Tilemap")]
+    public static void CompressTilemap() {
+        if (Selection.activeGameObject.TryGetComponent(out Tilemap tilemap)) {
+            tilemap.CompressBounds();
+            EditorUtility.SetDirty(tilemap);
+        }
     }
 
     public void OnGUI() {
@@ -44,54 +52,35 @@ public class MvLMapCreateWindow : EditorWindow {
     }
 
     public bool CreateNewMap() {
-        string[] sourceAssets = new string[] {
-            "Assets/Scenes/Template/LevelTemplate.unity",
-            "Assets/Scenes/Template/TemplateMap.asset",
-            "Assets/Scenes/Template/TemplateStageData.asset",
-        };
-        string[] destinationAssets = new string[] {
-            $"Assets/Scenes/Levels/{mapName}.unity",
-            $"Assets/QuantumUser/Resources/AssetObjects/Maps/{mapName}/{mapName}Map.asset",
-            $"Assets/QuantumUser/Resources/AssetObjects/Maps/{mapName}/{mapName}StageData.asset",
-        };
-
-        if (destinationAssets.Any(AssetDatabase.AssetPathExists)) {
+        string newScenePath = $"Assets/Scenes/Levels/{mapName}.unity";
+        if (AssetDatabase.AssetPathExists(newScenePath)) {
             Debug.LogError("A stage called {name} already exists.");
             return false;
         }
 
-        // mkdirs
-        for (int i = 0; i < destinationAssets.Length; i++) {
-            string directoryPath = Path.GetDirectoryName(destinationAssets[i]);
-            if (!Directory.Exists(directoryPath)) {
-                Directory.CreateDirectory(directoryPath);
-                AssetDatabase.Refresh();
-            }
-        }
+        Directory.CreateDirectory($"Assets/QuantumUser/Resources/AssetObjects/Maps/{mapName}");
 
-        if (!AssetDatabase.CopyAssets(sourceAssets, destinationAssets)) {
+        if (!AssetDatabase.CopyAsset("Assets/Scenes/LevelTemplate.unity", newScenePath)) {
             Debug.LogError("Failed to duplicate template assets.");
             return false;
         }
 
-        Scene scene = EditorSceneManager.OpenScene(destinationAssets[0]);
-        AssetDatabase.ImportAsset(destinationAssets[0], ImportAssetOptions.ForceUpdate);
+        Scene scene = EditorSceneManager.OpenScene(newScenePath);
 
-        VersusStageData stage = AssetDatabase.LoadAssetAtPath<VersusStageData>(destinationAssets[2]);
+        VersusStageData stage = ScriptableObject.CreateInstance<VersusStageData>();
+        stage.name = mapName + "Stage";
         stage.TranslationKey = $"levels.custom.{mapName}";
-        stage.Guid = default;
-        EditorUtility.SetDirty(stage);
-        AssetDatabase.ImportAsset(destinationAssets[2], ImportAssetOptions.ForceUpdate);
+        AssetDatabase.CreateAsset(stage, $"Assets/QuantumUser/Resources/AssetObjects/Maps/{mapName}/{mapName}StageData.asset");
 
-        Map map = AssetDatabase.LoadAssetAtPath<Map>(destinationAssets[1]);
+        Map map = ScriptableObject.CreateInstance<Map>();
         map.Scene = mapName;
-        map.ScenePath = destinationAssets[0];
+        map.ScenePath = newScenePath;
         map.SceneGuid = default;
         map.Guid = default;
         map.UserAsset = stage;
         map.StaticColliders3DTrianglesData = default;
         EditorUtility.SetDirty(map);
-        AssetDatabase.ImportAsset(destinationAssets[1], ImportAssetOptions.ForceUpdate);
+        AssetDatabase.CreateAsset(map, $"Assets/QuantumUser/Resources/AssetObjects/Maps/{mapName}/{mapName}Map.asset");
 
         /*
         SimulationConfig simulationConfig = QuantumDefaultConfigs.Global.SimulationConfig;
@@ -101,15 +90,15 @@ public class MvLMapCreateWindow : EditorWindow {
         */
 
         QuantumMapData mapHolder = FindFirstObjectByType<QuantumMapData>();
-        mapHolder.AssetRef = map;
+        mapHolder.Asset = map;
         EditorUtility.SetDirty(mapHolder);
         EditorUtility.SetDirty(mapHolder.gameObject);
 
         var buildScenes = EditorBuildSettings.scenes;
         Array.Resize(ref buildScenes, buildScenes.Length + 1);
         buildScenes[^1] = new EditorBuildSettingsScene {
-            path = destinationAssets[0],
-            guid = AssetDatabase.GUIDFromAssetPath(destinationAssets[0]),
+            path = newScenePath,
+            guid = AssetDatabase.GUIDFromAssetPath(newScenePath),
             enabled = true,
         };
         EditorBuildSettings.scenes = buildScenes;
