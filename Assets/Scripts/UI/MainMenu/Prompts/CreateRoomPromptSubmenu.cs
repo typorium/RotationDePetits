@@ -1,6 +1,6 @@
+using NSMB.Addon;
 using NSMB.Networking;
 using Quantum;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Scripting;
@@ -26,14 +26,27 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
         public override void Show(bool first) {
             base.Show(first);
 
+            creating = false;
+            createdSuccessfully = false;
             if (first) {
                 // Default values
                 maxPlayerSlider.value = 10;
                 MaxPlayerSliderChanged();
                 privateToggle.isOn = false;
+
+                /*
+                addonsDropdown.ClearOptions();
+                addonsDropdown.captionText.text = "Retreiving addons...";
+                addonsDropdown.MultiSelect = true;
+
+                var addonManager = GlobalController.Instance.addonManager;
+                var addonTask = addonManager.RefreshAvailableAddons();
+                var availableAddons = await addonTask;
+                foreach ((_, var addonDef) in availableAddons) {
+                    addonsDropdown.options.Add(new AddonOption(addonDef));
+                }
+                */
             }
-            creating = false;
-            createdSuccessfully = false;
         }
 
         public override bool TryGoBack(out bool playSound) {
@@ -70,6 +83,15 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
             }
             creating = false;
             createdSuccessfully = false;
+        }
+
+        public class AddonOption : TMP_Dropdown.OptionData {
+            public AddonDefinition definition;
+
+            public AddonOption(AddonDefinition def) {
+                definition = def;
+                text = definition.FullName;
+            }
         }
     }
 }

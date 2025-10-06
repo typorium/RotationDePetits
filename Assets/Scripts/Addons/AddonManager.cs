@@ -20,24 +20,27 @@ namespace NSMB.Addon {
 
         private static readonly string RemoteRepoUrl = "https://raw.githubusercontent.com/ipodtouch0218/NSMB-MarioVsLuigi-AddonRepository/main/";
         private static readonly string RemoteAddonsFile = RemoteRepoUrl + "addons.json";
-        private static string LocalFolderPath = Path.Combine(Application.dataPath, "addons");
+        public static string LocalFolderPath = Path.Combine(Application.dataPath, "addons");
         private static readonly string LocalFolderDownloadedPath = Path.Combine(LocalFolderPath, "download");
 
         //---Properties
         public List<LoadedAddon> LoadedAddons { get; private set; } = new();
+        public List<(string, AddonDefinition)> AvailableAddons { get; private set; } = new();
 
-        public async Task<List<(string, AddonDefinition)>> GetAvailableAddons() {
+        public async Awaitable<List<(string, AddonDefinition)>> RefreshAvailableAddons() {
+            await Awaitable.BackgroundThreadAsync();
+
+            AvailableAddons.Clear();
             HashSet<string> foundAddonNames = new();
-            List<(string, AddonDefinition)> results = new();
 
             // Already extracted...
             foreach (var path in Directory.EnumerateFiles(LocalFolderPath, "addon.json", new EnumerationOptions { RecurseSubdirectories = true })) {
                 try {
                     // Looks good.
                     var definition = JsonConvert.DeserializeObject<AddonDefinition>(await File.ReadAllTextAsync(path));
-                    if (foundAddonNames.Add(definition.FullName)) {
-                        results.Add((path, definition));
-                    }
+                    //if (foundAddonNames.Add(definition.FullName)) {
+                        AvailableAddons.Add((path, definition));
+                    //}
                 } catch { }
             }
 
@@ -54,14 +57,14 @@ namespace NSMB.Addon {
 
                         // Looks good.
                         var definition = JsonConvert.DeserializeObject<AddonDefinition>(await entryStreamReader.ReadToEndAsync());
-                        if (foundAddonNames.Add(definition.FullName)) {
-                            results.Add((path, definition));
-                        }
+                        //if (foundAddonNames.Add(definition.FullName)) {
+                            AvailableAddons.Add((path, definition));
+                        //}
                     }
                 } catch { }
             }
 
-            return results;
+            return AvailableAddons;
         }
 
         public async Task<bool> LoadAllAddons(List<string> requestedAddons) {
