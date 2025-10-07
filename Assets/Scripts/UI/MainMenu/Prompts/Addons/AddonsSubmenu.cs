@@ -1,4 +1,6 @@
-using NSMB.Addon;
+using NSMB.Addons;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -6,88 +8,113 @@ using UnityEngine;
 namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
     public class AddonsSubmenu : PromptSubmenu {
 
-        //---Properties
-        private AddonManager AddonManager => GlobalController.Instance.addonManager;
+        //---Static Variables
+        private static readonly ScannedPath ParentFolder = new() {
+            Name = "..",
+            Type = ScannedPath.AddonType.Folder,
+        };
 
         //---Serialized Variables
         [SerializeField] private GameObject loadingGraphic;
-        [SerializeField] private FileNode fileTemplate;
-        [SerializeField] private DirectoryNode folderTemplate;
+        [SerializeField] private AddonFileSystemEntry template;
+        [SerializeField] private TMP_Text folderLabel;
 
         //---Private Variables
-        private Awaitable availableAddonsTask;
-        private DirectoryNode fileStructure;
+        private List<GameObject> entries = new();
+        private string currentRelativePath = "";
 
         public override void Initialize() {
             base.Initialize();
-
-            fileTemplate.gameObject.SetActive(false);
-            folderTemplate.gameObject.SetActive(false);
         }
 
         public override void Show(bool first) {
             base.Show(first);
-
-            loadingGraphic.SetActive(true);
-            if (availableAddonsTask?.IsCompleted ?? true) {
-                availableAddonsTask = CheckForNewAddons();
-            }
+            _ = OpenFolder(".");
         }
 
-        public async Awaitable CheckForNewAddons() {
-            DeleteNode(fileStructure);
-            fileStructure = Instantiate(folderTemplate, folderTemplate.transform.parent);
+        public async Awaitable OpenFolder(string newPath) {
+            await Awaitable.MainThreadAsync();
+            loadingGraphic.SetActive(true);
+            string fullPath = Path.Combine(AddonManager.LocalFolderPath, currentRelativePath, newPath).Replace(@"\", "/");
+            currentRelativePath = folderLabel.text = Path.GetRelativePath(AddonManager.LocalFolderPath, fullPath).Replace(@"\", "/");
 
-            var foundAddons = await AddonManager.RefreshAvailableAddons();
+            // Prepare paths in background thread
+            await Awaitable.BackgroundThreadAsync();
+            List<ScannedPath> results = new();
 
-            foreach ((var addonPath, var addon) in foundAddons) {
-                string partialPath = Path.GetRelativePath(AddonManager.LocalFolderPath, addonPath);
-                AddNode(fileStructure, partialPath, addon);
+            foreach (string subdirectoryPath in Directory.EnumerateDirectories(fullPath)) {
+                string subdirectoryName = Path.GetFileName(subdirectoryPath);
+                results.Add(new ScannedPath {
+                    Type = ScannedPath.AddonType.Folder,
+                    Name = subdirectoryName,
+                });
+            }
+            var addonManager = GlobalController.Instance.addonManager;
+            foreach (string filePath in Directory.EnumerateFiles(fullPath)) {
+                var addon = addonManager.FindAddon(filePath);
+                string fileName = Path.GetFileName(filePath);
+
+                if (addon != null) {
+                    // This is an addon.
+                    results.Add(new ScannedPath {
+                        Type = ScannedPath.AddonType.AddonFile,
+                        Addon = addon,
+                        Name = fileName,
+                    });
+                } else {
+                    results.Add(new ScannedPath {
+                        Type = ScannedPath.AddonType.NonAddonFile,
+                        Name = fileName,
+                    });
+                }
+            }
+            results.Sort();
+
+            // Create gameobjects in main thread
+            await Awaitable.MainThreadAsync();
+            foreach (var entry in entries) {
+                Destroy(entry);
+            }
+            entries.Clear();
+
+            bool isRoot = currentRelativePath == ".";
+            if (!isRoot) {
+                // Create "up" entry.
+                var newEntry = Instantiate(template, template.transform.parent);
+                newEntry.Initialize(this, ParentFolder);
+                entries.Add(newEntry.gameObject);
+            }
+
+            foreach (var result in results) {
+                var newEntry = Instantiate(template, template.transform.parent);
+                newEntry.Initialize(this, result);
+                entries.Add(newEntry.gameObject);
             }
 
             loadingGraphic.SetActive(false);
         }
 
-        public void AddNode(DirectoryNode parent, string remainingPath, AddonDefinition addon) {
-            Debug.Log("parsing " + remainingPath);
-            int separatorIndex = remainingPath.IndexOf(Path.DirectorySeparatorChar);
-            if (separatorIndex == -1) {
-                separatorIndex = remainingPath.IndexOf(Path.AltDirectorySeparatorChar);
-            }
-            bool isFile = separatorIndex == -1;
-            string name = isFile ? remainingPath : remainingPath[..separatorIndex];
+        public class ScannedPath : IComparable<ScannedPath> {
+            public AddonType Type;
+            public Addon Addon;
+            public string Name;
+            public bool IsFolder => Type == AddonType.Folder;
 
-            if (!parent.Children.TryGetValue(name, out Node newNode)) {
-                if (isFile) {
-                    newNode = Instantiate(fileTemplate, parent.transform.parent);
-                    ((FileNode) newNode).Addon = addon;
+            public int CompareTo(ScannedPath other) {
+                if (!IsFolder && other.IsFolder) {
+                    return 1;
+                } else if (IsFolder && !other.IsFolder) {
+                    return -1;
                 } else {
-                    newNode = Instantiate(folderTemplate, parent.transform.parent);
-                }
-                newNode.name = name;
-                newNode.gameObject.SetActive(true);
-                newNode.transform.SetSiblingIndex(parent.transform.GetSiblingIndex() + 1);
-                newNode.GetComponentInChildren<TMP_Text>().text = name;
-                parent.Children[name] = newNode;
-            }
-
-            if (!isFile && newNode is DirectoryNode dNewNode) {
-                AddNode(dNewNode, remainingPath[(separatorIndex + 1)..], addon);
-            }
-        }
-
-        public void DeleteNode(Node node) {
-            if (node == null) {
-                return;
-            }
-
-            if (node is DirectoryNode dNode) {
-                foreach ((_, var child) in dNode.Children) {
-                    DeleteNode(child);
+                    return string.Compare(Name, other.Name, true);
                 }
             }
-            Destroy(node.gameObject);
-        }
 
+            public enum AddonType {
+                AddonFile,
+                Folder,
+                NonAddonFile,
+            }
+        }
     }
 }

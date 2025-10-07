@@ -1,4 +1,4 @@
-﻿using NSMB.Addon;
+﻿using NSMB.Addons;
 using NSMB.Networking;
 using NSMB.Quantum;
 using NSMB.UI.Loading;

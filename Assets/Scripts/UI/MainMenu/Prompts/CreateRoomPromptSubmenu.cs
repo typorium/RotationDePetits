@@ -1,4 +1,4 @@
-using NSMB.Addon;
+using NSMB.Addons;
 using NSMB.Networking;
 using Quantum;
 using TMPro;

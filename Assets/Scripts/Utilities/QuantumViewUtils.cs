@@ -1,4 +1,4 @@
-using NSMB.Addon;
+using NSMB.Addons;
 using NSMB.Replay;
 using NSMB.UI.Game;
 using Photon.Deterministic;

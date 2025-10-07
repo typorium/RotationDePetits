@@ -10,7 +10,7 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
-namespace NSMB.Addon {
+namespace NSMB.Addons {
 
     public class AddonBuildWindow : EditorWindow {
 
@@ -120,7 +120,7 @@ namespace NSMB.Addon {
                 }
 
                 // Zip folder + clean
-                string zipPath = Path.Combine("ExportedAddons", $"{addonName}-{version}.zip");
+                string zipPath = Path.Combine("ExportedAddons", $"{addonName}-{version}{AddonManager.AddonExtension}");
                 try {
                     File.Delete(zipPath);
                 } catch { }
