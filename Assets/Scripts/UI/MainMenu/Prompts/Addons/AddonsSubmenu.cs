@@ -121,8 +121,9 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
             UnityEngine.Canvas.ForceUpdateCanvases();
 
             bool selected = false;
+            string previousParent = Path.GetFileName(previousPath);
             foreach (var entry in entries) {
-                if (entry.Path.FullPath == previousPath) {
+                if (entry.Path.Name == previousParent) {
                     Canvas.EventSystem.SetSelectedGameObject(entry.button.gameObject);
                     selected = true;
                     break;
