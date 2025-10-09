@@ -13,6 +13,7 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
         [SerializeField] private TMP_Text sliderValue;
         [SerializeField] private Slider maxPlayerSlider;
         [SerializeField] private Toggle privateToggle;
+        [SerializeField] private TMP_Text addonsText;
 
         //---Private Variables
         private bool creating, createdSuccessfully;
@@ -33,20 +34,12 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
                 maxPlayerSlider.value = 10;
                 MaxPlayerSliderChanged();
                 privateToggle.isOn = false;
-
-                /*
-                addonsDropdown.ClearOptions();
-                addonsDropdown.captionText.text = "Retreiving addons...";
-                addonsDropdown.MultiSelect = true;
-
-                var addonManager = GlobalController.Instance.addonManager;
-                var addonTask = addonManager.RefreshAvailableAddons();
-                var availableAddons = await addonTask;
-                foreach ((_, var addonDef) in availableAddons) {
-                    addonsDropdown.options.Add(new AddonOption(addonDef));
-                }
-                */
             }
+
+            int addons = GlobalController.Instance.addonManager.LoadedAddons.Count;
+            addonsText.text = GlobalController.Instance.translationManager.GetTranslationWithReplacements(
+                addons == 0 ? "ui.rooms.create.addons.notenabled" : "ui.rooms.create.addons.enabled",
+                "addons", addons.ToString());
         }
 
         public override bool TryGoBack(out bool playSound) {

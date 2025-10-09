@@ -71,7 +71,7 @@ namespace NSMB.Replay {
         }
 
         internal static ReplayParseResult TryLoadFromFile(Stream input, out BinaryReplayHeader result) {
-            using BinaryReader reader = new(input, Encoding.UTF8, true);
+            using BinaryReader reader = new(input, Encoding.UTF8, leaveOpen: true);
             
             result = new();
 
@@ -103,9 +103,11 @@ namespace NSMB.Replay {
                 result.WinningTeam = reader.ReadSByte();
 
                 // Addons
-                result.AddonKeys = new string[reader.ReadInt32()];
-                for (int i = 0; i < result.AddonKeys.Length; i++) {
-                    result.AddonKeys[i] = reader.ReadString();
+                if (result.Version >= new GameVersion(2, 1, 0)) {
+                    result.AddonKeys = new string[reader.ReadInt32()];
+                    for (int i = 0; i < result.AddonKeys.Length; i++) {
+                        result.AddonKeys[i] = reader.ReadString();
+                    }
                 }
             } catch {
                 return ReplayParseResult.ParseFailure;

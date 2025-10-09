@@ -1,10 +1,15 @@
-using JetBrains.Annotations;
 using System;
 using System.IO;
-using UnityEngine;
 
 public struct GameVersion : IEquatable<GameVersion>, IComparable<GameVersion> {
     public byte Major, Minor, Patch, Hotfix;
+
+    public GameVersion(byte major, byte minor, byte patch, byte hotfix = 0) {
+        Major = major;
+        Minor = minor;
+        Patch = patch;
+        Hotfix = hotfix;
+    }
 
     public bool Equals(GameVersion other) {
         return Major == other.Major && Minor == other.Minor && Patch == other.Patch && Hotfix == other.Hotfix;

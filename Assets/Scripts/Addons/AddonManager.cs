@@ -25,7 +25,9 @@ namespace NSMB.Addons {
         public static string LocalFolderPath = Path.Combine(Application.dataPath, "addons");
         private static readonly string LocalFolderDownloadedPath = Path.Combine(LocalFolderPath, "download");
         public static readonly string AddonExtension = ".mvladdon";
-        private static string AddonCachePath => Path.Combine(Application.persistentDataPath, "addoncache");
+
+        private static string PlatformFolder;
+        private static string AddonCachePath;
 
         //---Properties
         public List<LoadedAddon> LoadedAddons { get; private set; } = new();
@@ -35,6 +37,8 @@ namespace NSMB.Addons {
         private List<Addon> _availableAddons = new();
 
         public void Start() {
+            AddonCachePath = Path.Combine(Application.persistentDataPath, "addoncache");
+            PlatformFolder = GetFolderForPlatform();
             _ = FindAvailableAddons();
         }
 
@@ -45,7 +49,7 @@ namespace NSMB.Addons {
 
             foreach (var filepath in Directory.EnumerateFiles(LocalFolderPath, "*" + AddonExtension, new EnumerationOptions { RecurseSubdirectories = true })) {
                 // Find all `.mvladdon` files.
-                await RegisterAddon(filepath, results);
+                var addon = await RegisterAddon(filepath, results);
             }
 
             // Main thread the events
@@ -61,19 +65,39 @@ namespace NSMB.Addons {
             }
 
             // Load addons
-            foreach (var addonKey in requestedAddons) {
-                var loadedAddon = await LoadOrDownloadAddon(addonKey);
+            List<Guid> tryDownloading = new();
+            foreach (var guid in requestedAddons) {
+                var loadedAddon = await LoadAddon(guid);
                 if (loadedAddon == null) {
-                    // Failed. Abort.
-                    return false;
+                    // Failed.
+                    tryDownloading.Add(guid);
+                }
+            }
+
+            List<Guid> failedDownloads = new();
+            foreach (var guid in tryDownloading) {
+                var downloadedAddon = await DownloadAddon(guid);
+                if (downloadedAddon == null) {
+                    failedDownloads.Add(guid);
+                    continue;
+                }
+                var loadedAddon = await LoadAddon(downloadedAddon);
+                if (loadedAddon == null) {
+                    // Failed.
+                    failedDownloads.Add(guid);
+                    continue;
                 }
             }
             
+            if (failedDownloads.Count > 0) {
+                return false;
+            }
+
             // Good to go.
             return true;
         }
 
-        public async Task<LoadedAddon> LoadOrDownloadAddon(Guid addonGuid) {
+        public async Task<LoadedAddon> LoadAddon(Guid addonGuid, bool downloadIfUnavailable = false) {
             var availableAddon = _availableAddons.FirstOrDefault(addon => addon.Definition.Guid == addonGuid);
             if (availableAddon != null) {
                 // Great! We already have this one.
@@ -83,14 +107,16 @@ namespace NSMB.Addons {
                     Debug.Log($"[Addon] Failed to load addon {availableAddon.Definition.FullName} ({addonGuid}) from file \"{availableAddon.Filepath}\": {e.Message}");
                 }
             }
-
-            // Fallback: check the remote repository.
-            Addon downloadedAddon = await DownloadAddon(addonGuid);
-            if (downloadedAddon != null) {
-                // Success!
-                return await LoadAddon(downloadedAddon);
+/*
+            if (downloadIfUnavailable) {
+                // Fallback: check the remote repository.
+                Addon downloadedAddon = await DownloadAddon(addonGuid);
+                if (downloadedAddon != null) {
+                    // Success!
+                    return await LoadAddon(downloadedAddon);
+                }
             }
-
+*/
             // Failed.
             return null;
         }
@@ -103,36 +129,43 @@ namespace NSMB.Addons {
 
             // Extract to temp folder
             string pathToFolder = Path.Combine(AddonCachePath, addonDef.Guid.ToString());
-            if (!Directory.Exists(pathToFolder)) {
-                using ZipArchive zipped = ZipFile.OpenRead(addon.Filepath);
-                zipped.ExtractToDirectory(pathToFolder);
+            try {
+                if (!Directory.Exists(pathToFolder)) {
+                    using ZipArchive zipped = ZipFile.OpenRead(addon.Filepath);
+                    zipped.ExtractToDirectory(pathToFolder);
+                    Debug.Log(pathToFolder);
+                }
+            } catch (Exception e) {
+                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), failed to extract to temp directory: \"{pathToFolder}\" ({e.Message})");
+                return null;
             }
 
             // Catalog
-            string platformFolderName = GetFolderForPlatform();
-            string platformFolderPath = Path.Combine(pathToFolder, platformFolderName);
+            string platformFolderPath = Path.Combine(pathToFolder, PlatformFolder);
             if (!Directory.Exists(platformFolderPath)) {
-                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), it does not seem to support our platform ({platformFolderName})!");
+                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), it does not seem to support our platform ({PlatformFolder})!");
                 return null;
             }
             string catalogPath = Directory.GetFiles(platformFolderPath, "*.json").FirstOrDefault();
             if (catalogPath == null) {
                 // No catalog? No bitches?
-                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), it does not seem to support our platform ({platformFolderName})!");
+                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), it does not seem to support our platform ({PlatformFolder})!");
                 return null;
             }
 
             // Resolve paths + create a copy of the catalog.
-            string catalogAsString = await File.ReadAllTextAsync(catalogPath);
-            catalogAsString = catalogAsString.Replace("{MOD_PATH}", platformFolderPath.Replace(@"\", @"\\")); // JSON expects double escaped backslashes
-
-            string tempCatalogPath = Path.Combine(Application.temporaryCachePath, $"catalog_{addonDef.FullName}.json");
-            await File.WriteAllTextAsync(tempCatalogPath, catalogAsString);
-
+            try {
+                string catalogAsString = await File.ReadAllTextAsync(catalogPath);
+                catalogAsString = catalogAsString.Replace("{MOD_PATH}", platformFolderPath.Replace(@"\", @"\\")); // JSON expects double escaped backslashes
+                await File.WriteAllTextAsync(catalogPath, catalogAsString);
+            } catch (Exception e) {
+                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), couldn't create new catalog! ({e.Message})");
+                return null;
+            }
 
             // Read temp catalog
             await Awaitable.MainThreadAsync();
-            var catalogHandle = Addressables.LoadContentCatalogAsync(tempCatalogPath);
+            var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
             var resourceLocator = await catalogHandle.Task;
 
             if (catalogHandle.Status != AsyncOperationStatus.Succeeded) {
@@ -165,58 +198,69 @@ namespace NSMB.Addons {
             return newAddon;
         }
 
-        public async Task<Addon> DownloadAddon(Guid addonGuid) {
+        public async Awaitable<Addon> DownloadAddon(Guid addonGuid) {
+            await Awaitable.MainThreadAsync();
+
             string targetFileUrl = CombineUrl(RemoteRepoUrl, addonGuid + AddonExtension);
             Debug.Log($"[Addon] Attempting to download addon {addonGuid} from remote source ({targetFileUrl})");
 
-            using UnityWebRequest zippedAddonRequest = UnityWebRequest.Get(targetFileUrl);
-            zippedAddonRequest.SetRequestHeader("Accept", "*/*");
-            zippedAddonRequest.SetRequestHeader("UserAgent", "ipodtouch0218/NSMB-MarioVsLuigi");
-            await zippedAddonRequest.SendWebRequest();
-            if (zippedAddonRequest.result != UnityWebRequest.Result.Success) {
-                Debug.Log($"[Addon] Download failed: {zippedAddonRequest.error} ({zippedAddonRequest.responseCode})");
-                return null;
+            byte[] downloadedFile;
+            using (UnityWebRequest zippedAddonRequest = UnityWebRequest.Get(targetFileUrl)) {
+                zippedAddonRequest.SetRequestHeader("Accept", "*/*");
+                zippedAddonRequest.SetRequestHeader("UserAgent", "ipodtouch0218/NSMB-MarioVsLuigi");
+                await zippedAddonRequest.SendWebRequest();
+                if (zippedAddonRequest.result != UnityWebRequest.Result.Success) {
+                    Debug.Log($"[Addon] Download failed: {zippedAddonRequest.error} ({zippedAddonRequest.responseCode})");
+                    return null;
+                }
+                downloadedFile = zippedAddonRequest.downloadHandler.data;
             }
 
+            await Awaitable.BackgroundThreadAsync();
             string finalPath;
             AddonDefinition addonDef;
-            using (MemoryStream memoryStream = new(zippedAddonRequest.downloadHandler.data)) {
-                using (ZipArchive zipFile = new(memoryStream)) {
-                    var addonDefEntry = zipFile.GetEntry("addon.json");
-                    if (addonDefEntry == null) {
-                        Debug.Log($"[Addon] Download failed: the downloaded file doesn't appear to be an addon?");
-                        return null;
-                    }
+            using (MemoryStream memoryStream = new(downloadedFile)) {
+                using ZipArchive zipFile = new(memoryStream);
+                var addonDefEntry = zipFile.GetEntry("addon.json");
+                if (addonDefEntry == null) {
+                    Debug.Log($"[Addon] Download failed: the downloaded file doesn't appear to be an addon?");
+                    return null;
+                }
 
-                    using (var addonDefStream = addonDefEntry.Open()) {
-                        using var addonDefStreamReader = new StreamReader(addonDefStream);
-                        try {
-                            addonDef = JsonConvert.DeserializeObject<AddonDefinition>(await addonDefStreamReader.ReadToEndAsync());
-                        } catch (Exception e) {
-                            Debug.Log($"[Addon] Download failed: the addon.json failed to deserialize {e.Message}");
-                            return null;
-                        }
-                    }
-
-                    string platformFolderName = GetFolderForPlatform();
-                    if (zipFile.GetEntry(platformFolderName + "/catalog.json") == null) {
-                        Debug.Log($"[Addon] Download failed: the addon {addonDef.FullName} ({addonGuid}) doesn't appear to support our platform! ({platformFolderName})");
+                using (var addonDefStream = addonDefEntry.Open()) {
+                    using var addonDefStreamReader = new StreamReader(addonDefStream);
+                    try {
+                        addonDef = JsonConvert.DeserializeObject<AddonDefinition>(await addonDefStreamReader.ReadToEndAsync());
+                    } catch (Exception e) {
+                        Debug.Log($"[Addon] Download failed: the addon.json failed to deserialize {e.Message}");
                         return null;
                     }
                 }
 
+                if (zipFile.GetEntry(PlatformFolder + "/catalog.json") == null) {
+                    Debug.Log($"[Addon] Download failed: the addon {addonDef.FullName} ({addonGuid}) doesn't appear to support our platform! ({PlatformFolder})");
+                    return null;
+                }
+
+                // Disposing the zip file will close the memorystream... keep it open.
                 finalPath = Path.Combine(LocalFolderDownloadedPath, addonDef.FullName + AddonExtension);
-                using (var fileStream = new FileStream(finalPath, FileMode.Create)) {
+                var parent = Directory.GetParent(finalPath);
+                if (!parent.Exists) {
+                    parent.Create();
+                }
+                using (var fileStream = new FileStream(finalPath, FileMode.OpenOrCreate)) {
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     memoryStream.CopyTo(fileStream);
                 }
-                Debug.Log($"[Addon] Successfully downloaded addon {addonDef.FullName} ({addonGuid}) to \"{finalPath}\"");
             }
+            Debug.Log($"[Addon] Successfully downloaded addon {addonDef.FullName} ({addonGuid}) to \"{finalPath}\"");
 
             var result = new Addon {
                 Definition = addonDef,
                 Filepath = finalPath,
             };
+
+            await Awaitable.MainThreadAsync();
             _availableAddons.Add(result);
             return result;
         }

@@ -11,7 +11,9 @@ namespace Quantum.Editor {
   /// The Quantum Frame Differ window shown in the Unity Editor.
   /// Readable and comparable frame dumps are sent by other clients and can be compared after a desync error.
   /// </summary>
-  public class QuantumEditorFrameDifferWindow : EditorWindow {
+  public partial class QuantumEditorFrameDifferWindow : EditorWindow {
+    static partial void OnCallback(ref bool showWindow);
+
     private class StaticFrameStateStorage : ScriptableObject {
       public QuantumFrameDifferGUI.FrameDifferState State = new QuantumFrameDifferGUI.FrameDifferState();
     }
@@ -39,7 +41,12 @@ namespace Quantum.Editor {
           callback.FrameNumber,
           callback.FrameDump,
           QuantumFrameDiffer.TryGetPhotonNickname(QuantumRunner.FindRunner(callback.Game)?.NetworkClient, callback.ActorId));
-        ShowWindow();
+        // Open the windows unless the partial method OnCallback disabled it.
+        var showWindow = true;
+        OnCallback(ref showWindow);
+        if (showWindow) {
+          ShowWindow();
+        }
       });
     }
 

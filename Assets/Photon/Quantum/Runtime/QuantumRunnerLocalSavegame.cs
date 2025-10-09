@@ -23,7 +23,6 @@ namespace Quantum {
     public InstantReplaySettings InstantReplayConfig = InstantReplaySettings.Default;
 
     private ResourceManagerStatic _resourceManager;
-    private Native.Allocator _resourceAllocator;
 
     /// <summary>
     /// Unity start method loads the savegame files and starts the runner.
@@ -62,19 +61,16 @@ namespace Quantum {
       }
 
       if (assets?.Length > 0) {
-        _resourceAllocator = new QuantumUnityNativeAllocator();
-        _resourceManager = new ResourceManagerStatic(serializer.AssetsFromByteArray(assets), new QuantumUnityNativeAllocator());
+        _resourceManager = new ResourceManagerStatic(serializer.AssetsFromByteArray(assets));
         arguments.ResourceManager = _resourceManager;
       }
 
-      QuantumRunner.StartGame(arguments);
+      SessionRunner.Start(arguments);
     }
 
     private void OnDestroy() {
       _resourceManager?.Dispose();
       _resourceManager = null;
-      _resourceAllocator?.Dispose();
-      _resourceAllocator = null;
     }
   }
 }

@@ -161,14 +161,14 @@ namespace Quantum {
       }
 
       // set map to this maps asset
-      runtimeConfig.Map = mapdata.Asset;
+      runtimeConfig.Map = mapdata.AssetRef;
 
       // if not set, try to set simulation config from global default configs
       if (runtimeConfig.SimulationConfig.Id.IsValid == false && QuantumDefaultConfigs.TryGetGlobal(out var defaultConfigs)) {
         runtimeConfig.SimulationConfig = defaultConfigs.SimulationConfig;
       }
 
-      using var dynamicDB = new DynamicAssetDB(new QuantumUnityNativeAllocator(), DynamicAssetDB.IsLegacyModeEnabled);
+      using var dynamicDB = new DynamicAssetDB(DynamicAssetDB.IsLegacyModeEnabled);
       DynamicAssetDB.OnInitialDynamicAssetsRequested?.Invoke(dynamicDB);
 
       // create start game parameter
@@ -176,7 +176,7 @@ namespace Quantum {
         RunnerFactory         = QuantumRunnerUnityFactory.DefaultFactory,
         GameParameters        = QuantumRunnerUnityFactory.CreateGameParameters,
         RuntimeConfig         = runtimeConfig,
-        SessionConfig         = SessionConfig?.Config ?? QuantumDeterministicSessionConfigAsset.DefaultConfig,
+        SessionConfig         = (SessionConfig != null ? SessionConfig.Config : null) ?? QuantumDeterministicSessionConfigAsset.DefaultConfig,
         ReplayProvider        = null,
         GameMode              = DeterministicGameMode.Local,
         InitialTick           = frameNumber,
@@ -192,10 +192,15 @@ namespace Quantum {
       
       OnBeforeStart?.Invoke(arguments);
 
-      var runner = QuantumRunner.StartGame(arguments);
+      SessionRunner.Start(arguments);
     }
 
     private void OnGameStarted(QuantumGame game, bool isResync) {
+      if (LocalPlayers == null) {
+        // Can happen when a new scene has not been saved yet.
+        return;
+      }
+
       for (Int32 i = 0; i < LocalPlayers.Length; ++i) {
         game.AddPlayer(i, LocalPlayers[i]);
       }

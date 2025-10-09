@@ -1,6 +1,7 @@
 using NSMB.UI.Translation;
 using Quantum;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -173,7 +174,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         public void UpdateState() {
 #if UNITY_EDITOR
-            if (!this) {
+            if (!this || !Application.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode) {
                 return;
             }
 #endif

@@ -51,12 +51,13 @@ namespace Quantum.Editor {
     
     /// <summary>
     /// The search paths to collect all simulation source files from.E.g. files that are included in the Quantum.Simulation.asmdef.
+    /// Adds the UPM package path by default even if not used.
     /// </summary>
     [Header("Files and folders can either be marked with " + IncludeLabel + " label or included here.")]
-    public string[] IncludePaths = new[] {
+    public string[] IncludePaths = new[] { 
       "Assets/QuantumUser/Simulation",
-      "Assets/Photon/Quantum/Simulation"
-    };
+      "Assets/Photon/Quantum/Simulation",
+      "Packages/com.photonengine.quantum/Simulation"};
 
     /// <summary>
     /// Export the non-Unity simulation project to <see cref="OutputProjectPath"/>.

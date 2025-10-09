@@ -1,7 +1,7 @@
 namespace Quantum {
+  using Photon.Client;
   using System;
   using System.Diagnostics;
-  using Photon.Client;
   using UnityEngine;
   using UnityEngine.EventSystems;
   using UnityEngine.UI;
@@ -24,10 +24,6 @@ namespace Quantum {
     /// </summary>
     public Text Predicted;
     /// <summary>
-    /// Number of resimulated frames.
-    /// </summary>
-    public Text Resimulated;
-    /// <summary>
     /// The last simulation time.
     /// </summary>
     public Text SimulateTime;
@@ -39,6 +35,10 @@ namespace Quantum {
     /// The network ping measured by the simulation.
     /// </summary>
     public Text NetworkPing;
+    /// <summary>
+    /// The connected region.
+    /// </summary>
+    public Text Region;
     /// <summary>
     /// The bytes received per second.
     /// </summary>
@@ -101,7 +101,7 @@ namespace Quantum {
       SetState(StartEnabled);
     }
 
-    void Update() {
+    void LateUpdate() {
       if (QuantumRunner.Default && ToggleOff.activeSelf) {
         if (QuantumRunner.Default.IsRunning) {
           if (ShowCompactStats) {
@@ -131,7 +131,6 @@ namespace Quantum {
           NetworkPing.text = gameInstance.Session.Stats.Ping.ToString();
           SimulateTime.text = Math.Round(gameInstance.Session.Stats.UpdateTime * 1000, 2) + " ms";
           InputOffset.text = gameInstance.Session.Stats.Offset.ToString();
-          Resimulated.text = gameInstance.Session.Stats.ResimulatedFrames.ToString();
 
           if (gameInstance.Session.IsStalling) {
             SimulationState.text = "Stalling";
@@ -146,6 +145,8 @@ namespace Quantum {
           if (_networkTimer == null) {
             _networkTimer = Stopwatch.StartNew();
           }
+
+          Region.text = QuantumRunner.Default.NetworkClient.CurrentRegion;
 
           if (UseCurrentBandwidth) {
             var deltaTime = _networkTimer.Elapsed.TotalSeconds - _lastTime;

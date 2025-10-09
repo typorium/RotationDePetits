@@ -24,7 +24,7 @@ public class MvLMapCreateWindow : EditorWindow {
             return;
         }
 
-        EditorGUIUtility.PingObject(QuantumUnityDB.GetGlobalAsset(qmd.Asset.UserAsset));
+        EditorGUIUtility.PingObject(QuantumUnityDB.GetGlobalAsset(qmd.GetAsset(true).UserAsset));
     }
 
     [MenuItem("Tools/MvLO/Compress Selected Tilemap")]
@@ -90,7 +90,7 @@ public class MvLMapCreateWindow : EditorWindow {
         */
 
         QuantumMapData mapHolder = FindFirstObjectByType<QuantumMapData>();
-        mapHolder.Asset = map;
+        mapHolder.AssetRef = map;
         EditorUtility.SetDirty(mapHolder);
         EditorUtility.SetDirty(mapHolder.gameObject);
 

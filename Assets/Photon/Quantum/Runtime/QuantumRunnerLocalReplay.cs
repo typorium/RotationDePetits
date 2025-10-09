@@ -49,7 +49,6 @@ namespace Quantum {
     
     QuantumRunner _runner;
     IResourceManager _resourceManager;
-    Native.Allocator _resourceAllocator;
     IDeterministicReplayProvider _replayInputProvider;
 
     /// <summary>
@@ -83,6 +82,7 @@ namespace Quantum {
 
       var arguments = new SessionRunner.Arguments {
         RunnerFactory = QuantumRunnerUnityFactory.DefaultFactory,
+        GameParameters = QuantumRunnerUnityFactory.CreateGameParameters,
         RuntimeConfig = serializer.ConfigFromByteArray<RuntimeConfig>(replayFile.RuntimeConfigData.Decode(), compressed: true),
         SessionConfig = replayFile.DeterministicConfig,
         ReplayProvider = _replayInputProvider,
@@ -101,12 +101,11 @@ namespace Quantum {
       }
 
       if (assets?.Length > 0) {
-        _resourceAllocator = new QuantumUnityNativeAllocator();
-        _resourceManager = new ResourceManagerStatic(serializer.AssetsFromByteArray(assets), new QuantumUnityNativeAllocator());
+        _resourceManager = new ResourceManagerStatic(serializer.AssetsFromByteArray(assets));
         arguments.ResourceManager = _resourceManager;
       }
 
-      _runner = QuantumRunner.StartGame(arguments);
+      _runner = (QuantumRunner)SessionRunner.Start(arguments);
 
       if (replayFile.Checksums?.Checksums != null) {
         _runner.Game.StartVerifyingChecksums(replayFile.Checksums);
@@ -145,8 +144,6 @@ namespace Quantum {
     private void OnDestroy() {
       _resourceManager?.Dispose();
       _resourceManager = null;
-      _resourceAllocator?.Dispose();
-      _resourceAllocator = null;
     }
 
 #if UNITY_EDITOR

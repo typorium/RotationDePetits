@@ -81,6 +81,7 @@ MonoBehaviour:
       Z:
         RawValue: 0
     SolverType: 1
+    WarmStart: 1
     SolverIterations: 4
     PositionSolverIterations: 2
     UseJoints: 0
@@ -189,16 +190,21 @@ MonoBehaviour:
     MaxAvoidanceCandidates: 64
     VelocityObstacleTruncationFactor:
       RawValue: 72090
+  Heap:
+    TrackingMode: 1
+    Management: 1
+    PageSize: 3
+    SegmentSize: 4
+    SegmentCapacity: 32
+    PageShift: 15
+    PageCount: 256
+    ExtraHeapCount: 1
   AutoLoadSceneFromMap: 0
   DeltaTimeType: 0
   ThreadCount: 4
   ChecksumSnapshotHistoryLengthSeconds:
     RawValue: 196608
   ChecksumErrorDumpOptions: 0
-  HeapTrackingMode: 1
-  HeapPageShift: 15
-  HeapPageCount: 256
-  HeapExtraCount: 1
   InvisibleSolidTile:
     Id:
       Value: 282924479522535788
@@ -210,91 +216,6 @@ MonoBehaviour:
   DefaultGamemode:
     Id:
       Value: 326486899682662279
-  AllStages:
-  - Id:
-      Value: 438935048561577377
-  - Id:
-      Value: 422133218138107384
-  - Id:
-      Value: 472204063534919154
-  - Id:
-      Value: 329327285755650127
-  - Id:
-      Value: 372220640476305493
-  - Id:
-      Value: 365460248894597713
-  - Id:
-      Value: 420358832928607506
-  - Id:
-      Value: 328495164863943948
-  - Id:
-      Value: 269186410886596865
-  - Id:
-      Value: 280769179842433036
-  - Id:
-      Value: 372234066173501830
-  - Id:
-      Value: 503647763446439242
-  - Id:
-      Value: 457386534134594884
-  CharacterDatas:
-  - Id:
-      Value: 532063855470386108
-  - Id:
-      Value: 485289843648077326
-  Palettes:
-  - Id:
-      Value: 0
-  - Id:
-      Value: 520065536123357703
-  - Id:
-      Value: 359165249679469206
-  - Id:
-      Value: 454459291395690797
-  - Id:
-      Value: 439818323390480907
-  - Id:
-      Value: 382817490487173616
-  - Id:
-      Value: 523410392730610906
-  - Id:
-      Value: 524740824993114785
-  - Id:
-      Value: 531445013469831101
-  - Id:
-      Value: 425669587075414699
-  - Id:
-      Value: 451175776753330594
-  - Id:
-      Value: 305528157120426054
-  - Id:
-      Value: 504563041428027805
-  - Id:
-      Value: 388220319941842390
-  - Id:
-      Value: 278130574760325123
-  - Id:
-      Value: 318461744176949519
-  - Id:
-      Value: 398166620170367761
-  - Id:
-      Value: 459398035224653976
-  - Id:
-      Value: 448831233412633846
-  - Id:
-      Value: 421237760296031664
-  - Id:
-      Value: 482111089418591160
-  - Id:
-      Value: 408521781682520198
-  - Id:
-      Value: 410277434916936612
-  - Id:
-      Value: 484478936524730291
-  - Id:
-      Value: 438340492681313369
-  - Id:
-      Value: 450812137399066317
   Teams:
   - Id:
       Value: 382742106279861433
@@ -339,6 +260,8 @@ MonoBehaviour:
       Value: 2370489195152201878
   UpdateInterval: 1
   PathQuality: 1
+  HeuristicWeight:
+    RawValue: 65536
   CachedWaypointCount: 6
   MaxRepathTimeout:
     RawValue: 327680
@@ -346,7 +269,6 @@ MonoBehaviour:
   DynamicLineOfSight: 0
   DynamicLineOfSightWaypointRange:
     RawValue: 0
-  AutomaticTargetCorrection: 1
   AutomaticTargetCorrectionRadius:
     RawValue: 65536
   EnableWaypointDetectionAxis: 0
@@ -404,6 +326,8 @@ MonoBehaviour:
   CharacterController3DConfig: {fileID: 8491722975622669967}
   NavMeshAgentConfig: {fileID: -100545808229499591}
   SystemsConfig: {fileID: 398352223551057686}
+  InputActionAsset: {fileID: -944628639613478452, guid: 8a2679cf1c581ca41a337897e3dc5a06,
+    type: 3}
 --- !u!114 &398352223551057686
 MonoBehaviour:
   m_ObjectHideFlags: 0
