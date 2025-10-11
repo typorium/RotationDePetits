@@ -200,10 +200,9 @@ namespace NSMB.Entities.Player {
             var mario = f.Unsafe.GetPointer<MarioPlayer>(EntityRef);
 
             var playerData = QuantumUtils.GetPlayerData(f, mario->PlayerRef);
-            var palettes = QuantumViewUtils.Palettes;
-            int paletteIndex = Mathf.Clamp(playerData != null ? playerData->Palette : 0, 0, palettes.Length - 1);
-
-            skin = palettes[paletteIndex].GetPaletteForCharacter(character);
+            if (f.TryFindAsset(playerData->Palette, out var palette)) {
+                skin = palette.GetPaletteForCharacter(character);
+            }
             GlowColor = Utils.GetPlayerColor(f, mario->PlayerRef);
 
             if (Game.PlayerIsLocal(mario->PlayerRef)) {

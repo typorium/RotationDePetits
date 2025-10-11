@@ -3,8 +3,8 @@ component PlayerData {
 	bool IsRoomHost;
 	bool IsLoaded;
 
-	byte Character;
-	byte Palette;
+	AssetRef<CharacterAsset> Character;
+	AssetRef<PaletteSet> Palette;
 	byte RequestedTeam;
 	bool IsSpectator;
 	bool ManualSpectator;

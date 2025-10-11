@@ -61,6 +61,7 @@ MonoBehaviour:
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: d195fab4e8724014f96002eee32a737e, type: 2}
+  - {fileID: 11400000, guid: db6de2e9c542f114d9060e05664e69ed, type: 2}
   - {fileID: 11400000, guid: 192dfaf0286df4142a86d083d2483e5b, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
@@ -71,12 +72,16 @@ MonoBehaviour:
       m_Id: 44a4ab066ff04334389982b391cbab9e
       m_ProfileName: Default
       m_Values:
+      - m_Id: 0c03e5c3ffe43ed428d44949693adec5
+        m_Value: ExportedAddons/UndergroundDesert
       - m_Id: 109fe15bba24c0248b681e262bb70121
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: 13f32c46ecdcbbc4998e5b6eb0026f73
         m_Value: '{MOD_PATH}'
       - m_Id: 2f63148ccd139f645b616f2df2da1e73
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: 47ec443f6c6d9874c9100d5463692587
+        m_Value: '{MOD_PATH}'
       - m_Id: 51a37bcf817b7834b9ad9edabc51dc8b
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 8978d9faa5e72fc45be2b69cf78975e0
@@ -86,6 +91,9 @@ MonoBehaviour:
       - m_Id: dd6891f29467fc74d97303b892db7f7b
         m_Value: <undefined>
     m_ProfileEntryNames:
+    - m_Id: 0c03e5c3ffe43ed428d44949693adec5
+      m_Name: UndergroundDesert-BuildPath
+      m_InlineUsage: 0
     - m_Id: 109fe15bba24c0248b681e262bb70121
       m_Name: Local.LoadPath
       m_InlineUsage: 0
@@ -94,6 +102,9 @@ MonoBehaviour:
       m_InlineUsage: 0
     - m_Id: 2f63148ccd139f645b616f2df2da1e73
       m_Name: BuildTarget
+      m_InlineUsage: 0
+    - m_Id: 47ec443f6c6d9874c9100d5463692587
+      m_Name: UndergroundDesert-LoadPath
       m_InlineUsage: 0
     - m_Id: 51a37bcf817b7834b9ad9edabc51dc8b
       m_Name: Local.BuildPath

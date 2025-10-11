@@ -370,8 +370,10 @@ namespace Quantum {
                     continue;
                 }
 
-                int characterIndex = FPMath.Clamp(data->Character, 0, f.Context.CharacterDatas.Length - 1);
-                CharacterAsset character = f.Context.CharacterDatas[characterIndex];
+                CharacterAsset character = f.FindAsset(data->Character);
+                if (character == null) {
+                    character = f.Context.CharacterDatas[0];
+                }
 
                 EntityRef newPlayer = f.Create(character.Prototype);
                 var mario = f.Unsafe.GetPointer<MarioPlayer>(newPlayer);
@@ -388,7 +390,7 @@ namespace Quantum {
                     PlayerRef = data->PlayerRef,
                     Nickname = runtimePlayer.PlayerNickname,
                     NicknameColor = runtimePlayer.NicknameColor,
-                    Character = (byte) characterIndex,
+                    Character = runtimePlayer.Character,
                     Team = data->RealTeam,
                 };
             }

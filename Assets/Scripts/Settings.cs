@@ -1,4 +1,6 @@
 using NSMB.UI.Game;
+using NSMB.Utilities;
+using Quantum;
 using System;
 using System.IO;
 using UnityEngine;
@@ -208,7 +210,9 @@ namespace NSMB {
 
         //---Public Variables
         public string generalNickname;
-        public int generalCharacter, generalPalette, generalMaxTempReplays;
+        public AssetRef<CharacterAsset> generalCharacter;
+        public AssetRef<PaletteSet> generalPalette;
+        public int generalMaxTempReplays;
         public bool generalScoreboardAlways, generalChatFiltering, generalUseNicknameColor;
 
         public bool graphicsNametags;
@@ -232,7 +236,7 @@ namespace NSMB {
 
         public void Awake() {
             Set(this);
-            VersionUpdaters = new Action[] { LoadFromVersion0, LoadFromVersion1 };
+            VersionUpdaters = new Action[] { LoadFromVersion0, LoadFromVersion1, LoadFromVersion2 };
             LoadSettings();
 
             // Potential duplicate bindings not activating fix?
@@ -245,8 +249,8 @@ namespace NSMB {
             PlayerPrefs.SetInt("General_ScoreboardAlwaysVisible", generalScoreboardAlways ? 1 : 0);
             PlayerPrefs.SetInt("General_DisableChat", GeneralDisableChat ? 1 : 0);
             PlayerPrefs.SetInt("General_ChatFilter", generalChatFiltering ? 1 : 0);
-            PlayerPrefs.SetInt("General_Character", generalCharacter);
-            PlayerPrefs.SetInt("General_Palette", generalPalette);
+            PlayerPrefs.SetString("General_Character", generalCharacter.Id.ToString());
+            PlayerPrefs.SetString("General_Palette", generalPalette.Id.ToString());
             PlayerPrefs.SetString("General_Locale", GeneralLocale);
             PlayerPrefs.SetInt("General_UseNicknameColor", generalUseNicknameColor ? 1 : 0);
             PlayerPrefs.SetInt("General_ReplaysEnabled", GeneralReplaysEnabled ? 1 : 0);
@@ -325,8 +329,8 @@ namespace NSMB {
             generalScoreboardAlways = PlayerPrefs.GetInt("ScoreboardAlwaysVisible", 1) != 0;
             GeneralDisableChat = false;
             generalChatFiltering = PlayerPrefs.GetInt("ChatFilter", 1) != 0;
-            generalCharacter = PlayerPrefs.GetInt("Character", 0);
-            generalPalette = PlayerPrefs.GetInt("Skin", 0);
+            generalCharacter = Utils.IndexIntoArrayOrFirstElement(QuantumViewUtils.Characters, PlayerPrefs.GetInt("Character", 0));
+            generalPalette = Utils.IndexIntoArrayOrFirstElement(QuantumViewUtils.Palettes, PlayerPrefs.GetInt("Skin", 0));
             GeneralLocale = "en-US";
             generalUseNicknameColor = true;
             GeneralReplaysEnabled = true;
@@ -378,6 +382,62 @@ namespace NSMB {
             TryGetSetting("General_ScoreboardAlwaysVisible", ref generalScoreboardAlways);
             TryGetSetting<bool>("General_DisableChat", nameof(GeneralDisableChat));
             TryGetSetting("General_ChatFilter", ref generalChatFiltering);
+            int generalCharacterOld = 0;
+            if (TryGetSetting("General_Character", ref generalCharacterOld)) {
+                generalCharacter = Utils.IndexIntoArrayOrFirstElement(QuantumViewUtils.Characters, generalCharacterOld);
+            }
+            int generalPaletteOld = 0;
+            if (TryGetSetting("General_Palette", ref generalPaletteOld)) {
+                generalPalette = Utils.IndexIntoArrayOrFirstElement(QuantumViewUtils.Palettes, generalPaletteOld);
+            }
+            TryGetSetting<string>("General_Locale", nameof(GeneralLocale));
+            TryGetSetting("General_UseNicknameColor", ref generalUseNicknameColor);
+            TryGetSetting<bool>("General_ReplaysEnabled", nameof(GeneralReplaysEnabled));
+            TryGetSetting("General_MaxTempReplays", ref generalMaxTempReplays);
+            TryGetSetting<bool>("General_DiscordIntegration", nameof(GeneralDiscordIntegration));
+
+            // Graphics
+            TryGetSetting<int>("Graphics_FullscreenMode", nameof(GraphicsFullscreenMode));
+            TryGetSetting<string>("Graphics_FullscreenResolution", nameof(GraphicsFullscreenResolution));
+            TryGetSetting<bool>("Graphics_NDS_Enabled", nameof(GraphicsNdsEnabled));
+            TryGetSetting<bool>("Graphics_NDS_ForceAspect", nameof(GraphicsNdsForceAspect));
+            TryGetSetting<bool>("Graphics_NDS_PixelPerfect", nameof(GraphicsNdsPixelPerfect));
+            TryGetSetting<int>("Graphics_MaxFPS", nameof(GraphicsMaxFps));
+            TryGetSetting<bool>("Graphics_VSync", nameof(GraphicsVsync));
+            TryGetSetting<bool>("Graphics_PlayerOutlines", nameof(GraphicsPlayerOutlines));
+            TryGetSetting<bool>("Graphics_PlayerNametags", nameof(GraphicsPlayerNametags));
+            TryGetSetting<bool>("Graphics_Colorblind", nameof(GraphicsColorblind));
+            TryGetSetting<bool>("Graphics_InputDisplay", nameof(GraphicsInputDisplay));
+
+            // Audio
+            TryGetSetting<float>("Audio_MasterVolume", nameof(AudioMasterVolume));
+            TryGetSetting<float>("Audio_MusicVolume", nameof(AudioMusicVolume));
+            TryGetSetting<float>("Audio_SFXVolume", nameof(AudioSFXVolume));
+            TryGetSetting("Audio_MuteMusicOnUnfocus", ref audioMuteMusicOnUnfocus);
+            TryGetSetting("Audio_MuteSFXOnUnfocus", ref audioMuteSFXOnUnfocus);
+            TryGetSetting("Audio_Panning", ref audioPanning);
+            TryGetSetting("Audio_RestartMusicOnDeath", ref audioRestartMusicOnDeath);
+            TryGetSetting("Audio_SpecialPowerupMusic", ref audioSpecialPowerupMusic);
+
+            // Controls
+            TryGetSetting("Controls_FireballFromSprint", ref controlsFireballSprint);
+            TryGetSetting("Controls_AutoSprint", ref controlsAutoSprint);
+            TryGetSetting("Controls_PropellerJump", ref controlsPropellerJump);
+            TryGetSetting("Controls_AllowGroundpoundWithLeftRight", ref controlsAllowGroundpoundWithLeftRight);
+            TryGetSetting("Controls_Rumble", ref controlsRumble);
+            TryGetSetting<string>("Controls_Bindings", nameof(ControlsBindings));
+
+            // Misc
+            TryGetSetting("Misc_FilterFullRooms", ref miscFilterFullRooms);
+            TryGetSetting("Misc_FilterInProgressRooms", ref miscFilterInProgressRooms);
+        }
+
+        private void LoadFromVersion2() {
+            // Generic
+            TryGetSetting("General_Nickname", ref generalNickname);
+            TryGetSetting("General_ScoreboardAlwaysVisible", ref generalScoreboardAlways);
+            TryGetSetting<bool>("General_DisableChat", nameof(GeneralDisableChat));
+            TryGetSetting("General_ChatFilter", ref generalChatFiltering);
             TryGetSetting("General_Character", ref generalCharacter);
             TryGetSetting("General_Palette", ref generalPalette);
             TryGetSetting<string>("General_Locale", nameof(GeneralLocale));
@@ -422,7 +482,7 @@ namespace NSMB {
             TryGetSetting("Misc_FilterInProgressRooms", ref miscFilterInProgressRooms);
         }
 
-        private bool TryGetSetting<T>(string key, string propertyName, T defaultValue = default) {
+        private bool TryGetSetting<T>(string key, string propertyName) {
             if (!PlayerPrefs.HasKey(key)) {
                 return false;
             }
@@ -432,16 +492,18 @@ namespace NSMB {
             // Gross... but there's no way to do it through a switch statement (afaik)
             if (typeof(T) == typeof(int)) {
                 value = PlayerPrefs.GetInt(key);
-
             } else if (typeof(T) == typeof(float)) {
                 value = PlayerPrefs.GetFloat(key);
-
             } else if (typeof(T) == typeof(string)) {
                 value = PlayerPrefs.GetString(key);
-
             } else if (typeof(T) == typeof(bool)) {
                 value = PlayerPrefs.GetInt(key) != 0;
-
+            } else if (typeof(T) == typeof(AssetRef<>)) {
+                if (AssetGuid.TryParse(PlayerPrefs.GetString(key), out var guid, false)) {
+                    value = new AssetRef(guid);
+                } else {
+                    return false;
+                }
             } else {
                 throw new ArgumentException($"Type {typeof(T).Name} is not supported!");
             }
@@ -494,6 +556,19 @@ namespace NSMB {
             }
 
             value = PlayerPrefs.GetInt(key) == 1;
+            return true;
+        }
+
+        private bool TryGetSetting<T>(string key, ref AssetRef<T> value) where T : AssetObject {
+            if (!PlayerPrefs.HasKey(key)) {
+                return false;
+            }
+
+            if (!AssetGuid.TryParse(PlayerPrefs.GetString(key), out var guid, false)) {
+                return false;
+            }
+
+            value = new(guid);
             return true;
         }
 

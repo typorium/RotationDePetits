@@ -38,6 +38,18 @@ namespace NSMB.Utilities {
             return PlayerElements.AllPlayerElements.Any(pe => pe.Entity == entity);
         }
 
+        public static T FindAssetOrFirst<T>(AssetRef<T> assetRef, T[] possibleValues) where T : AssetObject {
+            if (QuantumUnityDB.TryGetGlobalAsset(assetRef, out var result)) {
+                return result;
+            } else {
+                return possibleValues[0];
+            }
+        }
+
+        public static CharacterAsset FindAssetOrFirst(AssetRef<CharacterAsset> assetRef) {
+            return FindAssetOrFirst(assetRef, Characters);
+        }
+
         private static void OnAddonListChanged(LoadedAddon la) {
             _maps = null;
             _teams = null;

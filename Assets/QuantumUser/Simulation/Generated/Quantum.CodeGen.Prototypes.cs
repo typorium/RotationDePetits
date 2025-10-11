@@ -776,8 +776,8 @@ namespace Quantum.Prototypes {
     public PlayerRef PlayerRef;
     public QBoolean IsRoomHost;
     public QBoolean IsLoaded;
-    public Byte Character;
-    public Byte Palette;
+    public AssetRef<CharacterAsset> Character;
+    public AssetRef<PaletteSet> Palette;
     public Byte RequestedTeam;
     public QBoolean IsSpectator;
     public QBoolean ManualSpectator;
@@ -824,7 +824,7 @@ namespace Quantum.Prototypes {
     [MaxStringByteCount(46, "UTF-8")]
     public string NicknameColor;
     public Byte Team;
-    public Byte Character;
+    public AssetRef<CharacterAsset> Character;
     public QBoolean Disconnected;
     public QBoolean Disqualified;
     partial void MaterializeUser(Frame frame, ref Quantum.PlayerInformation result, in PrototypeMaterializationContext context);

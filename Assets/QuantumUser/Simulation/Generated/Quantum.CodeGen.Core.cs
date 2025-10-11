@@ -1108,18 +1108,18 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct PlayerInformation {
-    public const Int32 SIZE = 112;
-    public const Int32 ALIGNMENT = 4;
+    public const Int32 SIZE = 120;
+    public const Int32 ALIGNMENT = 8;
     [FieldOffset(4)]
     public PlayerRef PlayerRef;
-    [FieldOffset(16)]
+    [FieldOffset(24)]
     public QString48 Nickname;
-    [FieldOffset(64)]
+    [FieldOffset(72)]
     public QStringUtf8_48 NicknameColor;
-    [FieldOffset(1)]
-    public Byte Team;
     [FieldOffset(0)]
-    public Byte Character;
+    public Byte Team;
+    [FieldOffset(16)]
+    public AssetRef<CharacterAsset> Character;
     [FieldOffset(8)]
     public QBoolean Disconnected;
     [FieldOffset(12)]
@@ -1139,11 +1139,11 @@ namespace Quantum {
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (PlayerInformation*)ptr;
-        serializer.Stream.Serialize(&p->Character);
         serializer.Stream.Serialize(&p->Team);
         PlayerRef.Serialize(&p->PlayerRef, serializer);
         QBoolean.Serialize(&p->Disconnected, serializer);
         QBoolean.Serialize(&p->Disqualified, serializer);
+        AssetRef.Serialize(&p->Character, serializer);
         Quantum.QString48.Serialize(&p->Nickname, serializer);
         Quantum.QStringUtf8_48.Serialize(&p->NicknameColor, serializer);
     }
@@ -1196,7 +1196,7 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 3072;
+    public const Int32 SIZE = 3152;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
     public Int32 PlayerConnectedCount;
@@ -1249,7 +1249,7 @@ namespace Quantum {
     public UInt16 AutomaticStageRefreshTimer;
     [FieldOffset(1952)]
     [FramePrinter.FixedArrayAttribute(typeof(PlayerInformation), 10)]
-    private fixed Byte _PlayerInfo_[1120];
+    private fixed Byte _PlayerInfo_[1200];
     [FieldOffset(1832)]
     public Byte RealPlayers;
     [FieldOffset(1833)]
@@ -1275,7 +1275,7 @@ namespace Quantum {
     }
     public readonly FixedArray<PlayerInformation> PlayerInfo {
       get {
-        fixed (byte* p = _PlayerInfo_) { return new FixedArray<PlayerInformation>(p, 112, 10); }
+        fixed (byte* p = _PlayerInfo_) { return new FixedArray<PlayerInformation>(p, 120, 10); }
       }
     }
     public override readonly Int32 GetHashCode() {
@@ -3076,19 +3076,19 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct PlayerData : Quantum.IComponent {
-    public const Int32 SIZE = 52;
-    public const Int32 ALIGNMENT = 4;
+    public const Int32 SIZE = 72;
+    public const Int32 ALIGNMENT = 8;
     [FieldOffset(20)]
     public PlayerRef PlayerRef;
     [FieldOffset(36)]
     public QBoolean IsRoomHost;
     [FieldOffset(28)]
     public QBoolean IsLoaded;
-    [FieldOffset(0)]
-    public Byte Character;
+    [FieldOffset(56)]
+    public AssetRef<CharacterAsset> Character;
+    [FieldOffset(64)]
+    public AssetRef<PaletteSet> Palette;
     [FieldOffset(1)]
-    public Byte Palette;
-    [FieldOffset(3)]
     public Byte RequestedTeam;
     [FieldOffset(40)]
     public QBoolean IsSpectator;
@@ -3098,7 +3098,7 @@ namespace Quantum {
     public QBoolean VotedToContinue;
     [FieldOffset(16)]
     public Int32 Wins;
-    [FieldOffset(2)]
+    [FieldOffset(0)]
     public Byte RealTeam;
     [FieldOffset(8)]
     public Int32 LastChatMessage;
@@ -3134,8 +3134,6 @@ namespace Quantum {
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (PlayerData*)ptr;
-        serializer.Stream.Serialize(&p->Character);
-        serializer.Stream.Serialize(&p->Palette);
         serializer.Stream.Serialize(&p->RealTeam);
         serializer.Stream.Serialize(&p->RequestedTeam);
         serializer.Stream.Serialize(&p->JoinTick);
@@ -3150,6 +3148,8 @@ namespace Quantum {
         QBoolean.Serialize(&p->IsSpectator, serializer);
         QBoolean.Serialize(&p->ManualSpectator, serializer);
         QBoolean.Serialize(&p->VotedToContinue, serializer);
+        AssetRef.Serialize(&p->Character, serializer);
+        AssetRef.Serialize(&p->Palette, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]

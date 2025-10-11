@@ -5,8 +5,8 @@ namespace Quantum {
 
         public Changes EnabledChanges;
 
-        public byte Character;
-        public byte Palette;
+        public AssetRef<CharacterAsset> Character;
+        public AssetRef<PaletteSet> Palette;
         public byte Team;
         public bool Spectating;
 

@@ -20,3 +20,4 @@ MonoBehaviour:
     m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.SceneProvider
   externalCatalogs:
   - {fileID: 11400000, guid: e345bb78eb176b249a84d8faf130a559, type: 2}
+  - {fileID: 11400000, guid: d06ab1de71219674cb4e461857dfa662, type: 2}

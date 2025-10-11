@@ -99,7 +99,7 @@ namespace NSMB.Replay {
                 // Players
                 result.PlayerInformation = new ReplayPlayerInformation[reader.ReadByte()];
                 for (int i = 0; i < result.PlayerInformation.Length; i++) {
-                    result.PlayerInformation[i] = ReplayPlayerInformation.Deserialize(reader);
+                    result.PlayerInformation[i] = ReplayPlayerInformation.Deserialize(reader, result.Version);
                 }
                 result.WinningTeam = reader.ReadSByte();
 

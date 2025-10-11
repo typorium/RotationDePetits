@@ -278,8 +278,8 @@ namespace NSMB.Networking {
                     PlayerNickname = Settings.Instance.generalNickname ?? "noname",
                     UserId = Client.UserId,
                     UseColoredNickname = Settings.Instance.generalUseNicknameColor,
-                    Character = (byte) Settings.Instance.generalCharacter,
-                    Palette = (byte) Settings.Instance.generalPalette,
+                    Character = Settings.Instance.generalCharacter,
+                    Palette = Settings.Instance.generalPalette,
                 });
             } catch { }
         }
