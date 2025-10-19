@@ -37188,8 +37188,8 @@
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.PlayerCount">
             <summary> Player count the simulation is initialized for. </summary>
         </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.ChecksumCrossPlatformDeterminism">
-            <summary> This allows Quantum frame checksumming to be deterministic across different runtime platforms, however it comes with quite a cost and should only be used during debugging. </summary>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.UpdateFPS">
+            <summary> How many ticks per second Quantum should execute. </summary>
         </member>
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.LockstepSimulation">
             <summary>
@@ -37198,17 +37198,26 @@
             (recommended at least 10 ticks), while still being able to perform predictions if and when necessary.
             </summary>
         </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputDeltaCompression">
-            <summary> If the server should delta-compress inputs against previous tick-input-set (new/experimental). </summary>
-        </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.UpdateFPS">
-            <summary> How many ticks per second Quantum should execute. </summary>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.RollbackWindow">
+            <summary> How many frames can the simulation predict into the future without input confirmation. Not used in lockstep mode. </summary>
         </member>
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.ChecksumInterval">
             <summary> How often we should send checksums of the frame state to the server for verification (useful during development, set to zero for release). Defined in frames. </summary>
         </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.RollbackWindow">
-            <summary> How many frames can the simulation predict into the future without input confirmation. Not used in lockstep mode. </summary>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.ChecksumCrossPlatformDeterminism">
+            <summary> This allows Quantum frame checksums to be deterministic across different runtime platforms, however it comes with quite a cost and should only be used during debugging. </summary>
+        </member>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputDeltaCompression">
+            <summary> If the server should delta-compress inputs against previous tick-input-set (new/experimental). </summary>
+        </member>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputDelayMin">
+            <summary> The minimum input offset a player can have. Defined in ticks.</summary>
+        </member>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputDelayMax">
+            <summary> The maximum input offset a player can have. Defined in ticks. Set to simulation rate by default.</summary>
+        </member>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputDelayPingStart">
+            <summary> At what ping value that Quantum starts applying input offset. Defined in milliseconds. </summary>
         </member>
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputHardTolerance">
             <summary> How many frames the server will wait until it expires a frame and replaces all non-received inputs with repeated inputs or <see langword="null"/>'s and sends it out to all players. </summary>
@@ -37219,8 +37228,8 @@
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputRepeatMaxDistance">
             <summary> How many frames Quantum will scan for repeatable inputs. 5 = Scan five frames forward and backwards, 10 = Scan ten frames, etc. </summary>
         </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.SessionStartTimeout">
-            <summary> How long the server will wait to commence the start request that was requested by the first client. This is supposed to give other clients a bit breathing room to join the room. Usually set to 0 or 1. Defined in seconds. Default is 1.</summary>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.MinOffsetCorrectionDiff">
+            <summary> How many frames the current local input delay must diff to the current requested offset for Quantum to update the local input offset. Defined in frames. </summary>
         </member>
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.TimeCorrectionRate">
             <summary> How many times per second the server will send out time correction packages to make sure every clients time is synchronized. </summary>
@@ -37228,8 +37237,8 @@
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.MinTimeCorrectionFrames">
             <summary> How much the local client time must differ with the server time when a time correction package is received for the client to adjust it's local clock. Defined in frames. </summary>
         </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.MinOffsetCorrectionDiff">
-            <summary> How many frames the current local input delay must diff to the current requested offset for Quantum to update the local input offset. Defined in frames. </summary>
+        <member name="F:Photon.Deterministic.DeterministicSessionConfig.SessionStartTimeout">
+            <summary> How long the server will wait to commence the start request that was requested by the first client. This is supposed to give other clients a bit breathing room to join the room. Usually set to 0 or 1. Defined in seconds. Default is 1.</summary>
         </member>
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.TimeScaleMin">
             <summary> The smallest timescale that can be applied by the server. Defined in percent. </summary>
@@ -37239,15 +37248,6 @@
         </member>
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.TimeScalePingMax">
             <summary> The ping value that the server will reach the 'Time Scale Minimum' value at, i.e. be at its slowest setting. Defined in milliseconds. </summary>
-        </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputDelayMin">
-            <summary> The minimum input offset a player can have. Defined in ticks.</summary>
-        </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputDelayMax">
-            <summary> The maximum input offset a player can have. Defined in ticks.</summary>
-        </member>
-        <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputDelayPingStart">
-            <summary> At what ping value that Quantum starts applying input offset. Defined in milliseconds. </summary>
         </member>
         <member name="F:Photon.Deterministic.DeterministicSessionConfig.InputFixedSize">
             <summary> Fixed input size. </summary>

@@ -12,7 +12,11 @@ namespace Quantum {
   /// <summary>
   /// The SimulationConfig holds parameters used in the ECS layer and inside core systems like physics and navigation.
   /// </summary>
-  public partial class SimulationConfig : AssetObject {
+  public partial class SimulationConfig : AssetObject
+#if QUANTUM_UNITY
+    , ISerializationCallbackReceiver
+#endif
+    {
     /// <summary>
     /// Obsolete: Don't use the hard coded guids instead reference the simulation config used in the RuntimeConfig.
     /// </summary>
@@ -67,6 +71,21 @@ namespace Quantum {
     /// </summary>
     [Space, InlineHelp]
     public FrameHeapConfig Heap;
+
+    #region Legacy
+
+    [HideInInspector, Obsolete("Use Heap.TrackingMode")]
+    public HeapTrackingMode HeapTrackingMode;
+    [HideInInspector, Obsolete("Use Heap.PageShift")]
+    public int HeapPageShift;
+    [HideInInspector, Obsolete("Use Heap.PageCount")]
+    public int HeapPageCount;
+    [HideInInspector, Obsolete("Use Heap.ExtraHeapCount")]
+    public int HeapExtraCount;
+    [HideInInspector]
+    public bool HeapSettingsMigrated;
+
+    #endregion
 
     /// <summary>
     /// This option will trigger a Unity scene load during the Quantum start sequence.\n
@@ -211,8 +230,29 @@ namespace Quantum {
       }
 
       return matrix;
-    }    
-#endif
+    }
+
+    /// <inheritdoc cref="ISerializationCallbackReceiver.OnBeforeSerialize"/>
+    public void OnBeforeSerialize() {
+    }
+
+    /// <inheritdoc cref="ISerializationCallbackReceiver.OnAfterDeserialize"/>
+    public void OnAfterDeserialize() {
+#if UNITY_EDITOR
+      // 3.1 Migrating heap config
+#pragma warning disable CS0618 // Type or member is obsolete
+      if (HeapSettingsMigrated == false && HeapPageCount > 0) {
+        Heap.Management = HeapManagement.PageBasedLegacy;
+        Heap.PageShift = HeapPageShift;
+        Heap.PageCount = HeapPageCount;
+        Heap.TrackingMode = HeapTrackingMode;
+        Heap.ExtraHeapCount = HeapExtraCount;
+        HeapSettingsMigrated = true;
+      }
+#pragma warning restore CS0618 // Type or member is obsolete
+#endif // UNITY_EDITOR
+    }
+#endif // QUANTUM_UNITY
   }
 
   /// <summary>

@@ -4,6 +4,27 @@
 
 Disclaimer: The Quantum SDK 3.1.0 development snapshots are not intended to be used for live games.
 
+### Build 1865 (Oct 15, 2025)
+
+**Bug Fixes**
+
+- Fixed: A regression where filters didn't skip entities pending destruction
+- Fixed: An issue that caused the heap settings in SimulationConfig of existing projects to not be migrated correctly
+
+### Build 1863 (Oct 14, 2025)
+
+**Breaking Changes**
+
+- The `DeterministicSessionConfig` inspector now computes the `Hard Tolerance` based on the `Simulation Rate`, input `Offset Ping Start` and input `Offset Min`, to override this behaviour toggle `Override Hard Tolerance`
+
+**What's New**
+
+- Added `Prediction` statistic to the GraphProfilers and QuantumStats window that shows how many ticks the simulation goes into prediction
+
+**Changes**
+
+- Some stats on the QuantumStats window are now smoothed and show an average (1 second) to make them more readable
+
 ### Build 1862 (Oct 11, 2025)
 
 **Bug Fixes**
@@ -28,6 +49,7 @@ Disclaimer: The Quantum SDK 3.1.0 development snapshots are not intended to be u
 **Breaking Changes**
 
 - The library `Quantum.Deterministic.dll` was merged with `Quantun.Engine.dll` and remnants of the old dll have to be deleted from projects that migrate to SDK 3.1
+- The `DeterministicSessionConfig` inspector now computes the `Hard Tolerance` based on the simulation rate and input offset ping start, to override this behaviour toggle `Override Hard Tolerance`
 - `SessionRunner.Arguments` now requires setting an explicit `TaskRunner` to be set. This can be done by either specifying `TaskRunner = QuantumTaskRunnerJobs.GetInstance()` or by implicitly setting the TaskRunner by using `GameParameters = QuantumRunnerUnityFactory.CreateGameParameters` for Unity. Use `TaskRunner = new DotNetTaskRunner()` outside of Unity
 - The demo input `.unitypackage` now requires the installation of the Unity module `com.unity.inputsystem`
 - `Quantum.Profiling.HostProfiler` was renamed to `Quantum.HostProfiler`

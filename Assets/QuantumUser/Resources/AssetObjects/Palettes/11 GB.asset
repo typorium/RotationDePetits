@@ -46,4 +46,4 @@ MonoBehaviour:
       A: 255
     HatUsesOverallsColor: 0
   translationKey: skin.gb
-  order: 13
+  order: -900

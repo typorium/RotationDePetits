@@ -4488,6 +4488,12 @@
             </summary>
             <param name="physicsType"></param>
         </member>
+        <member name="M:Quantum.SimulationConfig.OnBeforeSerialize">
+            <inheritdoc cref="M:UnityEngine.ISerializationCallbackReceiver.OnBeforeSerialize"/>
+        </member>
+        <member name="M:Quantum.SimulationConfig.OnAfterDeserialize">
+            <inheritdoc cref="M:UnityEngine.ISerializationCallbackReceiver.OnAfterDeserialize"/>
+        </member>
         <member name="T:Quantum.SimulationConfigChecksumErrorDumpOptions">
             <summary>
             Configuration options for checksum error dumps.

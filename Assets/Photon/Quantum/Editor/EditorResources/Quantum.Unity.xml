@@ -106,6 +106,14 @@
         <member name="M:Quantum.Profiling.QuantumGraphProfilerFrameTime.OnTargetFPSChanged(System.Int32)">
             <inheritdoc/>
         </member>
+        <member name="T:Quantum.Profiling.QuantumGraphProfilerPrediction">
+            <summary>
+            A Quantum graph profiler that shows how far the simulation is in predicting.
+            </summary>
+        </member>
+        <member name="M:Quantum.Profiling.QuantumGraphProfilerPrediction.OnUpdate">
+            <inheritdoc/>
+        </member>
         <member name="T:Quantum.Profiling.QuantumGraphProfilerPing">
             <summary>
             A Quantum graph profiler that shows the RTT to the server.
@@ -2712,7 +2720,17 @@
         </member>
         <member name="F:Quantum.QuantumStats.Predicted">
             <summary>
-            Number of predicted frames.
+            The number of frames currently predicted into the future.
+            </summary>
+        </member>
+        <member name="F:Quantum.QuantumStats.VerifiedFrames">
+            <summary>
+            Verified frames per Unity update.
+            </summary>
+        </member>
+        <member name="F:Quantum.QuantumStats.PredictedFrames">
+            <summary>
+            Predicted frames per Unity update.
             </summary>
         </member>
         <member name="F:Quantum.QuantumStats.SimulateTime">
@@ -9531,14 +9549,49 @@
             The default location of the global QuantumDeterministicSessionConfigAsset asset.
             </summary>
         </member>
+        <member name="F:Quantum.QuantumDeterministicSessionConfigAsset.AliasingSlackTimeMs">
+            <summary>
+            A rule of thumb time added to compensate to additional network transport and condition.
+            </summary>
+        </member>
         <member name="F:Quantum.QuantumDeterministicSessionConfigAsset.Config">
             <summary>
             The config instance.
             </summary>
         </member>
+        <member name="F:Quantum.QuantumDeterministicSessionConfigAsset.OverrideHardTolerance">
+            <summary>
+            Override the hard tolerance calculation.
+            </summary>
+        </member>
+        <member name="F:Quantum.QuantumDeterministicSessionConfigAsset.HardTolerance">
+            <summary>
+            Override the calculated hard tolerance with this value.
+            </summary>
+        </member>
         <member name="P:Quantum.QuantumDeterministicSessionConfigAsset.DefaultConfig">
             <summary>
             Return the default global config instance.
+            </summary>
+        </member>
+        <member name="M:Quantum.QuantumDeterministicSessionConfigAsset.CalculateHardToleranceFrames(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Calculate the hard tolerance from the ping value that starts local input delay.
+            ceil((rtt / 2 + delta + slack) / delta) + 1 - min 
+            </summary>
+            <param name="offsetPingStart">Ping to start input delay</param>
+            <param name="updateFps">Simulation update rate</param>
+            <param name="minInputDelay">Min input delay</param>
+            <returns>Computed hard tolerance value</returns>
+        </member>
+        <member name="M:Quantum.QuantumDeterministicSessionConfigAsset.OnAfterDeserialize">
+            <summary>
+            Make sure limitations, calculations or overrides are applied.
+            </summary>
+        </member>
+        <member name="M:Quantum.QuantumDeterministicSessionConfigAsset.OnBeforeSerialize">
+            <summary>
+            Not needed.
             </summary>
         </member>
         <member name="F:QuantumSDKAttributesTest.LayerMask">

@@ -1,6 +1,5 @@
 using NSMB.Networking;
 using NSMB.UI.Elements;
-using NSMB.Utilities;
 using Quantum;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,10 +11,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         public override bool IsInSubmenu => teamChooser.content.activeSelf || paletteChooser.content.activeSelf;
 
         //---Serialized Variables
-        [SerializeField] private Image[] characterButtonImages, characterButtonLogos;
-        [SerializeField] private Sprite[] enabledCharacterButtonSprites, disabledCharacterButtonSprites;
-        [SerializeField] private Color enabledCharacterButtonLogoColor, disabledCharacterButtonLogoColor;
         [SerializeField] private Image paletteBackground;
+        [SerializeField] private CharacterChooser characterChooser;
         [SerializeField] private PaletteChooser paletteChooser;
         [SerializeField] private TeamChooser teamChooser;
         [SerializeField] private SpriteChangingToggle spectateToggle;
@@ -57,10 +54,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             SetCharacterButtonState(game.Frames.Predicted, character, true);
         }
 
-        public void OnCharacterToggled() {
-            //OnCharacterClicked((currentCharacter + 1) % characterButtonImages.Length);
-        }
-
         public void OnSpectateToggled() {
             QuantumGame game = NetworkHandler.Runner.Game;
             foreach (var slot in game.GetLocalPlayerSlots()) {
@@ -72,39 +65,20 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             menu.Canvas.PlayConfirmSound();
         }
 
-        private void SetCharacterButtonState(Frame f, AssetRef<CharacterAsset> character, bool sound) {
-            bool changed = currentCharacter != character;
-            currentCharacter = character;
+        private void SetCharacterButtonState(Frame f, AssetRef<CharacterAsset> characterRef, bool sound) {
+            bool changed = currentCharacter != characterRef;
+            currentCharacter = characterRef;
 
-            for (int i = 0; i < characterButtonImages.Length; i++) {
-                var image = characterButtonImages[i];
-                image.sprite = disabledCharacterButtonSprites[i];
-
-                if (i < characterButtonLogos.Length && characterButtonLogos[i]) {
-                    characterButtonLogos[i].color = disabledCharacterButtonLogoColor;
-                }
-            }
-
-            /*
-            characterButtonImages[index].sprite = enabledCharacterButtonSprites[index];
-            paletteBackground.sprite = disabledCharacterButtonSprites[index];
-            if (index < characterButtonLogos.Length && characterButtonLogos[index]) {
-                characterButtonLogos[index].color = enabledCharacterButtonLogoColor;
-            }
-
-            var allCharacters = QuantumViewUtils.Characters;
-            var characterAsset = allCharacters[Mathf.Clamp(index, 0, allCharacters.Length)];
-            paletteChooser.ChangeCharacter(characterAsset);
+            characterChooser.ChangeCharacterButton(characterRef);
 
             if (changed) {
-                Settings.Instance.generalCharacter = index;
+                Settings.Instance.generalCharacter = characterRef;
                 Settings.Instance.SaveSettings();
             }
 
-            if (sound && changed) {
-                menu.Canvas.PlaySound(SoundEffect.Player_Voice_Selected, characterAsset);
+            if (sound && changed && f.TryFindAsset(characterRef, out CharacterAsset character)) {
+                menu.Canvas.PlaySound(SoundEffect.Player_Voice_Selected, character);
             }
-            */
         }
 
         private void SetPaletteButtonState(AssetRef<PaletteSet> palette) {
@@ -121,8 +95,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
             // Set character button to the correct state
             PlayerData* data = QuantumUtils.GetPlayerData(f, e.Player);
-            SetPaletteButtonState(data->Palette);
             SetCharacterButtonState(f, data->Character, false);
+            SetPaletteButtonState(data->Palette);
             spectateToggle.SetIsOnWithoutNotify(data->ManualSpectator);
         }
     }

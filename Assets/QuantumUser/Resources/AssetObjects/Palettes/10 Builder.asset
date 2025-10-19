@@ -46,4 +46,4 @@ MonoBehaviour:
       A: 255
     HatUsesOverallsColor: 0
   translationKey: skin.builder
-  order: 12
+  order: -910

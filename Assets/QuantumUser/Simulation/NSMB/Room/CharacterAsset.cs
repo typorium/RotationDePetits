@@ -14,6 +14,10 @@ public class CharacterAsset : AssetObject {
     public Sprite LoadingLargeSprite;
     public Sprite ReadySprite;
 
+    public Sprite SelectionSprite;
+    public Color SelectionColor = Color.white;
+    public int SelectionOrder;
+
     public RuntimeAnimatorController SmallOverrides;
     public RuntimeAnimatorController LargeOverrides;
 #endif 

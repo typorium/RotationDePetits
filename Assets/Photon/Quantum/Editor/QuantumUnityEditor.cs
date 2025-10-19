@@ -1081,98 +1081,41 @@ namespace Quantum.Editor {
 #region Assets/Photon/Quantum/Editor/CustomEditors/QuantumDeterministicSessionConfigAssetEditor.cs
 
 namespace Quantum.Editor {
-  using System.Collections.Generic;
-  using System.Linq;
   using Photon.Deterministic;
   using UnityEditor;
   using UnityEngine;
 
   [CustomEditor(typeof(QuantumDeterministicSessionConfigAsset))]
   public class QuantumDeterministicSessionConfigAssetEditor : QuantumEditor {
+    float _inputOffsetCalculatorPing = -1.0f;
+
     public override void OnInspectorGUI() {
-      base.PrepareOnInspectorGUI();
+      base.OnInspectorGUI();
+
       var asset = target as QuantumDeterministicSessionConfigAsset;
-      if (asset) {
-        OnInspectorGUI(asset);
-      }
-    }
-
-    private SerializedProperty _configProperty;
-    private Dictionary<string, GUIContent> _propertyCache;
-
-    protected override void OnEnable() {
-      base.OnEnable();
-      _configProperty = serializedObject.FindPropertyOrThrow(nameof(QuantumDeterministicSessionConfigAsset.Config));
-      _propertyCache = typeof(DeterministicSessionConfig)
-       .GetFields()
-       .ToDictionary(x => x.Name, x => QuantumCodeDoc.FindEntry(x));
-    }
-
-    void OnInspectorGUI(QuantumDeterministicSessionConfigAsset asset) {
-      base.PrepareOnInspectorGUI();
-      base.DrawScriptPropertyField();
-
-      using (new QuantumEditorGUI.SectionScope("Simulation")) {
-
-        DoProperty(nameof(DeterministicSessionConfig.UpdateFPS), min: 1, label: "Simulation Rate", unit: Units.PerSecond);
-        DoProperty(nameof(DeterministicSessionConfig.LockstepSimulation), label: "Force Strict Lockstep");
-
-        EditorGUI.BeginDisabledGroup(asset.Config.LockstepSimulation);
-        DoProperty(nameof(DeterministicSessionConfig.RollbackWindow), min: 1, unit: Units.Frames);
-        EditorGUI.EndDisabledGroup();
-
-        DoProperty(nameof(DeterministicSessionConfig.ChecksumInterval), min: 0, unit: Units.Frames);
-
-        EditorGUI.BeginDisabledGroup(asset.Config.ChecksumInterval == 0);
-        DoProperty(nameof(DeterministicSessionConfig.ChecksumCrossPlatformDeterminism));
-        EditorGUI.EndDisabledGroup();
+      if (asset == null) {
+        return;
       }
 
-      using (new QuantumEditorGUI.SectionScope("Input")) {
-        DoProperty(nameof(DeterministicSessionConfig.InputDeltaCompression), label: "Input Delta Compression");
-        DoProperty(nameof(DeterministicSessionConfig.InputDelayMin), min: 0, label: "Offset Min");
-        DoProperty(nameof(DeterministicSessionConfig.InputDelayMax), min: asset.Config.InputDelayMin + 1, label: "Offset Max");
-        DoProperty(nameof(DeterministicSessionConfig.InputDelayPingStart), min: 0, unit: Units.MilliSecs, label: "Offset Ping Start");
-        DoProperty(nameof(DeterministicSessionConfig.InputRedundancy), min: 1, label: "Send Redundancy", unit: Units.Frames);
-        DoProperty(nameof(DeterministicSessionConfig.InputRepeatMaxDistance), min: 0, label: "Repeat Max Distance", unit: Units.Frames);
-        DoProperty(nameof(DeterministicSessionConfig.InputHardTolerance), min: -10, label: "Hard Tolerance", unit: Units.Frames);
-        DoProperty(nameof(DeterministicSessionConfig.MinOffsetCorrectionDiff), min: 1, unit: Units.Frames, label: "Offset Correction Limit");
+      asset.OnAfterDeserialize();
+
+      GUILayout.Space(5);
+      EditorGUILayout.LabelField("Input Offset Calculator", EditorStyles.boldLabel);
+      _inputOffsetCalculatorPing = _inputOffsetCalculatorPing < 0.0f ? asset.Config.InputDelayPingStart : _inputOffsetCalculatorPing;
+      _inputOffsetCalculatorPing = EditorGUILayout.Slider("Ping", _inputOffsetCalculatorPing, 0, 500);
+      using (new EditorGUI.DisabledScope(true)) {
+        var inputOffset = DeterministicSession.CalculateInputOffset((int)_inputOffsetCalculatorPing, asset.Config.InputDelayPingStart, asset.Config.InputDelayMin, asset.Config.UpdateFPS);
+        EditorGUILayout.IntField("Input Offset Frames", inputOffset);
+        EditorGUILayout.FloatField("Input Offset Ms", inputOffset * (1000.0f / asset.Config.UpdateFPS));
       }
 
-      using (new QuantumEditorGUI.SectionScope("Time")) {
-        DoProperty(nameof(DeterministicSessionConfig.TimeCorrectionRate), min: 0, label: "Correction Send Rate", unit: Units.PerSecond);
-        DoProperty(nameof(DeterministicSessionConfig.MinTimeCorrectionFrames), min: 0, unit: Units.Frames, label: "Correction Frames Limit");
-        DoProperty(nameof(DeterministicSessionConfig.SessionStartTimeout), min: 0, max: 30, unit: Units.Seconds, label: "Session Start Wait Time");
-        DoProperty(nameof(DeterministicSessionConfig.TimeScaleMin), min: 10, max: 100, unit: Units.Percentage, label: "Time Scale Minimum");
-        DoProperty(nameof(DeterministicSessionConfig.TimeScalePingMin), min: 0, max: 1000, unit: Units.MilliSecs, label: "Time Scale Ping Start");
-        DoProperty(nameof(DeterministicSessionConfig.TimeScalePingMax), min: asset.Config.TimeScalePingMin + 1, max: 1000, unit: Units.MilliSecs, label: "Time Scale Ping End");
-      }
-
-      serializedObject.ApplyModifiedProperties();
-    }
-
-    void DoProperty(string propName, int min = int.MinValue, int max = int.MaxValue, Units unit = Units.None, string label = null) {
-      var property = _configProperty.FindPropertyRelativeOrThrow(propName);
-
-      if (_propertyCache.TryGetValue(propName, out var helpContent)) {
-      }
-
-      var position = QuantumEditorGUI.LayoutHelpPrefix(this, propName, helpContent);
-
-      if (label != null) {
-        EditorGUI.PropertyField(position, property, new GUIContent(label));
-      } else {
-        EditorGUI.PropertyField(position, property);
-      }
-
-      if (property.propertyType == SerializedPropertyType.Integer) {
-        property.intValue = Mathf.Clamp(property.intValue, min, max);
-      }
-
-
-      if (unit != Units.None) {
-        var unitLabel = UnitAttributeDrawer.UnitToLabel(unit);
-        QuantumEditorGUI.Overlay(position, unitLabel);
+      GUILayout.Space(5);
+      EditorGUILayout.LabelField("Reset Config", EditorStyles.boldLabel);
+      if (GUILayout.Button("Reset To Default")) {
+        asset.Config = new DeterministicSessionConfig();
+        asset.OverrideHardTolerance = false;
+        asset.HardTolerance = 8;
+        EditorUtility.SetDirty(asset);
       }
     }
   }

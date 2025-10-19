@@ -46,4 +46,4 @@ MonoBehaviour:
       A: 255
     HatUsesOverallsColor: 1
   translationKey: skin.arcade
-  order: 17
+  order: -860

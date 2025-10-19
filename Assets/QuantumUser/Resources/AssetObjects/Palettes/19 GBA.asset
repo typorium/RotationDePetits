@@ -32,4 +32,4 @@ MonoBehaviour:
       A: 255
     HatUsesOverallsColor: 0
   translationKey: skin.gba
-  order: 21
+  order: -820

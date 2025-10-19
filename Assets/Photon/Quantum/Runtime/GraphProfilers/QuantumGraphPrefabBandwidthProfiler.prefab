@@ -214,8 +214,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enableOnAwake: 0
   _renderObject: {fileID: 6228808868806097407}
-  InitialSampleCount: 60
-  SampleInterval: 50
+  InitialCapacity: 60
+  SampleIntervalMs: 50
   Type: 0
 --- !u!114 &1572187370849299077
 MonoBehaviour:
@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 69c189902d5b19b4a81c26ce1de1fe31, type: 2}
+  m_Material: {fileID: 2100000, guid: f3b90f2d8b02d6d4c9fd07b679018ffc, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}

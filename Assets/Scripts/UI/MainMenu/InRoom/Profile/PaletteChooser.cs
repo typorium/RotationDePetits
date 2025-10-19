@@ -13,7 +13,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
     public class PaletteChooser : MonoBehaviour, KeepChildInFocus.IFocusIgnore {
 
         //---Serialized Variables
-        // [SerializeField] private SimulationConfig config;
         [SerializeField] private MainMenuCanvas canvas;
         [SerializeField] private GameObject template, blockerTemplate;
         [SerializeField] public GameObject content;
@@ -29,23 +28,24 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         private GameObject blocker;
         private CharacterAsset character;
         private AssetRef<PaletteSet> selectedPalette;
-        private bool initialized;
 
         public void OnDisable() {
             Close(false);
         }
 
         public unsafe void Initialize() {
-            if (initialized) {
-                return;
+            foreach (var pb in paletteButtons) {
+                Destroy(pb.gameObject);
             }
-
-            int palettesPerRow = template.transform.parent.GetComponent<GridLayoutGroup>().constraintCount;
+            paletteButtons.Clear();
 
             List<PaletteSet> palettes = QuantumViewUtils.Palettes
                 .OrderBy(ps => ps ? ps.order : int.MinValue)
                 .ToList();
             palettes.Insert(0, null);
+
+            int palettesPerRow = Mathf.Max(4, palettes.Count / 7);
+            template.transform.parent.GetComponent<GridLayoutGroup>().constraintCount = palettesPerRow;
 
             for (int i = 0; i < palettes.Count; i++) {
                 PaletteSet palette = palettes[i];
@@ -84,7 +84,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             for (int i = 0; i < paletteButtons.Count; i++) {
                 paletteButtons[i].button.navigation = navigations[i];
             }
-            initialized = true;
 
             foreach (PaletteButton b in paletteButtons) {
                 b.Instantiate(defaultCharacter);
