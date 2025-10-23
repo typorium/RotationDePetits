@@ -19559,6 +19559,7 @@ GameObject:
   - component: {fileID: 7634937552315031300}
   - component: {fileID: 4465003512522454241}
   - component: {fileID: 7662282222624482137}
+  - component: {fileID: 6932446485402536007}
   - component: {fileID: 405963795238578845}
   - component: {fileID: 5858149666679547523}
   m_Layer: 0
@@ -19601,9 +19602,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf2db399dc5ed094c8b01e459636e673, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soundEffects:
-    Id:
-      Value: 415285428882097807
   translationManager: {fileID: 6974483067213173336}
   discordController: {fileID: 6841901076153067735}
   rumbleManager: {fileID: 4506347848550621655}
@@ -19816,6 +19814,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aa18a5e74dbe834385d4f3ca387dde6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6932446485402536007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938254683282774592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfbe365800bdecc4483cde5a41b55543, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultProvider: {fileID: 11400000, guid: bad12b6809ed5404481a9e8c48ade007, type: 2}
+  globalSfxSource: {fileID: 405963795238578845}
 --- !u!82 &405963795238578845
 AudioSource:
   m_ObjectHideFlags: 0

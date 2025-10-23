@@ -1,8 +1,9 @@
 using Photon.Deterministic;
 using Quantum;
+using System;
+using System.Collections.Generic;
 
-public class PowerupAsset : CoinItemAsset {
-
+public class PowerupAsset : CoinItemAsset, ISoundEffectOverrideProvider {
     public PowerupType Type;
     public PowerupState State;
 
@@ -23,6 +24,20 @@ public class PowerupAsset : CoinItemAsset {
     public FPAnimationCurve AnimationCurveY;
 
     public sbyte StatePriority = -1, ItemPriority = -1;
+
+    public SoundEffectOverride[] SfxOverrides;
+
+    [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
+    public SoundEffectOverride GetOverrideForSfx(SoundEffect sfx) {
+        if (overridesDict == null) {
+            overridesDict = new();
+            foreach (var @override in SfxOverrides) {
+                overridesDict[@override.SoundEffect] = @override;
+            }
+        }
+        overridesDict.TryGetValue(sfx, out var result);
+        return result;
+    }
 }
 
 public enum PowerupType {

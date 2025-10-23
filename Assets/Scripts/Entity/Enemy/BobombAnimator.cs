@@ -1,3 +1,4 @@
+using NSMB.Sound;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace NSMB.Entities.Enemies {
         private static readonly int ParamFlashAmount = Shader.PropertyToID("FlashAmount");
 
         //---Serialized Variables
-        [SerializeField] private AudioSource sfx;
+        [SerializeField] private SoundEffectPlayer sfx;
         [SerializeField] private SpriteRenderer sRenderer;
         [SerializeField] private Animator animator;
         [SerializeField] private GameObject explosionPrefab;
@@ -21,9 +22,9 @@ namespace NSMB.Entities.Enemies {
         private MaterialPropertyBlock mpb;
 
         public void OnValidate() {
-            this.SetIfNull(ref sfx);
             this.SetIfNull(ref sRenderer, UnityExtensions.GetComponentType.Children);
             this.SetIfNull(ref animator, UnityExtensions.GetComponentType.Children);
+            this.SetIfNull(ref sfx);
         }
 
         public void Start() {
@@ -128,8 +129,7 @@ namespace NSMB.Entities.Enemies {
                 return;
             }
 
-            sfx.clip = SoundEffect.Enemy_Bobomb_Fuse.GetClip();
-            sfx.Play();
+            sfx.Play(SoundEffect.Enemy_Bobomb_Fuse);
 
             /*
             if (e.Stomped) {

@@ -77,8 +77,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
 
             if (sound && changed && f.TryFindAsset(characterRef, out var character)) {
-                f.TryFindAsset(character.SoundEffectOverrides, out var overrides);
-                menu.Canvas.PlaySound(SoundEffect.Player_Voice_Selected, overrides);
+                menu.Canvas.PlaySound(SoundEffect.Player_Voice_Selected, new[] { character });
             }
         }
 

@@ -21,7 +21,6 @@ signal OnMarioPlayerCollectedStar(EntityRef entity);
 
 synced event MarioPlayerCollectedStar {
 	EntityRef Entity;
-	MarioPlayer Mario;
 	FPVector2 Position;
 }
 

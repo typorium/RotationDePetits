@@ -27,7 +27,6 @@ namespace NSMB {
         public static event Action ResolutionChanged;
 
         //---Public Variables
-        public AssetRef<SoundEffectOverrideList> soundEffects;
         public TranslationManager translationManager;
         public DiscordController discordController;
         public RumbleManager rumbleManager;

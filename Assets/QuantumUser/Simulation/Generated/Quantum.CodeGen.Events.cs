@@ -148,11 +148,10 @@ namespace Quantum {
           default: break;
         }
       }
-      public EventMarioPlayerCollectedStar MarioPlayerCollectedStar(EntityRef Entity, MarioPlayer Mario, FPVector2 Position) {
+      public EventMarioPlayerCollectedStar MarioPlayerCollectedStar(EntityRef Entity, FPVector2 Position) {
         if (_f.IsPredicted) return null;
         var ev = _f.Context.AcquireEvent<EventMarioPlayerCollectedStar>(EventMarioPlayerCollectedStar.ID);
         ev.Entity = Entity;
-        ev.Mario = Mario;
         ev.Position = Position;
         _f.AddEvent(ev);
         return ev;
@@ -752,7 +751,6 @@ namespace Quantum {
   public unsafe partial class EventMarioPlayerCollectedStar : EventBase {
     public new const Int32 ID = 1;
     public EntityRef Entity;
-    public MarioPlayer Mario;
     public FPVector2 Position;
     protected EventMarioPlayerCollectedStar(Int32 id, EventFlags flags) : 
         base(id, flags) {
@@ -772,7 +770,6 @@ namespace Quantum {
       unchecked {
         var hash = 41;
         hash = hash * 31 + Entity.GetHashCode();
-        hash = hash * 31 + Mario.GetHashCode();
         hash = hash * 31 + Position.GetHashCode();
         return hash;
       }

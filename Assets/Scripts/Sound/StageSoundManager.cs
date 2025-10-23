@@ -1,3 +1,4 @@
+using NSMB.Quantum;
 using NSMB.Utilities.Extensions;
 using Photon.Deterministic;
 using Quantum;
@@ -5,7 +6,7 @@ using UnityEngine;
 using static NSMB.Utilities.QuantumViewUtils;
 
 namespace NSMB.Sound {
-    public unsafe class SfxManager : QuantumSceneViewComponent {
+    public unsafe class StageSoundManager : QuantumSceneViewComponent<StageContext> {
 
         //---Serialized Variables
         [SerializeField] private AudioSource sfx;

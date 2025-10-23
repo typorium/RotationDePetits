@@ -9,14 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4652b02924e159344b13a4ebfb1d7b34, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ef72dd466a4a304fa1d61bcde88ab92, type: 3}
   m_Name: LuigiSounds
   m_EditorClassIdentifier: 
-  Identifier:
-    Path: QuantumUser/Resources/AssetObjects/Characters/LuigiSounds
-    Guid:
-      Value: 529563455592105687
-  Overrides:
+  SfxOverrides:
   - SoundEffect: 33
     AudioClips:
     - {fileID: 8300000, guid: d5651dfa0a2904a488fa9fe3a5ff7bec, type: 3}

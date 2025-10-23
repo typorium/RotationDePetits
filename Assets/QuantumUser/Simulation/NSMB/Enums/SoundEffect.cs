@@ -1,5 +1,5 @@
 public enum SoundEffect : byte {
-    //CURRENT HIGHEST NUMBER: 114 (use 115 next)
+    //CURRENT HIGHEST NUMBER: 119 (use 120 next)
     //Enemy
     Enemy_Generic_Freeze = 0,
     Enemy_Generic_FreezeShatter = 1,
@@ -9,7 +9,7 @@ public enum SoundEffect : byte {
     Enemy_Bobomb_Explode = 3,
     Enemy_Bobomb_Fuse = 4,
     Enemy_BulletBill_Shoot = 5,
-    Enemy_PiranhaPlant_Chomp = 7, //HARDCODED: DO NOT CHANGE WITHOUT CHANGING PIRAHNA PLANT ANIMATION FIRST
+    Enemy_PiranhaPlant_Chomp = 7,
     Enemy_PiranhaPlant_Death = 6,
     Enemy_Shell_Kick = 8,
     Enemy_Shell_Combo1 = 9,
@@ -31,7 +31,7 @@ public enum SoundEffect : byte {
     Player_Sound_GroundpoundLanding = 23,
     Player_Sound_Jump = 24,
     Player_Sound_LavaHiss = 90,
-    Player_Sound_PowerupCollect = 16, //HARDCODED: DO NOT CHANGE WITHOUT CHANGING POWERUPS SCRIPTABLES
+    Player_Sound_PowerupCollect = 16,
     Player_Sound_PowerupReserveStore = 25,
     Player_Sound_PowerupReserveUse = 26,
     Player_Sound_Powerdown = 27,
@@ -53,10 +53,14 @@ public enum SoundEffect : byte {
     Player_Voice_SpinnerLaunch = 37,
     Player_Voice_TripleJump = 38,
     Player_Voice_WallJump = 39,
-    Player_Sound_MegaMushroom_Collect = 40, //HARDCODED: DO NOT CHANGE WITHOUT CHANGING POWERUPS SCRIPTABLES
+    Player_Sound_MegaMushroom_Collect = 40,
+    Player_Voice_Pickup_Small = 115,
+    Player_Voice_Pickup_Large = 116,
+    Player_Voice_Throw_Small = 117,
+    Player_Voice_Throw_Large = 118,
 
     //Powerup
-    Powerup_1UP_Collect = 78, //HARDCODED: DO NOT CHANGE WITHOUT CHANGING POWERUPS SCRIPTABLES
+    Powerup_1UP_Collect = 78,
     Powerup_BlueShell_Enter = 41,
     Powerup_BlueShell_Slide = 42,
     Powerup_Fireball_Break = 43,
@@ -69,7 +73,7 @@ public enum SoundEffect : byte {
     Powerup_MegaMushroom_Groundpound = 51,
     Powerup_MegaMushroom_Jump = 52,
     Powerup_MegaMushroom_Walk = 53,
-    Powerup_MiniMushroom_Collect = 45, //HARDCODED: DO NOT CHANGE WITHOUT CHANGING POWERUPS SCRIPTABLES
+    Powerup_MiniMushroom_Collect = 45,
     Powerup_MiniMushroom_Groundpound = 54,
     Powerup_MiniMushroom_Jump = 55,
     Powerup_MiniMushroom_WaterWalk = 97,
@@ -118,6 +122,7 @@ public enum SoundEffect : byte {
     World_Gold_Block_Damage = 112,
     World_Gold_Block_Equip = 113,
     World_Gold_Block_Finished = 114,
+    World_Pipe_Use = 119,
     World_Spinner_Launch = 72,
     World_Starcoin_Collect = 110,
     World_Starcoin_Store = 111,

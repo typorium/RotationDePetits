@@ -1,3 +1,5 @@
+using NSMB.Sound;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -99,10 +101,8 @@ namespace NSMB.Utilities.Extensions {
         }
 
         //easy sound clips
-        public static void PlayOneShot(this AudioSource source, SoundEffect clip, SoundEffectOverrideList overrides = null, int? variant = null, float volume = 1f) {
-            if (source.gameObject.activeInHierarchy) {
-                source.PlayOneShot(clip.GetClip(overrides, variant), volume);
-            }
+        public static float PlayOneShot(this AudioSource source, SoundEffect sfx, IList<ISoundEffectOverrideProvider> extraProviders = null, int? variant = null, float volume = 1f) {
+            return SoundEffectResolver.Instance.PlayOneShot(source, sfx, extraProviders, variant, volume);
         }
 
         public static void SetLossyScale(this Transform transform, Vector3 lossyScale) {

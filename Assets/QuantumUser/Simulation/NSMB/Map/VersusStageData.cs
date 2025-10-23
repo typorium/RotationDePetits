@@ -1,9 +1,10 @@
 using Photon.Deterministic;
 using Quantum;
-using Quantum.Profiling;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public unsafe class VersusStageData : AssetObject {
+public unsafe class VersusStageData : AssetObject, ISoundEffectOverrideProvider {
 
     //---Properties
     public FPVector2 StageWorldMin => new FPVector2(TileOrigin.X, TileOrigin.Y) / 2 + TilemapWorldPosition;
@@ -49,14 +50,28 @@ public unsafe class VersusStageData : AssetObject {
     public bool SpawnBigPowerups = true;
     public bool SpawnVerticalPowerups = true;
 
+    [Header("---Sound")]
+    public SoundEffectOverride[] SfxOverrides;
+
     [Header("-- Music")]
     public AssetRef<LoopingMusicData>[] MainMusic;
     public AssetRef<LoopingMusicData> InvincibleMusic;
     public AssetRef<LoopingMusicData> MegaMushroomMusic;
 
-
     [HideInInspector] public StageTileInstance[] TileData;
     [HideInInspector] public FPVector2[] BigStarSpawnpoints;
+
+    [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
+    public SoundEffectOverride GetOverrideForSfx(SoundEffect sfx) {
+        if (overridesDict == null) {
+            overridesDict = new();
+            foreach (var @override in SfxOverrides) {
+                overridesDict[@override.SoundEffect] = @override;
+            }
+        }
+        overridesDict.TryGetValue(sfx, out var result);
+        return result;
+    }
 
     public AssetRef<LoopingMusicData> GetCurrentMusic(Frame f) {
         return MainMusic[f.Global->TotalGamesPlayed % MainMusic.Length];

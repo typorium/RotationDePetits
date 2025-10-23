@@ -1,7 +1,9 @@
 using Quantum;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterAsset : AssetObject {
+public class CharacterAsset : AssetObject, ISoundEffectOverrideProvider {
 
     public AssetRef<EntityPrototype> Prototype;
 
@@ -19,7 +21,20 @@ public class CharacterAsset : AssetObject {
 
     public RuntimeAnimatorController SmallOverrides;
     public RuntimeAnimatorController LargeOverrides;
-
-    public AssetRef<SoundEffectOverrideList> SoundEffectOverrides;
 #endif
+
+    public SoundEffectOverride[] SfxOverrides;
+
+    [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
+    public override void Loaded(IResourceManager resourceManager) {
+        overridesDict = new();
+        foreach (var @override in SfxOverrides) {
+            overridesDict[@override.SoundEffect] = @override;
+        }
+    }
+
+    public SoundEffectOverride GetOverrideForSfx(SoundEffect sfx) {
+        overridesDict.TryGetValue(sfx, out var result);
+        return result;
+    }
 }
