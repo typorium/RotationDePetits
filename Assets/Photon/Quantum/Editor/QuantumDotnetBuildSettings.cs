@@ -265,7 +265,13 @@ namespace Quantum.Editor {
       }
     }
 
-    private static bool RunDotnetCommand(string arguments, string dotnetCommandPath = null) {
+    /// <summary>
+    /// Attempts to run a Dotnet command.
+    /// </summary>
+    /// <param name="arguments">Arguments to the command</param>
+    /// <param name="dotnetCommandPath">Optionally set a dotnet command path.</param>
+    /// <returns>True when succeeded.</returns>
+    public static bool RunDotnetCommand(string arguments, string dotnetCommandPath = null) {
       return RunDotnetCommand(arguments, out _, dotnetCommandPath);
     }
 

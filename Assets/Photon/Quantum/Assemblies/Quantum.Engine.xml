@@ -7108,6 +7108,24 @@
             </summary>
             <returns><see langword="true"/> if the instances are not equal.</returns>
         </member>
+        <member name="T:Quantum.Collections.UnsafeFixedList`1">
+            <summary>
+            A stable container for elements in unmanaged memory.
+            This means that, once an element is added, the pointer to its location is stable throughout the lifetime
+            of this collection, even if the collection has to expand to accomodate more elements.
+            </summary>
+            <param name="blockSize">The number of elements each allocated block can hold.</param>
+            <typeparam name="T">Element type, which must be unmanaged.</typeparam>
+        </member>
+        <member name="M:Quantum.Collections.UnsafeFixedList`1.#ctor(System.Int32)">
+            <summary>
+            A stable container for elements in unmanaged memory.
+            This means that, once an element is added, the pointer to its location is stable throughout the lifetime
+            of this collection, even if the collection has to expand to accomodate more elements.
+            </summary>
+            <param name="blockSize">The number of elements each allocated block can hold.</param>
+            <typeparam name="T">Element type, which must be unmanaged.</typeparam>
+        </member>
         <member name="T:Quantum.BitSetRef">
             <summary>
             A variable sized bitmask.
@@ -13654,7 +13672,7 @@
             <param name="end">Target position</param>
             <param name="navmesh">The navmesh to operate on</param>
             <param name="regionMask">Region mask is used to check if navmesh parts are active or inactive</param>
-            <returns>The corrected start position</returns>
+            <returns>The find path result <see cref="F:Quantum.Navigation.FindPathResult.Result"/> and possible corrected start and end positions</returns>
             \ingroup NavigationApi
         </member>
         <member name="M:Quantum.Navigation.FindPath(Quantum.FrameThreadSafe,Photon.Deterministic.FPVector3,Photon.Deterministic.FPVector3,Quantum.NavMesh,Quantum.NavMeshRegionMask@,Photon.Deterministic.FP,Quantum.Navigation.PathQuality,System.Int64)">
@@ -13669,7 +13687,7 @@
             <param name="automaticTargetCorrectionRadius">The range to validated the start and target position.</param>
             <param name="quality">The path quality</param>
             <param name="heuristicWeight">The weight of the heuristic function, increasing it slightly can improve the performance, default is one</param>
-            <returns>The corrected start position</returns>
+            <returns>The find path result <see cref="F:Quantum.Navigation.FindPathResult.Result"/> and possible corrected start and end positions</returns>
             \ingroup NavigationApi
         </member>
         <member name="M:Quantum.Navigation.FindPath(Quantum.FrameThreadSafe,Photon.Deterministic.FPVector2,Photon.Deterministic.FPVector2,Quantum.NavMesh,Quantum.NavMeshRegionMask@)">
@@ -13681,7 +13699,7 @@
             <param name="end">Target position</param>
             <param name="navmesh">The navmesh to operate on</param>
             <param name="regionMask">Region mask is used to check if navmesh parts are active or inactive</param>
-            <returns>The corrected start position</returns>
+            <returns>The find path result <see cref="F:Quantum.Navigation.FindPathResult.Result"/> and possible corrected start and end positions</returns>
             \ingroup NavigationApi
         </member>
         <member name="M:Quantum.Navigation.FindPath(Quantum.FrameThreadSafe,Photon.Deterministic.FPVector2,Photon.Deterministic.FPVector2,Quantum.NavMesh,Quantum.NavMeshRegionMask@,Photon.Deterministic.FP,Quantum.Navigation.PathQuality,System.Int64)">
@@ -13696,7 +13714,7 @@
             <param name="automaticTargetCorrectionRadius">The range to validate the start and target position.</param>
             <param name="quality">The path quality</param>
             <param name="heuristicWeight">The weight of the heuristic function, increasing it slightly can improve the performance, default is one</param>
-            <returns>The corrected start position</returns>
+            <returns>The find path result <see cref="F:Quantum.Navigation.FindPathResult.Result"/> and possible corrected start and end positions</returns>
             \ingroup NavigationApi
         </member>
         <member name="M:Quantum.Navigation.LineOfSight(Photon.Deterministic.FPVector3,Photon.Deterministic.FPVector3,Quantum.NavMeshRegionMask@,Quantum.NavMesh,System.Int32,System.Int32)">
@@ -14962,7 +14980,10 @@
             The <see cref="T:Quantum.PhysicsCommon.MapPhysicsData"/> is changed to default and the <see cref="T:Quantum.PhysicsSceneSettings"/> is changed to initial state.
             </summary>
         </member>
-        <member name="M:Quantum.Physics2D.PhysicsEngine2D.Api.Update(Quantum.Core.ICollisionCallbacks2D,Photon.Deterministic.FP,Quantum.Task.TaskHandle)">
+        <member name="M:Quantum.Physics2D.PhysicsEngine2D.Api.Update(Quantum.Core.ICollisionCallbacks2D,Photon.Deterministic.FP,Quantum.Task.TaskHandle,System.Boolean)">
+            <inheritdoc cref="M:Quantum.Physics2D.PhysicsEngine2D.Api.ScheduleUpdate(Quantum.Core.ICollisionCallbacks2D,Photon.Deterministic.FP,Quantum.Task.TaskHandle,System.Boolean)"/>
+        </member>
+        <member name="M:Quantum.Physics2D.PhysicsEngine2D.Api.ScheduleUpdate(Quantum.Core.ICollisionCallbacks2D,Photon.Deterministic.FP,Quantum.Task.TaskHandle,System.Boolean)">
             <summary>
             Schedules all tasks that compose the 2D Physics Update loop.
             If the frame map changed, the static part of the physics engine is also reset.
@@ -14970,7 +14991,21 @@
             <param name="callbacks">A listener of physics collision callbacks.</param>
             <param name="dt">Delta-time of the physics update loop</param>
             <param name="taskHandle">Handle of the last task scheduled in the graph.</param>
+            <param name="resetScene">
+            If a task to clear the physics scene should be scheduled before all other tasks.
+            The physics scene is automatically reset as soon as a frame simulation begins, so resetting it again is not
+            necessary unless there are multiple physics updates being scheduled in the same frame, in which case all
+            physics updates after the first one should have this value set to true.
+            </param>
             <returns>The task handle of the last task scheduled by the physics engine.</returns>
+        </member>
+        <member name="M:Quantum.Physics2D.PhysicsEngine2D.Api.ScheduleReset(Quantum.Task.TaskHandle)">
+            <summary>
+            Schedules a task to reset the physics state.
+            Useful when performing multiple physics updates per frame, in which case it should be scheduled in between Updates.
+            </summary>
+            <param name="taskHandle">Handle of the last task scheduled in the graph.</param>
+            <returns>The task handle of the last task scheduled by this method.</returns>
         </member>
         <member name="M:Quantum.Physics2D.PhysicsEngine2D.Api.ResetMap">
             <summary>
@@ -18793,7 +18828,10 @@
             The <see cref="T:Quantum.PhysicsCommon.MapPhysicsData"/> is changed to default and the <see cref="T:Quantum.PhysicsSceneSettings"/> is changed to initial state.
             </summary>
         </member>
-        <member name="M:Quantum.Physics3D.PhysicsEngine3D.Api.Update(Quantum.Core.ICollisionCallbacks3D,Photon.Deterministic.FP,Quantum.Task.TaskHandle)">
+        <member name="M:Quantum.Physics3D.PhysicsEngine3D.Api.Update(Quantum.Core.ICollisionCallbacks3D,Photon.Deterministic.FP,Quantum.Task.TaskHandle,System.Boolean)">
+            <inheritdoc cref="M:Quantum.Physics3D.PhysicsEngine3D.Api.ScheduleUpdate(Quantum.Core.ICollisionCallbacks3D,Photon.Deterministic.FP,Quantum.Task.TaskHandle,System.Boolean)"/>
+        </member>
+        <member name="M:Quantum.Physics3D.PhysicsEngine3D.Api.ScheduleUpdate(Quantum.Core.ICollisionCallbacks3D,Photon.Deterministic.FP,Quantum.Task.TaskHandle,System.Boolean)">
             <summary>
             Schedules all tasks that compose the 3D Physics Update loop.
             If the frame map changed, the static part of the physics engine is also reset.
@@ -18801,7 +18839,21 @@
             <param name="callbacks">A listener of physics collision callbacks.</param>
             <param name="dt">Delta-time of the physics update loop</param>
             <param name="taskHandle">Handle of the last task scheduled in the graph.</param>
+            <param name="resetScene">
+            If a task to clear the physics scene should be scheduled before all other tasks.
+            The physics scene is automatically reset as soon as a frame simulation begins, so resetting it again is not
+            necessary unless there are multiple physics updates being scheduled in the same frame, in which case all
+            physics updates after the first one should have this value set to true.
+            </param>
             <returns>The task handle of the last task scheduled by the physics engine.</returns>
+        </member>
+        <member name="M:Quantum.Physics3D.PhysicsEngine3D.Api.ScheduleReset(Quantum.Task.TaskHandle)">
+            <summary>
+            Schedules a task to reset the physics state.
+            Useful when performing multiple physics updates per frame, in which case it should be scheduled in between Updates.
+            </summary>
+            <param name="taskHandle">Handle of the last task scheduled in the graph.</param>
+            <returns>The task handle of the last task scheduled by this method.</returns>
         </member>
         <member name="M:Quantum.Physics3D.PhysicsEngine3D.Api.ResetMap">
             <summary>

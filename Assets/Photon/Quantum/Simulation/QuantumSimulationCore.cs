@@ -10098,7 +10098,7 @@ namespace Quantum.Core {
     /// <param name="taskHandle">The initial task handle.</param>
     /// <returns>The updated task handle with the physics update graph.</returns>
     protected override TaskHandle Schedule(Frame f, TaskHandle taskHandle) {
-      return f.Physics2D.Update(this, f.DeltaTime, taskHandle);
+      return f.Physics2D.ScheduleUpdate(this, f.DeltaTime, taskHandle, resetScene: false);
     }
 
     /// <inheritdoc cref="ISignalOnCollision2D.OnCollision2D(Frame, CollisionInfo2D)"/>
@@ -10152,7 +10152,7 @@ namespace Quantum.Core {
     /// <param name="taskHandle">The initial task handle.</param>
     /// <returns>The updated task handle with the physics update graph.</returns>
     protected override TaskHandle Schedule(Frame f, TaskHandle taskHandle) {
-      return f.Physics3D.Update(this, f.DeltaTime, taskHandle);
+      return f.Physics3D.ScheduleUpdate(this, f.DeltaTime, taskHandle, resetScene: false);
     }
 
     /// <inheritdoc cref="ISignalOnCollision3D.OnCollision3D(Frame, CollisionInfo3D)"/>

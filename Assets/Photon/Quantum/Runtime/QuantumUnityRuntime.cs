@@ -27801,7 +27801,7 @@ namespace Quantum {
 
 namespace Quantum {
   using System;
-  using System.Linq;
+  using System.Reflection;
   using Photon.Deterministic;
   using UnityEditor;
   using UnityEngine;
@@ -27836,11 +27836,74 @@ namespace Quantum {
     /// The default arrow head length.
     /// </summary>
     public const float DefaultArrowHeadLength = 0.25f;
-    
+
     /// <summary>
     /// The default arrow head angle.
     /// </summary>
-    public const float DefaultArrowHeadAngle  = 25.0f;
+    public const float DefaultArrowHeadAngle = 25.0f;
+
+    private static Vector3[] _polygonsBuffer = new Vector3[64];
+    private static int _polygonsBufferCount = 0;
+
+    private delegate void DoDrawAAConvexPolygon(Vector3[] points, int actualNumberOfPoints, float alpha);
+    private static readonly DoDrawAAConvexPolygon _drawPolygonCall;
+    private static bool _drawingPolygons = false;
+
+    static GizmoUtils() {
+#if UNITY_EDITOR
+      _drawPolygonCall = ReflectionUtils.CreateMethodDelegate<DoDrawAAConvexPolygon>(typeof(Handles), "DoDrawAAConvexPolygon", BindingFlags.Static | BindingFlags.NonPublic);
+#endif
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    private static void BeginPolygonDraw() {
+      if (_drawingPolygons) {
+        Debug.LogError($"{nameof(BeginPolygonDraw)}: Polygon Gizmo Drawing Begin called without ending the previous call");
+        return;
+      }
+
+      _polygonsBufferCount = 0;
+      _drawingPolygons = true;
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    private static void DrawPolygonVertex(Vector3 v) {
+      if (_drawingPolygons == false) {
+        Debug.LogError($"{nameof(DrawPolygonVertex)}: Polygon Gizmo Drawing called without calling {nameof(BeginPolygonDraw)}()");
+        return;
+      }
+      
+      if (_polygonsBufferCount + 1 > _polygonsBuffer.Length) {
+        var newArr = new Vector3[_polygonsBuffer.Length * 2];
+        Array.Copy(_polygonsBuffer, newArr, _polygonsBufferCount);
+        _polygonsBuffer = newArr;
+      }
+
+      _polygonsBuffer[_polygonsBufferCount] = v;
+      _polygonsBufferCount++;
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    private static void EndPolygonDraw() {
+      if (_drawingPolygons == false) {
+        Debug.LogError($"{nameof(EndPolygonDraw)}: Polygon Gizmo Drawing End called without calling {nameof(BeginPolygonDraw)}()");
+        return;
+      }
+
+      if (_drawPolygonCall == null) {
+        // Delegate initialization failed.
+        return;
+      }
+
+      if (_polygonsBufferCount <= 0) {
+        _drawingPolygons = false;
+        return;
+      }
+
+      _drawPolygonCall(_polygonsBuffer, _polygonsBufferCount, 1f);
+      _polygonsBufferCount = 0;
+      _drawingPolygons = false;
+    }
 
     /// <summary>
     /// Draws a gizmo box in the scene using the specified parameters.
@@ -27936,25 +27999,7 @@ namespace Quantum {
       var numberOfLines = 8;
       var distance = numberOfLines / Mathf.PI;
       var cycleOffset = Mathf.PI / 2;
-      var vertices = new Vector3[(int)numberOfLines * 2 + 2];
-
-      // the points of the top
-      for (int i = 0; i < numberOfLines + 1; i++) {
-        var sin = Mathf.Sin(i / distance + cycleOffset) * radius;
-        var cos = Mathf.Cos(i / distance + cycleOffset) * radius;
-        vertices[i] = new Vector3(capsuleTop.x + sin, capsuleTop.y - cos * yAxis, capsuleTop.z - cos * zAxis);
-      }
-
-      // the points of the bottom
-      for (int i = (int)numberOfLines + 1; i < numberOfLines * 2 + 2; i++) {
-        var sin = Mathf.Sin((i - 1) / distance + cycleOffset) * radius;
-        var cos = Mathf.Cos((i - 1) / distance + cycleOffset) * radius;
-        vertices[i] = new Vector3(capsuleBottom.x + sin, capsuleBottom.y - cos * yAxis, capsuleBottom.z - cos * zAxis);
-      }
-
-      // draw the capsule shape with the points
-      Handles.DrawAAConvexPolygon(vertices.ToArray());
-
+      DrawGizmosCapsuleInternal(radius, numberOfLines, distance, cycleOffset, capsuleTop, yAxis, zAxis, capsuleBottom, Vector3.zero);
 
       // draw the capsule vertical transform height
       tHeight = Mathf.Abs(tHeight);
@@ -27974,7 +28019,7 @@ namespace Quantum {
           var sin = Mathf.Sin(i / distance + cycleOffset) * radius;
           var cos = Mathf.Cos(i / distance + cycleOffset) * radius;
           Handles.DrawLine(
-            new Vector3(capsuleTop.x  + sin, capsuleTop.y  - cos * yAxis, capsuleTop.z  - cos * zAxis), 
+            new Vector3(capsuleTop.x + sin, capsuleTop.y - cos * yAxis, capsuleTop.z - cos * zAxis),
             new Vector3(capsuleTopH.x + sin, capsuleTopH.y - cos * yAxis, capsuleTopH.z - cos * zAxis)
           );
         }
@@ -27984,29 +28029,32 @@ namespace Quantum {
         for (float i = 0; i < numberOfLines; i++) {
           var sin = Mathf.Sin(i / distance - cycleOffset) * radius;
           var cos = Mathf.Cos(i / distance - cycleOffset) * radius;
-          Handles.DrawAAConvexPolygon(
-            new Vector3(capsuleBottom.x  + sin, capsuleBottom.y  - cos * yAxis, capsuleBottom.z  - cos * zAxis), 
-            new Vector3(capsuleBottomH.x + sin, capsuleBottomH.y - cos * yAxis, capsuleBottomH.z - cos * zAxis)
-          );
+          BeginPolygonDraw();
+          DrawPolygonVertex(new Vector3(capsuleBottom.x + sin, capsuleBottom.y - cos * yAxis, capsuleBottom.z - cos * zAxis));
+          DrawPolygonVertex(new Vector3(capsuleBottomH.x + sin, capsuleBottomH.y - cos * yAxis, capsuleBottomH.z - cos * zAxis));
+          EndPolygonDraw();
         }
 
         // draw a second capsule shape at transform height
-        for (int i = 0; i < vertices.Length; i++) {
-          vertices[i] = vertices[i] + th;
-        }
-        Handles.DrawAAConvexPolygon(vertices.ToArray());
+        DrawGizmosCapsuleInternal(radius, numberOfLines, distance, cycleOffset, capsuleTop, yAxis, zAxis, capsuleBottom, th);
 
         // draw side planes for the capsule at transform height
         Handles.color = Gizmos.color / 2;
-        Handles.DrawAAConvexPolygon(new Vector3[] {
-          v1, v1 + th,
-          v2 + th, v2
-        });
-        Handles.DrawAAConvexPolygon(new Vector3[] {
-          v3, v3 + th,
-          v4 + th, v4
-        });
 
+        BeginPolygonDraw();
+        DrawPolygonVertex(v1);
+        DrawPolygonVertex(v1 + th);
+        DrawPolygonVertex(v2 + th);
+        DrawPolygonVertex(v2);
+        EndPolygonDraw();
+        
+        BeginPolygonDraw();
+        DrawPolygonVertex(v3);
+        DrawPolygonVertex(v3 + th);
+        DrawPolygonVertex(v4 + th);
+        DrawPolygonVertex(v4);
+        EndPolygonDraw();
+        
         // draw the planes between the arcs of the capsule
         // the arc up planes
         capsuleTopH = capsuleTop + th;
@@ -28015,12 +28063,12 @@ namespace Quantum {
           var cos = Mathf.Cos(i / distance + cycleOffset) * radius;
           var sin2 = Mathf.Sin((i + 1) / distance + cycleOffset) * radius;
           var cos2 = Mathf.Cos((i + 1) / distance + cycleOffset) * radius;
-          Handles.DrawAAConvexPolygon(new Vector3[] {
-            new Vector3(capsuleTop.x  + sin,  capsuleTop.y  - cos  * yAxis, capsuleTop.z  - cos * zAxis), 
-            new Vector3(capsuleTopH.x + sin,  capsuleTopH.y - cos  * yAxis, capsuleTopH.z - cos * zAxis),
-            new Vector3(capsuleTopH.x + sin2, capsuleTopH.y - cos2 * yAxis, capsuleTopH.z - cos2 * zAxis), 
-            new Vector3(capsuleTop.x  + sin2, capsuleTop.y  - cos2 * yAxis, capsuleTop.z  - cos2 * zAxis)
-          });
+          BeginPolygonDraw();
+          DrawPolygonVertex(new Vector3(capsuleTop.x + sin, capsuleTop.y - cos * yAxis, capsuleTop.z - cos * zAxis));
+          DrawPolygonVertex(new Vector3(capsuleTopH.x + sin, capsuleTopH.y - cos * yAxis, capsuleTopH.z - cos * zAxis));
+          DrawPolygonVertex(new Vector3(capsuleTopH.x + sin2, capsuleTopH.y - cos2 * yAxis, capsuleTopH.z - cos2 * zAxis));
+          DrawPolygonVertex(new Vector3(capsuleTop.x + sin2, capsuleTop.y - cos2 * yAxis, capsuleTop.z - cos2 * zAxis));
+          EndPolygonDraw();
         }
 
         // the arc down planes
@@ -28030,12 +28078,12 @@ namespace Quantum {
           var cos = Mathf.Cos(i / distance - cycleOffset) * radius;
           var sin2 = Mathf.Sin((i + 1) / distance - cycleOffset) * radius;
           var cos2 = Mathf.Cos((i + 1) / distance - cycleOffset) * radius;
-          Handles.DrawAAConvexPolygon(new Vector3[] {
-            new Vector3(capsuleBottom.x  + sin,  capsuleBottom.y  - cos  * yAxis, capsuleBottom.z  - cos  * zAxis), 
-            new Vector3(capsuleBottomH.x + sin,  capsuleBottomH.y - cos  * yAxis, capsuleBottomH.z - cos  * zAxis),
-            new Vector3(capsuleBottomH.x + sin2, capsuleBottomH.y - cos2 * yAxis, capsuleBottomH.z - cos2 * zAxis), 
-            new Vector3(capsuleBottom.x  + sin2, capsuleBottom.y  - cos2 * yAxis, capsuleBottom.z  - cos2 * zAxis)
-          });
+          BeginPolygonDraw();
+          DrawPolygonVertex(new Vector3(capsuleBottom.x + sin, capsuleBottom.y - cos * yAxis, capsuleBottom.z - cos * zAxis));
+          DrawPolygonVertex(new Vector3(capsuleBottomH.x + sin, capsuleBottomH.y - cos * yAxis, capsuleBottomH.z - cos * zAxis));
+          DrawPolygonVertex(new Vector3(capsuleBottomH.x + sin2, capsuleBottomH.y - cos2 * yAxis, capsuleBottomH.z - cos2 * zAxis));
+          DrawPolygonVertex(new Vector3(capsuleBottom.x + sin2, capsuleBottom.y - cos2 * yAxis, capsuleBottom.z - cos2 * zAxis));
+          EndPolygonDraw();
         }
       }
 
@@ -28043,7 +28091,26 @@ namespace Quantum {
       Handles.color = Gizmos.color = Color.white;
       Handles.matrix = matrix;
 #endif
+    }
 
+    private static void DrawGizmosCapsuleInternal(float radius, int numberOfLines, float distance, float cycleOffset, Vector3 capsuleTop, int yAxis, int zAxis, Vector3 capsuleBottom, Vector3 th) {
+      BeginPolygonDraw();
+
+      // the points of the top
+      for (int i = 0; i < numberOfLines + 1; i++) {
+        var sin = Mathf.Sin(i / distance + cycleOffset) * radius;
+        var cos = Mathf.Cos(i / distance + cycleOffset) * radius;
+        DrawPolygonVertex(new Vector3(capsuleTop.x + sin, capsuleTop.y - cos * yAxis, capsuleTop.z - cos * zAxis) + th);
+      }
+
+      // the points of the bottom
+      for (int i = numberOfLines + 1; i < numberOfLines * 2 + 2; i++) {
+        var sin = Mathf.Sin((i - 1) / distance + cycleOffset) * radius;
+        var cos = Mathf.Cos((i - 1) / distance + cycleOffset) * radius;
+        DrawPolygonVertex(new Vector3(capsuleBottom.x + sin, capsuleBottom.y - cos * yAxis, capsuleBottom.z - cos * zAxis) + th);
+      }
+
+      EndPolygonDraw();
     }
 
     /// <summary>
@@ -28067,7 +28134,7 @@ namespace Quantum {
       }
 
       Gizmos.matrix = Matrix4x4.identity;
-      Gizmos.color  = Color.white;
+      Gizmos.color = Color.white;
     }
 
     /// <summary>
@@ -28090,8 +28157,8 @@ namespace Quantum {
       up = Vector3.forward;
 #else
       rot = Quaternion.Euler(-90, 0, 0);
-      s   = new Vector3(radius + radius, radius + radius, 1.0f);
-      up  = Vector3.up;
+      s = new Vector3(radius + radius, radius + radius, 1.0f);
+      up = Vector3.up;
 #endif
 
       // TODO: Use non-XY circle as default
@@ -28099,8 +28166,8 @@ namespace Quantum {
       if (height != 0.0f) {
         s.z = height;
       }
-      
-      Gizmos.color  = color;
+
+      Gizmos.color = color;
       Handles.color = Gizmos.color;
 
       if (style.IsWireframeEnabled) {
@@ -28258,49 +28325,58 @@ namespace Quantum {
 
     /// <inheritdoc cref="DrawGizmoPolygon2D(Vector3, Quaternion, FPVector2[], float, bool, Color, QuantumGizmoStyle)"/>
     public static void DrawGizmoPolygon2D(Matrix4x4 matrix, FPVector2[] vertices, Single height, bool drawNormals, Color color, QuantumGizmoStyle style = default) {
-
       if (vertices.Length < 3) return;
 
       FPMathUtils.LoadLookupTables();
 
       color = FPVector2.IsPolygonConvex(vertices) && FPVector2.PolygonNormalsAreValid(vertices) ? color : Color.red;
 
-      var transformedVertices = vertices.Select(x => matrix.MultiplyPoint(x.ToUnityVector3())).ToArray();
-      DrawGizmoPolygon2DInternal(transformedVertices, height, drawNormals, color, style: style);
+      DrawGizmoPolygon2DInternal(vertices, matrix, height, drawNormals, color, style: style);
     }
 
     /// <summary>
     /// Draws a 2D polygon gizmo.
     /// </summary>
     /// <param name="vertices">The vertices of the polygon in world space.</param>
+    /// <param name="matrix"></param>
     /// <param name="height">The height of the polygon.</param>
     /// <param name="drawNormals">Determines whether to draw normal.</param>
     /// <param name="color">The color of the polygon.</param>
     /// <param name="style">The gizmo style.</param>
-    private static void DrawGizmoPolygon2DInternal(Vector3[] vertices, Single height, Boolean drawNormals, Color color, QuantumGizmoStyle style = default) {
+    private static void DrawGizmoPolygon2DInternal(FPVector2[] vertices, Matrix4x4 matrix, Single height, Boolean drawNormals, Color color, QuantumGizmoStyle style = default) {
 #if UNITY_EDITOR
 #if QUANTUM_XY
       var upVector = Vector3.forward;
 #else
       var upVector = Vector3.up;
 #endif
-      Gizmos.color  = color;
+      Gizmos.color = color;
       Handles.color = color;
 
       if (style.IsFillEnabled) {
-        Handles.DrawAAConvexPolygon(vertices);
+        BeginPolygonDraw();
+        foreach (var v in vertices) {
+          DrawPolygonVertex(matrix.MultiplyPoint(v.ToUnityVector3()));
+        }
+
+        EndPolygonDraw();
 
         if (height != 0.0f) {
           Handles.matrix = Matrix4x4.Translate(upVector * height);
-          Handles.DrawAAConvexPolygon(vertices);
+          BeginPolygonDraw();
+          foreach (var v in vertices) {
+            DrawPolygonVertex(matrix.MultiplyPoint(v.ToUnityVector3()));
+          }
+
+          EndPolygonDraw();
           Handles.matrix = Matrix4x4.identity;
         }
       }
 
       if (style.IsWireframeEnabled) {
         for (Int32 i = 0; i < vertices.Length; ++i) {
-          var v1 = vertices[i];
-          var v2 = vertices[(i + 1) % vertices.Length];
+          var v1 = matrix.MultiplyPoint(vertices[i].ToUnityVector3());
+          var v2 = matrix.MultiplyPoint(vertices[(i + 1) % vertices.Length].ToUnityVector3());
 
           Gizmos.DrawLine(v1, v2);
 
@@ -28311,7 +28387,7 @@ namespace Quantum {
 
           if (drawNormals) {
 #if QUANTUM_XY
-          var normal = Vector3.Cross(v2 - v1, upVector).normalized;
+            var normal = Vector3.Cross(v2 - v1, upVector).normalized;
 #else
             var normal = Vector3.Cross(v1 - v2, upVector).normalized;
 #endif
@@ -28359,7 +28435,7 @@ namespace Quantum {
       Gizmos.DrawLine(start, end);
       var d = (end - start).normalized;
       Vector3 right = Quaternion.LookRotation(d) * Quaternion.Euler(0f, 180f + arrowHeadAngle, 0f) * new Vector3(0f, 0f, 1f);
-      Vector3 left  = Quaternion.LookRotation(d) * Quaternion.Euler(0f, 180f - arrowHeadAngle, 0f) * new Vector3(0f, 0f, 1f);
+      Vector3 left = Quaternion.LookRotation(d) * Quaternion.Euler(0f, 180f - arrowHeadAngle, 0f) * new Vector3(0f, 0f, 1f);
       Gizmos.DrawLine(end, end + right * arrowHeadLength);
       Gizmos.DrawLine(end, end + left * arrowHeadLength);
     }
@@ -28498,14 +28574,14 @@ namespace Quantum {
 
       if (height > float.Epsilon) {
         var startToEnd = end - start;
-        var edgeSize   = startToEnd.magnitude;
-        var size       = new Vector3(edgeSize, 0);
-        var center     = start + startToEnd / 2;
+        var edgeSize = startToEnd.magnitude;
+        var size = new Vector3(edgeSize, 0);
+        var center = start + startToEnd / 2;
 #if QUANTUM_XY
         size.z = -height;
         center.z -= height / 2;
 #else
-        size.y   =  height;
+        size.y = height;
         center.y += height / 2;
 #endif
         DrawGizmosBox(center, size, color, rotation: Quaternion.FromToRotation(Vector3.right, startToEnd), style: style);
@@ -28544,7 +28620,7 @@ namespace Quantum {
       Handles.color = color;
 
       // TODO: handle QuantumGizmoStyle.IsFillEnabled (see Box gizmos for reference)
-      
+
       var cylinderTop = Vector3.up * extent;
       var cylinderBottom = Vector3.down * extent;
       var radiusRight = Vector3.right * radius;
@@ -28552,12 +28628,12 @@ namespace Quantum {
 
       Handles.DrawWireArc(cylinderTop, Vector3.up, Vector3.left, 360.0f, radius);
       Handles.DrawWireArc(cylinderBottom, Vector3.down, Vector3.left, 360.0f, radius);
-      
+
       Handles.DrawWireArc(cylinderTop, Vector3.right, Vector3.back, 180.0f, radius);
       Handles.DrawWireArc(cylinderTop, Vector3.forward, Vector3.right, 180.0f, radius);
       Handles.DrawWireArc(cylinderBottom, Vector3.left, Vector3.back, 180.0f, radius);
       Handles.DrawWireArc(cylinderBottom, Vector3.back, Vector3.right, 180.0f, radius);
-      
+
       Handles.DrawLine(cylinderTop + radiusRight, cylinderBottom + radiusRight);
       Handles.DrawLine(cylinderTop - radiusRight, cylinderBottom - radiusRight);
       Handles.DrawLine(cylinderTop + radiusForward, cylinderBottom + radiusForward);
@@ -28588,7 +28664,7 @@ namespace Quantum {
     /// Returns true if the gizmo fill is enabled.
     /// </summary>
     public bool IsFillEnabled => !DisableFill;
-    
+
     /// <summary>
     /// Returns true if the gizmo wireframe is enabled.
     /// </summary>

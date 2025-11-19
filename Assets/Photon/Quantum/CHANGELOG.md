@@ -4,6 +4,18 @@
 
 Disclaimer: The Quantum SDK 3.1.0 development snapshots are not intended to be used for live games.
 
+### Build 1878 (Oct 29, 2025)
+
+**Bug Fixes**
+
+- Fixed: An issue where clients with certain heap configurations would desync upon late-joining
+
+### Build 1873 (Oct 23, 2025)
+
+**What's New**
+
+- Support to scheduling multiple Physics Updates in the same frame simulation
+
 ### Build 1872 (Oct 21, 2025)
 
 **Changes**

@@ -5291,11 +5291,12 @@
         <member name="M:Quantum.GizmoUtils.DrawGizmoPolygon2D(UnityEngine.Matrix4x4,Photon.Deterministic.FPVector2[],System.Single,System.Boolean,UnityEngine.Color,Quantum.QuantumGizmoStyle)">
             <inheritdoc cref="M:Quantum.GizmoUtils.DrawGizmoPolygon2D(UnityEngine.Vector3,UnityEngine.Quaternion,Photon.Deterministic.FPVector2[],System.Single,System.Boolean,UnityEngine.Color,Quantum.QuantumGizmoStyle)"/>
         </member>
-        <member name="M:Quantum.GizmoUtils.DrawGizmoPolygon2DInternal(UnityEngine.Vector3[],System.Single,System.Boolean,UnityEngine.Color,Quantum.QuantumGizmoStyle)">
+        <member name="M:Quantum.GizmoUtils.DrawGizmoPolygon2DInternal(Photon.Deterministic.FPVector2[],UnityEngine.Matrix4x4,System.Single,System.Boolean,UnityEngine.Color,Quantum.QuantumGizmoStyle)">
             <summary>
             Draws a 2D polygon gizmo.
             </summary>
             <param name="vertices">The vertices of the polygon in world space.</param>
+            <param name="matrix"></param>
             <param name="height">The height of the polygon.</param>
             <param name="drawNormals">Determines whether to draw normal.</param>
             <param name="color">The color of the polygon.</param>

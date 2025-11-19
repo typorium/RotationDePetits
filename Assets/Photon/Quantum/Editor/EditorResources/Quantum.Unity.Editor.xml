@@ -1601,6 +1601,14 @@
             <param name="copyOutputDir">Copy result to output dir</param>
             <param name="disablePopup">Disable file explorer popup</param>
         </member>
+        <member name="M:Quantum.Editor.QuantumDotnetBuildSettings.RunDotnetCommand(System.String,System.String)">
+            <summary>
+            Attempts to run a Dotnet command.
+            </summary>
+            <param name="arguments">Arguments to the command</param>
+            <param name="dotnetCommandPath">Optionally set a dotnet command path.</param>
+            <returns>True when succeeded.</returns>
+        </member>
         <member name="M:Quantum.Editor.QuantumDotnetBuildSettings.TryFindPluginSdkFolderWithPopup(System.String@)">
             <summary>
             Attempts to find the Photon Server SDK folder. If not found, opens a folder selection dialog.
