@@ -10,6 +10,12 @@ namespace Quantum.Editor {
   using static UnityEngine.Object;
   using static QuantumUnityExtensions;
 
+#if UNITY_6000_2_OR_NEWER
+  using TreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+  using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+  using TreeView = UnityEditor.IMGUI.Controls.TreeView<int>;
+#endif
+  
   /// <summary>
   /// An editor class that renders a windows displaying assets from the Quantum DB.
   /// Open the windows by using Tools > Quantum > Window > Quantum Unity DB

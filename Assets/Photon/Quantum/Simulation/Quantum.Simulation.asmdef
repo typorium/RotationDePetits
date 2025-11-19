@@ -7,12 +7,12 @@
     "allowUnsafeCode": true,
     "overrideReferences": true,
     "precompiledReferences": [
-        "Quantum.Deterministic.dll",
         "Quantum.Engine.dll",
         "Quantum.Log.dll",
         "Quantum.BotSDK.Core.dll",
         "Sirenix.Serialization.dll",
-        "Sirenix.OdinInspector.Attributes.dll"
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.Serialization.Config.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

@@ -564,7 +564,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Prototype:
-    LiquidType: 0
+    LiquidType:
+      Value: 0
     WidthTiles: 32
     HeightTiles:
       RawValue: 131072

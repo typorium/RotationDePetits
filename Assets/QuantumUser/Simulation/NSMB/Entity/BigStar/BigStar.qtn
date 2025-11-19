@@ -7,7 +7,7 @@ global {
 	int UsedStarSpawnCount;
 }
 
-component BigStar {
+table component BigStar {
 	bool IsStationary;
 	ushort Lifetime;
 	byte UncollectableFrames;
@@ -21,7 +21,6 @@ signal OnMarioPlayerCollectedStar(EntityRef entity);
 
 synced event MarioPlayerCollectedStar {
 	EntityRef Entity;
-	MarioPlayer Mario;
 	FPVector2 Position;
 }
 

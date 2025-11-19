@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class StageTileMenuItems {
-    [MenuItem("MvLO/Convert standalone StageTiles to sub-assets")]
+    [MenuItem("Tools/MvLO/Convert standalone StageTiles to sub-assets")]
     public static void ConvertStageTiles() {
         var allStageTiles = AssetDatabase.FindAssets($"t:{typeof(StageTile).Name}")
             .Select(AssetDatabase.GUIDToAssetPath)

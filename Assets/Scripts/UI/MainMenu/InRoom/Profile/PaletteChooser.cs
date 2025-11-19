@@ -1,4 +1,5 @@
 using NSMB.UI.Elements;
+using NSMB.Utilities;
 using Quantum;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
     public class PaletteChooser : MonoBehaviour, KeepChildInFocus.IFocusIgnore {
 
         //---Serialized Variables
-        // [SerializeField] private SimulationConfig config;
         [SerializeField] private MainMenuCanvas canvas;
         [SerializeField] private GameObject template, blockerTemplate;
         [SerializeField] public GameObject content;
@@ -27,26 +27,27 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         private readonly List<Navigation> navigations = new();
         private GameObject blocker;
         private CharacterAsset character;
-        private int selectedPaletteIndex;
-        private bool initialized;
+        private AssetRef<PaletteSet> selectedPalette;
 
         public void OnDisable() {
             Close(false);
         }
 
         public unsafe void Initialize() {
-            if (initialized) {
-                return;
+            foreach (var pb in paletteButtons) {
+                Destroy(pb.gameObject);
             }
+            paletteButtons.Clear();
 
-            int palettesPerRow = template.transform.parent.GetComponent<GridLayoutGroup>().constraintCount;
-
-            PaletteSet[] palettes = GlobalController.Instance.config.Palettes
-                .Select(QuantumUnityDB.GetGlobalAsset)
+            List<PaletteSet> palettes = QuantumViewUtils.Palettes
                 .OrderBy(ps => ps ? ps.order : int.MinValue)
-                .ToArray();
+                .ToList();
+            palettes.Insert(0, null);
 
-            for (int i = 0; i < palettes.Length; i++) {
+            int palettesPerRow = Mathf.Max(4, palettes.Count / 7);
+            template.transform.parent.GetComponent<GridLayoutGroup>().constraintCount = palettesPerRow;
+
+            for (int i = 0; i < palettes.Count; i++) {
                 PaletteSet palette = palettes[i];
 
                 GameObject newButton = Instantiate(template, template.transform.parent);
@@ -83,7 +84,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             for (int i = 0; i < paletteButtons.Count; i++) {
                 paletteButtons[i].button.navigation = navigations[i];
             }
-            initialized = true;
 
             foreach (PaletteButton b in paletteButtons) {
                 b.Instantiate(defaultCharacter);
@@ -95,19 +95,13 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 b.Instantiate(data);
             }
             character = data;
-            ChangePaletteButton(selectedPaletteIndex);
+            ChangePaletteButton(selectedPalette);
         }
 
-        public void ChangePaletteButton(int index) {
-            selectedPaletteIndex = index;
-            AssetRef<PaletteSet>[] palettes = GlobalController.Instance.config.Palettes;
-            PaletteSet palette = null;
+        public void ChangePaletteButton(AssetRef<PaletteSet> paletteRef) {
+            selectedPalette = paletteRef;
 
-            if (index >= 0 && index < palettes.Length) {
-                palette = QuantumUnityDB.GetGlobalAsset(palettes[index]);
-            }
-
-            if (palette) {
+            if (QuantumUnityDB.TryGetGlobalAsset(paletteRef, out var palette)) {
                 overallsImage.enabled = true;
                 overallsImage.color = palette.GetPaletteForCharacter(character).OverallsColor.AsColor;
                 shirtImage.enabled = true;
@@ -127,19 +121,17 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
 
             QuantumGame game = QuantumRunner.DefaultGame;
-            int newIndex = game.Configurations.Simulation.Palettes.IndexOf(pbar => pbar == selectedButton.palette);
-
             foreach (var slot in game.GetLocalPlayerSlots()) {
                 game.SendCommand(slot, new CommandChangePlayerData { 
                     EnabledChanges = CommandChangePlayerData.Changes.Palette,
-                    Palette = (byte) newIndex,
+                    Palette = selectedButton.palette,
                 });
             }
             
             Close(false);
-            selectedPaletteIndex = newIndex;
-            ChangePaletteButton(selectedPaletteIndex);
-            Settings.Instance.generalPalette = selectedPaletteIndex;
+            selectedPalette = selectedButton.palette;
+            ChangePaletteButton(selectedPalette);
+            Settings.Instance.generalPalette = selectedPalette;
             Settings.Instance.SaveSettings();
             canvas.PlayConfirmSound();
         }
@@ -153,7 +145,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             canvas.PlayCursorSound();
 
             QuantumGame game = QuantumRunner.DefaultGame;
-            var selectedPalette = game.Configurations.Simulation.Palettes[selectedPaletteIndex];
             var selectedPaletteButton = paletteButtons.FirstOrDefault(pb => pb.palette == selectedPalette);
 
             if (selectedPaletteButton == null) {

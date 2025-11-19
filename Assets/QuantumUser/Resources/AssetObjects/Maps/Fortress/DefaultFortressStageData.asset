@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.default.fortress
   GroupingTranslationKey: level.header.default
   DiscordStageImage: level-fortress
+  SortOrder: 3
   Icon: {fileID: 21300000, guid: c8510af529294be40a5f09eeddf3d764, type: 3}
+  MainMenuPreviewPrefab: {fileID: 3733484828135373085, guid: ca3c3507779bf1548893acaa1c6e20b6,
+    type: 3}
   OverrideAutomaticTilemapSettings: 0
   TileDimensions:
     X: 64

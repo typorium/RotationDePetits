@@ -5,7 +5,6 @@ namespace Quantum.Editor {
   using System.Linq;
   using System.Reflection;
   using UnityEditor;
-  using UnityEditor.PackageManager.Requests;
   using UnityEditor.SceneManagement;
   using UnityEngine;
   using UnityEngine.SceneManagement;
@@ -77,6 +76,11 @@ namespace Quantum.Editor {
       if (SceneView.lastActiveSceneView != null) {
         AssetDatabaseExt.UpdateScriptingDefineSymbol("QUANTUM_XY", SceneView.lastActiveSceneView.in2DMode);
       }
+
+#if !QUANTUM_LOGLEVEL_DEBUG && !QUANTUM_LOGLEVEL_INFO && !QUANTUM_LOGLEVEL_WARN && !QUANTUM_LOGLEVEL_ERROR && !QUANTUM_LOGLEVEL_NONE
+      // Enabled at least one log level define
+      AssetDatabaseUtils.UpdateScriptingDefineSymbol("QUANTUM_LOGLEVEL_INFO", true);
+#endif
 
       // Add qtn extension to the VS project generation
       if (EditorSettings.projectGenerationUserExtensions.Contains("qtn") == false) {

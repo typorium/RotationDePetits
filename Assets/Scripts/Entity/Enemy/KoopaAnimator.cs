@@ -1,6 +1,6 @@
+using NSMB.Sound;
 using NSMB.Utilities.Extensions;
 using Quantum;
-using Quantum.Profiling;
 using UnityEngine;
 using static NSMB.Utilities.QuantumViewUtils;
 
@@ -15,7 +15,7 @@ namespace NSMB.Entities.Enemies {
 
         //---Serialized Variables
         [SerializeField] private Animator animator;
-        [SerializeField] private AudioSource sfx;
+        [SerializeField] private SoundEffectPlayer sfx;
         [SerializeField] private SpriteRenderer sRenderer;
         [SerializeField] private Transform rotation;
         [SerializeField] private bool mirrorSprite, dontFlip;
@@ -26,8 +26,8 @@ namespace NSMB.Entities.Enemies {
 
         public void OnValidate() {
             this.SetIfNull(ref animator, UnityExtensions.GetComponentType.Children);
-            this.SetIfNull(ref sfx);
             this.SetIfNull(ref sRenderer, UnityExtensions.GetComponentType.Children);
+            this.SetIfNull(ref sfx);
         }
 
         public void Start() {
@@ -117,13 +117,5 @@ namespace NSMB.Entities.Enemies {
 
             sfx.PlayOneShot(QuantumUtils.GetComboSoundEffect(e.Combo));
         }
-
-        /*
-        private void OnEnemyKilled(EventEnemyKilled e) {
-            if (e.Enemy != EntityRef) {
-                return;
-            }
-        }
-        */
     }
 }

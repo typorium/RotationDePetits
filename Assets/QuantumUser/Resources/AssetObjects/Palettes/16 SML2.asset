@@ -32,4 +32,4 @@ MonoBehaviour:
       A: 255
     HatUsesOverallsColor: 0
   translationKey: skin.marioland
-  order: 18
+  order: -850

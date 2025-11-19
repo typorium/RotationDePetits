@@ -157,10 +157,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 builder.Append("<sprite name=room_host>");
             }
 
-            int characterIndex = playerData->Character;
-            var allCharacters = f.SimulationConfig.CharacterDatas;
-            characterIndex %= allCharacters.Length;
-            CharacterAsset character = f.FindAsset(allCharacters[characterIndex]);
+            var character = QuantumViewUtils.FindAssetOrFirst(playerData->Character);
             builder.Append(character.UiString);
 
             if (f.Global->Rules.TeamsEnabled && Settings.Instance.GraphicsColorblind && !playerData->ManualSpectator) {

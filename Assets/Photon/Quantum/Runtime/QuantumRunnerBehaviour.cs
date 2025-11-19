@@ -1,5 +1,4 @@
 namespace Quantum {
-  using System;
   using UnityEngine;
   using UnityEngine.Rendering;
 
@@ -10,7 +9,7 @@ namespace Quantum {
   /// </summary>
   public class QuantumRunnerBehaviour : QuantumMonoBehaviour {
     /// <summary>
-    /// The runner object set during <see cref="QuantumRunner.StartGame(SessionRunner.Arguments)"/>
+    /// The runner object set during <see cref="QuantumRunnerUnityFactory.CreateRunner(SessionRunner.Arguments, string)"/>
     /// </summary>
     [InlineHelp] public QuantumRunner Runner;
 

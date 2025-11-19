@@ -1,9 +1,20 @@
 ﻿using Photon.Deterministic;
 using System.Collections.Generic;
+using System.Linq;
 using static Quantum.InteractionSystem;
 
 namespace Quantum {
     public partial class FrameContextUser {
+
+        //---Static Assets
+        private Map[] _allStages;
+        public Map[] AllStages => _allStages ??= ResourceManager.GetAssets(new AssetObjectQuery { Type = typeof(Map) }).Cast<Map>().ToArray();
+        private CharacterAsset[] _characterDatas;
+        public CharacterAsset[] CharacterDatas => _characterDatas ??= ResourceManager.GetAssets(new AssetObjectQuery { Type = typeof(CharacterAsset) }).Cast<CharacterAsset>().ToArray();
+        public PaletteSet[] _palettes;
+        public PaletteSet[] Palettes => _palettes ??= ResourceManager.GetAssets(new AssetObjectQuery { Type = typeof(PaletteSet) }).Cast<PaletteSet>().ToArray();
+        // public TeamAsset[] _teams;
+        // public TeamAsset[] Teams => _teams ??= ResourceManager.GetAssets(new AssetObjectQuery { Type = typeof(TeamAsset) }).Cast<TeamAsset>().ToArray();
 
         //---Physics
         public LayerMask ExcludeEntityAndPlayerMask, PlayerOnlyMask;

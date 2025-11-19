@@ -442,7 +442,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 3
+      m_TileSpriteIndex: 7
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -522,7 +522,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 13
+      m_TileSpriteIndex: 3
       m_TileMatrixIndex: 1
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -802,7 +802,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 7
+      m_TileSpriteIndex: 13
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -3746,7 +3746,7 @@ Tilemap:
     m_Data: {fileID: 4050391162013687314, guid: becfea25a929a1545b276e03be04cacc,
       type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 8851103658266996879, guid: becfea25a929a1545b276e03be04cacc,
+    m_Data: {fileID: -9092035814142509112, guid: becfea25a929a1545b276e03be04cacc,
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -1089876685667018724, guid: becfea25a929a1545b276e03be04cacc,
@@ -3758,7 +3758,7 @@ Tilemap:
     m_Data: {fileID: 8868485360429641932, guid: becfea25a929a1545b276e03be04cacc,
       type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1641314556468492031, guid: becfea25a929a1545b276e03be04cacc,
+    m_Data: {fileID: 8851103658266996879, guid: becfea25a929a1545b276e03be04cacc,
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -4382169101540521697, guid: becfea25a929a1545b276e03be04cacc,
@@ -3776,7 +3776,7 @@ Tilemap:
     m_Data: {fileID: -7075255907576508134, guid: becfea25a929a1545b276e03be04cacc,
       type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -9092035814142509112, guid: becfea25a929a1545b276e03be04cacc,
+    m_Data: {fileID: 1641314556468492031, guid: becfea25a929a1545b276e03be04cacc,
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -3843259335920623202, guid: becfea25a929a1545b276e03be04cacc,
@@ -4612,8 +4612,7 @@ PrefabInstance:
         type: 3}
       propertyPath: Asset
       value: 
-      objectReference: {fileID: 11400000, guid: 49ae08f98b45cab4eba5f78b2b8e5e79,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
         type: 3}
       propertyPath: AssetRef.Id.Value
@@ -4687,6 +4686,41 @@ PrefabInstance:
     - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
         type: 3}
       propertyPath: 'MapEntityReferences.Array.data[12]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
+        type: 3}
+      propertyPath: 'MapEntityReferences.Array.data[13]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
+        type: 3}
+      propertyPath: 'MapEntityReferences.Array.data[14]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
+        type: 3}
+      propertyPath: 'MapEntityReferences.Array.data[15]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
+        type: 3}
+      propertyPath: 'MapEntityReferences.Array.data[16]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
+        type: 3}
+      propertyPath: 'MapEntityReferences.Array.data[17]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
+        type: 3}
+      propertyPath: 'MapEntityReferences.Array.data[18]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682502346014357760, guid: dcdc633a29f212843ae9cbdf4be58fb2,
+        type: 3}
+      propertyPath: 'MapEntityReferences.Array.data[19]'
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8642252342915534796, guid: dcdc633a29f212843ae9cbdf4be58fb2,

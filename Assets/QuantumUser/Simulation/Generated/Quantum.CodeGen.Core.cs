@@ -170,7 +170,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
+      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 8);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -241,7 +241,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 16);
+      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 16);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -314,7 +314,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 256);
+      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 256);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -389,7 +389,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 32);
+      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 32);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -466,7 +466,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 512);
+      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 512);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -541,7 +541,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 64);
+      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 64);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -616,7 +616,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
+      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 8);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -1108,18 +1108,18 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct PlayerInformation {
-    public const Int32 SIZE = 112;
-    public const Int32 ALIGNMENT = 4;
+    public const Int32 SIZE = 120;
+    public const Int32 ALIGNMENT = 8;
     [FieldOffset(4)]
     public PlayerRef PlayerRef;
-    [FieldOffset(16)]
+    [FieldOffset(24)]
     public QString48 Nickname;
-    [FieldOffset(64)]
+    [FieldOffset(72)]
     public QStringUtf8_48 NicknameColor;
-    [FieldOffset(1)]
-    public Byte Team;
     [FieldOffset(0)]
-    public Byte Character;
+    public Byte Team;
+    [FieldOffset(16)]
+    public AssetRef<CharacterAsset> Character;
     [FieldOffset(8)]
     public QBoolean Disconnected;
     [FieldOffset(12)]
@@ -1139,11 +1139,11 @@ namespace Quantum {
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (PlayerInformation*)ptr;
-        serializer.Stream.Serialize(&p->Character);
         serializer.Stream.Serialize(&p->Team);
         PlayerRef.Serialize(&p->PlayerRef, serializer);
         QBoolean.Serialize(&p->Disconnected, serializer);
         QBoolean.Serialize(&p->Disqualified, serializer);
+        AssetRef.Serialize(&p->Character, serializer);
         Quantum.QString48.Serialize(&p->Nickname, serializer);
         Quantum.QStringUtf8_48.Serialize(&p->NicknameColor, serializer);
     }
@@ -1196,77 +1196,77 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 3056;
+    public const Int32 SIZE = 3152;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
-    public AssetRef<Map> Map;
-    [FieldOffset(8)]
-    public FP DeltaTime;
-    [FieldOffset(16)]
-    public NavMeshRegionMask NavMeshRegions;
-    [FieldOffset(80)]
-    public PhysicsEngineState PhysicsState2D;
-    [FieldOffset(96)]
-    public PhysicsEngineState PhysicsState3D;
-    [FieldOffset(112)]
-    public RNGSession RngSession;
-    [FieldOffset(128)]
-    public FrameMetaData FrameMetaData;
-    [FieldOffset(176)]
-    public BitSet1024 Systems;
-    [FieldOffset(304)]
-    public PhysicsSceneSettings PhysicsSettings;
-    [FieldOffset(600)]
     public Int32 PlayerConnectedCount;
-    [FieldOffset(604)]
+    [FieldOffset(8)]
+    public AssetRef<Map> Map;
+    [FieldOffset(16)]
+    public FP DeltaTime;
+    [FieldOffset(24)]
+    public NavMeshRegionMask NavMeshRegions;
+    [FieldOffset(88)]
+    public PhysicsEngineState2D PhysicsState2D;
+    [FieldOffset(112)]
+    public PhysicsEngineState3D PhysicsState3D;
+    [FieldOffset(136)]
+    public RNGSession RngSession;
+    [FieldOffset(152)]
+    public FrameMetaData FrameMetaData;
+    [FieldOffset(200)]
+    public BitSet1024 Systems;
+    [FieldOffset(328)]
+    public PhysicsSceneSettings PhysicsSettings;
+    [FieldOffset(624)]
     [FramePrinter.FixedArrayAttribute(typeof(Input), 10)]
     private fixed Byte _input_[1200];
-    [FieldOffset(1808)]
-    public BitSet10 PlayerLastConnectionState;
     [FieldOffset(1824)]
-    public UInt16 BigStarSpawnTimer;
-    [FieldOffset(1872)]
-    public EntityRef MainBigStar;
-    [FieldOffset(1864)]
-    public BitSet64 UsedStarSpawns;
+    public BitSet10 PlayerLastConnectionState;
     [FieldOffset(1840)]
-    public Int32 UsedStarSpawnCount;
+    public UInt16 BigStarSpawnTimer;
     [FieldOffset(1888)]
-    public GameRules Rules;
-    [FieldOffset(1818)]
-    public GameState GameState;
-    [FieldOffset(1832)]
-    public Int32 StartFrame;
-    [FieldOffset(1836)]
-    public Int32 TotalGamesPlayed;
-    [FieldOffset(1826)]
-    public UInt16 GameStartFrames;
-    [FieldOffset(1828)]
-    public UInt16 PlayerLoadFrames;
-    [FieldOffset(1820)]
-    public UInt16 AutomaticStageRefreshInterval;
-    [FieldOffset(1822)]
-    public UInt16 AutomaticStageRefreshTimer;
-    [FieldOffset(1936)]
-    [FramePrinter.FixedArrayAttribute(typeof(PlayerInformation), 10)]
-    private fixed Byte _PlayerInfo_[1120];
-    [FieldOffset(1816)]
-    public Byte RealPlayers;
-    [FieldOffset(1817)]
-    public Byte TotalMarios;
-    [FieldOffset(1844)]
-    public Int32 WinningTeam;
-    [FieldOffset(1852)]
-    public QBoolean HasWinner;
-    [FieldOffset(1848)]
-    public PlayerRef Host;
+    public EntityRef MainBigStar;
+    [FieldOffset(1880)]
+    public BitSet64 UsedStarSpawns;
     [FieldOffset(1856)]
+    public Int32 UsedStarSpawnCount;
+    [FieldOffset(1904)]
+    public GameRules Rules;
+    [FieldOffset(1834)]
+    public GameState GameState;
+    [FieldOffset(1848)]
+    public Int32 StartFrame;
+    [FieldOffset(1852)]
+    public Int32 TotalGamesPlayed;
+    [FieldOffset(1842)]
+    public UInt16 GameStartFrames;
+    [FieldOffset(1844)]
+    public UInt16 PlayerLoadFrames;
+    [FieldOffset(1836)]
+    public UInt16 AutomaticStageRefreshInterval;
+    [FieldOffset(1838)]
+    public UInt16 AutomaticStageRefreshTimer;
+    [FieldOffset(1952)]
+    [FramePrinter.FixedArrayAttribute(typeof(PlayerInformation), 10)]
+    private fixed Byte _PlayerInfo_[1200];
+    [FieldOffset(1832)]
+    public Byte RealPlayers;
+    [FieldOffset(1833)]
+    public Byte TotalMarios;
+    [FieldOffset(1860)]
+    public Int32 WinningTeam;
+    [FieldOffset(1868)]
+    public QBoolean HasWinner;
+    [FieldOffset(1864)]
+    public PlayerRef Host;
+    [FieldOffset(1872)]
     [AllocateOnComponentAdded()]
     public QDictionaryPtr<PlayerRef, EntityRef> PlayerDatas;
-    [FieldOffset(1860)]
+    [FieldOffset(1876)]
     [AllocateOnComponentAdded()]
     public QListPtr<BannedPlayerInfo> BannedPlayerIds;
-    [FieldOffset(1880)]
+    [FieldOffset(1896)]
     public FP Timer;
     public readonly FixedArray<Input> input {
       get {
@@ -1275,12 +1275,13 @@ namespace Quantum {
     }
     public readonly FixedArray<PlayerInformation> PlayerInfo {
       get {
-        fixed (byte* p = _PlayerInfo_) { return new FixedArray<PlayerInformation>(p, 112, 10); }
+        fixed (byte* p = _PlayerInfo_) { return new FixedArray<PlayerInformation>(p, 120, 10); }
       }
     }
     public override readonly Int32 GetHashCode() {
       unchecked { 
         var hash = 12473;
+        hash = hash * 31 + PlayerConnectedCount.GetHashCode();
         hash = hash * 31 + Map.GetHashCode();
         hash = hash * 31 + DeltaTime.GetHashCode();
         hash = hash * 31 + NavMeshRegions.GetHashCode();
@@ -1290,7 +1291,6 @@ namespace Quantum {
         hash = hash * 31 + FrameMetaData.GetHashCode();
         hash = hash * 31 + Systems.GetHashCode();
         hash = hash * 31 + PhysicsSettings.GetHashCode();
-        hash = hash * 31 + PlayerConnectedCount.GetHashCode();
         hash = hash * 31 + HashCodeUtils.GetArrayHashCode(input);
         hash = hash * 31 + PlayerLastConnectionState.GetHashCode();
         hash = hash * 31 + BigStarSpawnTimer.GetHashCode();
@@ -1327,16 +1327,16 @@ namespace Quantum {
     }
     static partial void SerializeCodeGen(void* ptr, FrameSerializer serializer) {
         var p = (_globals_*)ptr;
+        serializer.Stream.Serialize(&p->PlayerConnectedCount);
         AssetRef.Serialize(&p->Map, serializer);
         FP.Serialize(&p->DeltaTime, serializer);
         NavMeshRegionMask.Serialize(&p->NavMeshRegions, serializer);
-        PhysicsEngineState.Serialize(&p->PhysicsState2D, serializer);
-        PhysicsEngineState.Serialize(&p->PhysicsState3D, serializer);
+        PhysicsEngineState2D.Serialize(&p->PhysicsState2D, serializer);
+        PhysicsEngineState3D.Serialize(&p->PhysicsState3D, serializer);
         RNGSession.Serialize(&p->RngSession, serializer);
         FrameMetaData.Serialize(&p->FrameMetaData, serializer);
         Quantum.BitSet1024.Serialize(&p->Systems, serializer);
         PhysicsSceneSettings.Serialize(&p->PhysicsSettings, serializer);
-        serializer.Stream.Serialize(&p->PlayerConnectedCount);
         FixedArray.Serialize(p->input, serializer, Statics.SerializeInput);
         Quantum.BitSet10.Serialize(&p->PlayerLastConnectionState, serializer);
         serializer.Stream.Serialize(&p->RealPlayers);
@@ -1388,7 +1388,7 @@ namespace Quantum {
       get {
         fixed (StarChasersData* p = &_StarChasers) {
           if (_field_used_ != STARCHASERS) {
-            Native.Utils.Clear(p, 4);
+            QuantumUnsafe.Clear(p, 4);
             _field_used_ = STARCHASERS;
           }
           return p;
@@ -1399,7 +1399,7 @@ namespace Quantum {
       get {
         fixed (CoinRunnersData* p = &_CoinRunners) {
           if (_field_used_ != COINRUNNERS) {
-            Native.Utils.Clear(p, 4);
+            QuantumUnsafe.Clear(p, 4);
             _field_used_ = COINRUNNERS;
           }
           return p;
@@ -1726,8 +1726,10 @@ namespace Quantum {
     [FieldOffset(16)]
     public FP MaximumShootRadius;
     [FieldOffset(0)]
+    [ExcludeFromPrototype()]
     public Byte BulletBillCount;
     [FieldOffset(4)]
+    [ExcludeFromPrototype()]
     public UInt16 TimeToShootFrames;
     public override readonly Int32 GetHashCode() {
       unchecked { 
@@ -1941,6 +1943,51 @@ namespace Quantum {
         var p = (Cullable*)ptr;
         FP.Serialize(&p->BroadRadius, serializer);
         FPVector2.Serialize(&p->Offset, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct DonutBlock : Quantum.IComponent {
+    public const Int32 SIZE = 40;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(0)]
+    public UInt16 FramesUntilFall;
+    [FieldOffset(2)]
+    public UInt16 FramesUntilRespawn;
+    [FieldOffset(16)]
+    public FP FallSpeed;
+    [FieldOffset(24)]
+    public FPVector2 Origin;
+    [FieldOffset(8)]
+    [ExcludeFromPrototype()]
+    public QBoolean HasMario;
+    [FieldOffset(12)]
+    [ExcludeFromPrototype()]
+    public QBoolean IsFalling;
+    [FieldOffset(4)]
+    [ExcludeFromPrototype()]
+    public UInt16 Timer;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 3319;
+        hash = hash * 31 + FramesUntilFall.GetHashCode();
+        hash = hash * 31 + FramesUntilRespawn.GetHashCode();
+        hash = hash * 31 + FallSpeed.GetHashCode();
+        hash = hash * 31 + Origin.GetHashCode();
+        hash = hash * 31 + HasMario.GetHashCode();
+        hash = hash * 31 + IsFalling.GetHashCode();
+        hash = hash * 31 + Timer.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (DonutBlock*)ptr;
+        serializer.Stream.Serialize(&p->FramesUntilFall);
+        serializer.Stream.Serialize(&p->FramesUntilRespawn);
+        serializer.Stream.Serialize(&p->Timer);
+        QBoolean.Serialize(&p->HasMario, serializer);
+        QBoolean.Serialize(&p->IsFalling, serializer);
+        FP.Serialize(&p->FallSpeed, serializer);
+        FPVector2.Serialize(&p->Origin, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -3076,19 +3123,19 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct PlayerData : Quantum.IComponent {
-    public const Int32 SIZE = 52;
-    public const Int32 ALIGNMENT = 4;
+    public const Int32 SIZE = 72;
+    public const Int32 ALIGNMENT = 8;
     [FieldOffset(20)]
     public PlayerRef PlayerRef;
     [FieldOffset(36)]
     public QBoolean IsRoomHost;
     [FieldOffset(28)]
     public QBoolean IsLoaded;
-    [FieldOffset(0)]
-    public Byte Character;
+    [FieldOffset(56)]
+    public AssetRef<CharacterAsset> Character;
+    [FieldOffset(64)]
+    public AssetRef<PaletteSet> Palette;
     [FieldOffset(1)]
-    public Byte Palette;
-    [FieldOffset(3)]
     public Byte RequestedTeam;
     [FieldOffset(40)]
     public QBoolean IsSpectator;
@@ -3098,7 +3145,7 @@ namespace Quantum {
     public QBoolean VotedToContinue;
     [FieldOffset(16)]
     public Int32 Wins;
-    [FieldOffset(2)]
+    [FieldOffset(0)]
     public Byte RealTeam;
     [FieldOffset(8)]
     public Int32 LastChatMessage;
@@ -3134,8 +3181,6 @@ namespace Quantum {
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (PlayerData*)ptr;
-        serializer.Stream.Serialize(&p->Character);
-        serializer.Stream.Serialize(&p->Palette);
         serializer.Stream.Serialize(&p->RealTeam);
         serializer.Stream.Serialize(&p->RequestedTeam);
         serializer.Stream.Serialize(&p->JoinTick);
@@ -3150,6 +3195,8 @@ namespace Quantum {
         QBoolean.Serialize(&p->IsSpectator, serializer);
         QBoolean.Serialize(&p->ManualSpectator, serializer);
         QBoolean.Serialize(&p->VotedToContinue, serializer);
+        AssetRef.Serialize(&p->Character, serializer);
+        AssetRef.Serialize(&p->Palette, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -3764,13 +3811,13 @@ namespace Quantum {
     private ISignalOnStageReset[] _ISignalOnStageResetSystems;
     private ISignalOnTileChanged[] _ISignalOnTileChangedSystems;
     partial void AllocGen() {
-      _globals = (_globals_*)Context.Allocator.AllocAndClear(sizeof(_globals_));
+      _globals = (_globals_*)QuantumUnsafe.AllocAndClear(sizeof(_globals_));
     }
     partial void FreeGen() {
-      Context.Allocator.Free(_globals);
+      QuantumUnsafe.Free(_globals);
     }
     partial void CopyFromGen(Frame frame) {
-      Native.Utils.Copy(_globals, frame._globals, sizeof(_globals_));
+      QuantumUnsafe.Copy(_globals, frame._globals, sizeof(_globals_));
     }
     partial void InitGen() {
       Initialize(this, this.SimulationConfig.Entities, 256);
@@ -3810,6 +3857,7 @@ namespace Quantum {
       _ISignalOnTileChangedSystems = BuildSignalsArray<ISignalOnTileChanged>();
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
+      _ComponentSignalsOnMoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       BuildSignalsArrayOnComponentAdded<Quantum.BetterPhysicsObject>();
       BuildSignalsArrayOnComponentRemoved<Quantum.BetterPhysicsObject>();
       BuildSignalsArrayOnComponentAdded<Quantum.BigStar>();
@@ -3840,6 +3888,8 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<Quantum.ComboKeeper>();
       BuildSignalsArrayOnComponentAdded<Quantum.Cullable>();
       BuildSignalsArrayOnComponentRemoved<Quantum.Cullable>();
+      BuildSignalsArrayOnComponentAdded<Quantum.DonutBlock>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.DonutBlock>();
       BuildSignalsArrayOnComponentAdded<Quantum.Enemy>();
       BuildSignalsArrayOnComponentRemoved<Quantum.Enemy>();
       BuildSignalsArrayOnComponentAdded<Quantum.EnterablePipe>();
@@ -4315,6 +4365,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum.Cullable), Quantum.Cullable.SIZE);
       typeRegistry.Register(typeof(DistanceJoint), DistanceJoint.SIZE);
       typeRegistry.Register(typeof(DistanceJoint3D), DistanceJoint3D.SIZE);
+      typeRegistry.Register(typeof(Quantum.DonutBlock), Quantum.DonutBlock.SIZE);
       typeRegistry.Register(typeof(Quantum.Enemy), Quantum.Enemy.SIZE);
       typeRegistry.Register(typeof(Quantum.EnterablePipe), Quantum.EnterablePipe.SIZE);
       typeRegistry.Register(typeof(EntityPrototypeRef), EntityPrototypeRef.SIZE);
@@ -4386,7 +4437,8 @@ namespace Quantum {
       typeRegistry.Register(typeof(PhysicsCollider2D), PhysicsCollider2D.SIZE);
       typeRegistry.Register(typeof(PhysicsCollider3D), PhysicsCollider3D.SIZE);
       typeRegistry.Register(typeof(Quantum.PhysicsContact), Quantum.PhysicsContact.SIZE);
-      typeRegistry.Register(typeof(PhysicsEngineState), PhysicsEngineState.SIZE);
+      typeRegistry.Register(typeof(PhysicsEngineState2D), PhysicsEngineState2D.SIZE);
+      typeRegistry.Register(typeof(PhysicsEngineState3D), PhysicsEngineState3D.SIZE);
       typeRegistry.Register(typeof(PhysicsFlags), 1);
       typeRegistry.Register(typeof(PhysicsJoints2D), PhysicsJoints2D.SIZE);
       typeRegistry.Register(typeof(PhysicsJoints3D), PhysicsJoints3D.SIZE);
@@ -4427,48 +4479,48 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum.WrappingObject), Quantum.WrappingObject.SIZE);
       typeRegistry.Register(typeof(Quantum._globals_), Quantum._globals_.SIZE);
     }
-    static partial void InitComponentTypeIdGen() {
-      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 38)
-        .AddBuiltInComponents()
-        .Add<Quantum.BetterPhysicsObject>(Quantum.BetterPhysicsObject.Serialize, Quantum.BetterPhysicsObject.OnAdded, Quantum.BetterPhysicsObject.OnRemoved, ComponentFlags.None)
-        .Add<Quantum.BigStar>(Quantum.BigStar.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.BlockBump>(Quantum.BlockBump.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Bobomb>(Quantum.Bobomb.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Boo>(Quantum.Boo.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.BreakableObject>(Quantum.BreakableObject.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.BulletBill>(Quantum.BulletBill.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.BulletBillLauncher>(Quantum.BulletBillLauncher.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.CameraController>(Quantum.CameraController.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Coin>(Quantum.Coin.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.CoinItem>(Quantum.CoinItem.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.ComboKeeper>(Quantum.ComboKeeper.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Cullable>(Quantum.Cullable.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Enemy>(Quantum.Enemy.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.EnterablePipe>(Quantum.EnterablePipe.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Freezable>(Quantum.Freezable.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.GenericMover>(Quantum.GenericMover.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.GoldBlock>(Quantum.GoldBlock.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Goomba>(Quantum.Goomba.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Holdable>(Quantum.Holdable.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.IceBlock>(Quantum.IceBlock.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Interactable>(Quantum.Interactable.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.InteractionInitiator>(Quantum.InteractionInitiator.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.InvisibleBlock>(Quantum.InvisibleBlock.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Koopa>(Quantum.Koopa.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Liquid>(Quantum.Liquid.Serialize, Quantum.Liquid.OnAdded, Quantum.Liquid.OnRemoved, ComponentFlags.None)
-        .Add<Quantum.MarioBrosPlatform>(Quantum.MarioBrosPlatform.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.MarioPlayer>(Quantum.MarioPlayer.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.MovingPlatform>(Quantum.MovingPlatform.Serialize, Quantum.MovingPlatform.OnAdded, Quantum.MovingPlatform.OnRemoved, ComponentFlags.None)
-        .Add<Quantum.ObjectiveCoin>(Quantum.ObjectiveCoin.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.PhysicsObject>(Quantum.PhysicsObject.Serialize, Quantum.PhysicsObject.OnAdded, Quantum.PhysicsObject.OnRemoved, ComponentFlags.None)
-        .Add<Quantum.PiranhaPlant>(Quantum.PiranhaPlant.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.PlayerData>(Quantum.PlayerData.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Powerup>(Quantum.Powerup.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Projectile>(Quantum.Projectile.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.Spinner>(Quantum.Spinner.Serialize, Quantum.Spinner.OnAdded, Quantum.Spinner.OnRemoved, ComponentFlags.None)
-        .Add<Quantum.StarCoin>(Quantum.StarCoin.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.WrappingObject>(Quantum.WrappingObject.Serialize, null, null, ComponentFlags.None)
-        .Finish();
+    static partial void InitComponentTypeIdGen(Int32 extraComponentCount) {
+      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 39 + extraComponentCount);
+      ComponentTypeId.RegisterBuiltInComponents();
+      ComponentTypeId.RegisterComponent<Quantum.BetterPhysicsObject>(20, Quantum.BetterPhysicsObject.Serialize, Quantum.BetterPhysicsObject.OnAdded, Quantum.BetterPhysicsObject.OnRemoved, ComponentFlags.None);
+      ComponentTypeId.RegisterComponent<Quantum.BigStar>(21, Quantum.BigStar.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.BlockBump>(22, Quantum.BlockBump.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Bobomb>(23, Quantum.Bobomb.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Boo>(24, Quantum.Boo.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.BreakableObject>(25, Quantum.BreakableObject.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.BulletBill>(26, Quantum.BulletBill.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.BulletBillLauncher>(27, Quantum.BulletBillLauncher.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.CameraController>(28, Quantum.CameraController.Serialize, null, null, ComponentFlags.None);
+      ComponentTypeId.RegisterComponent<Quantum.Coin>(29, Quantum.Coin.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.CoinItem>(30, Quantum.CoinItem.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.ComboKeeper>(31, Quantum.ComboKeeper.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Cullable>(32, Quantum.Cullable.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.DonutBlock>(33, Quantum.DonutBlock.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Enemy>(34, Quantum.Enemy.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.EnterablePipe>(35, Quantum.EnterablePipe.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Freezable>(36, Quantum.Freezable.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.GenericMover>(37, Quantum.GenericMover.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.GoldBlock>(38, Quantum.GoldBlock.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Goomba>(39, Quantum.Goomba.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Holdable>(40, Quantum.Holdable.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.IceBlock>(41, Quantum.IceBlock.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Interactable>(42, Quantum.Interactable.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.InteractionInitiator>(43, Quantum.InteractionInitiator.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.InvisibleBlock>(44, Quantum.InvisibleBlock.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Koopa>(45, Quantum.Koopa.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Liquid>(46, Quantum.Liquid.Serialize, Quantum.Liquid.OnAdded, Quantum.Liquid.OnRemoved, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.MarioBrosPlatform>(47, Quantum.MarioBrosPlatform.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.MarioPlayer>(48, Quantum.MarioPlayer.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.MovingPlatform>(49, Quantum.MovingPlatform.Serialize, Quantum.MovingPlatform.OnAdded, Quantum.MovingPlatform.OnRemoved, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.ObjectiveCoin>(50, Quantum.ObjectiveCoin.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.PhysicsObject>(51, Quantum.PhysicsObject.Serialize, Quantum.PhysicsObject.OnAdded, Quantum.PhysicsObject.OnRemoved, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.PiranhaPlant>(52, Quantum.PiranhaPlant.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.PlayerData>(53, Quantum.PlayerData.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Powerup>(54, Quantum.Powerup.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Projectile>(55, Quantum.Projectile.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.Spinner>(56, Quantum.Spinner.Serialize, Quantum.Spinner.OnAdded, Quantum.Spinner.OnRemoved, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.StarCoin>(57, Quantum.StarCoin.Serialize, null, null, ComponentFlags.Table);
+      ComponentTypeId.RegisterComponent<Quantum.WrappingObject>(58, Quantum.WrappingObject.Serialize, null, null, ComponentFlags.Table);
     }
     [Preserve()]
     public static void EnsureNotStrippedGen() {

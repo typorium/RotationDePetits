@@ -24,7 +24,7 @@ struct PlayerInformation {
 	QString<48> Nickname;
 	QStringUtf8<48> NicknameColor;
 	byte Team;
-	byte Character;
+	AssetRef<CharacterAsset> Character;
 	bool Disconnected;
 	bool Disqualified;
 }

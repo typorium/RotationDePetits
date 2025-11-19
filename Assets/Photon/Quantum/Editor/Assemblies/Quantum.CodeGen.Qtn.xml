@@ -313,6 +313,9 @@
  Options for the code generator.
  </summary>
 </member>
+<member name="F:Quantum.CodeGen.GeneratorLegacyOptions.CreateAssetMenuAttribute">
+ <summary>Generates CreateAssetMenu attributes</summary>
+</member>
 <member name="F:Quantum.CodeGen.GeneratorLegacyOptions.UnityUpgradableObsoleteAttributes">
  <summary>Generates Unity-upgradeable Obsolete attributes</summary>
 </member>

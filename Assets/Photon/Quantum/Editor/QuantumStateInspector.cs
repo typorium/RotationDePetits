@@ -10,6 +10,12 @@ namespace Quantum.Editor {
   using UnityEngine;
   using static QuantumUnityExtensions;
 
+#if UNITY_6000_2_OR_NEWER
+  using TreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+  using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+  using TreeView = UnityEditor.IMGUI.Controls.TreeView<int>;
+#endif
+  
   /// <summary>
   /// An editor class that renders the Quantum state inspector used to reveal internal state of Quantum entities during run-time.
   /// Open the window by using Tools > Quantum > Window > State Inspectors

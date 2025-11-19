@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.default.grass
   GroupingTranslationKey: level.header.default
   DiscordStageImage: level-grassland
+  SortOrder: 0
   Icon: {fileID: 21300000, guid: e65b552347cbc084fae4f7174a2f115e, type: 3}
+  MainMenuPreviewPrefab: {fileID: 4641210903229175284, guid: 83858daae11ce294f92bb16fc6ecf917,
+    type: 3}
   OverrideAutomaticTilemapSettings: 0
   TileDimensions:
     X: 64
@@ -721,8 +724,8 @@ MonoBehaviour:
   - Tile:
       Id:
         Value: 508553503855572043
-    Rotation: 0
-    Flags: 0
+    Rotation: 65534
+    Flags: 1
   - Tile:
       Id:
         Value: 508553503855572043
@@ -1356,8 +1359,8 @@ MonoBehaviour:
   - Tile:
       Id:
         Value: 508553503855572043
-    Rotation: 0
-    Flags: 0
+    Rotation: 65534
+    Flags: 1
   - Tile:
       Id:
         Value: 0

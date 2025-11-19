@@ -83,7 +83,7 @@ namespace NSMB.UI.Game.Scoreboard {
             backgroundColor.a = 0.5f;
             background.color = backgroundColor;
 
-            CharacterAsset character = f.FindAsset(f.SimulationConfig.CharacterDatas[info.Character]);
+            var character = QuantumViewUtils.FindAssetOrFirst(info.Character);
             int objective = 0;
             int lives = 0;
             if (f.Unsafe.TryGetPointer(Target, out MarioPlayer* mario)) {

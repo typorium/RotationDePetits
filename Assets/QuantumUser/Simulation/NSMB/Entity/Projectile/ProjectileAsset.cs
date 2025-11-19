@@ -1,8 +1,9 @@
-
 using Photon.Deterministic;
 using Quantum;
+using System;
+using System.Collections.Generic;
 
-public class ProjectileAsset : AssetObject {
+public class ProjectileAsset : AssetObject, ISoundEffectOverrideProvider {
     public ProjectileEffectType Effect;
     public bool Bounce = true;
     public FP Speed;
@@ -17,6 +18,22 @@ public class ProjectileAsset : AssetObject {
 
     public ParticleEffect DestroyParticleEffect = ParticleEffect.None;
     public SoundEffect ShootSound = SoundEffect.Powerup_Fireball_Shoot;
+
+    public SoundEffectOverride[] SfxOverrides;
+
+    [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
+    public override void Loaded(IResourceManager resourceManager) {
+        overridesDict = new();
+        if (SfxOverrides != null) {
+            foreach (var @override in SfxOverrides) {
+                overridesDict[@override.SoundEffect] = @override;
+            }
+        }
+    }
+    public SoundEffectOverride GetOverrideForSfx(SoundEffect sfx) {
+        overridesDict.TryGetValue(sfx, out var result);
+        return result;
+    }
 }
 
 public enum ProjectileEffectType {

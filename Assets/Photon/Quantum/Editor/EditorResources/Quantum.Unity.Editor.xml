@@ -14,6 +14,11 @@
             Label applied to Quantum AssetObject assets.
             </summary>
         </member>
+        <member name="F:Quantum.Editor.QuantumUnityDBUtilities.IgnoreAssetLabel">
+            <summary>
+            Label that prevents label <see cref="F:Quantum.Editor.QuantumUnityDBUtilities.AssetLabel"/> from being applied.
+            </summary>
+        </member>
         <member name="M:Quantum.Editor.QuantumUnityDBUtilities.GetGlobalDBPath">
             <summary>
             Returns the default path to the <see cref="T:Quantum.QuantumUnityDB"/> asset. 
@@ -32,11 +37,11 @@
         <member name="M:Quantum.Editor.QuantumUnityDBUtilities.SetQuantumUnityDBRefreshMode(System.Boolean)">
             <summary>
             Sets the Quantum Unity DB refresh mode. By default, after an asset with <see cref="F:Quantum.Editor.QuantumUnityDBUtilities.AssetLabel"/> is imported, a call to
-            <see cref="M:Quantum.Editor.QuantumUnityDBImporter.RefreshAssetObjectHash"/> is scheduled. When running in batch mode, it may result
+            <see cref="M:Quantum.Editor.QuantumUnityDBImporter.RefreshAssetObjectHash(System.Boolean)"/> is scheduled. When running in batch mode, it may result
             in the hash never being refreshed and the global <see cref="T:Quantum.QuantumUnityDB"/> not being updated. To prevent this,
             call this method with <paramref name="immediate"/> set to true.
             </summary>
-            <param name="immediate">Should <see cref="M:Quantum.Editor.QuantumUnityDBImporter.RefreshAssetObjectHash"/> be called immediately
+            <param name="immediate">Should <see cref="M:Quantum.Editor.QuantumUnityDBImporter.RefreshAssetObjectHash(System.Boolean)"/> be called immediately
             after an asset import.</param>
         </member>
         <member name="M:Quantum.Editor.QuantumUnityDBUtilities.ExportAsJson">
@@ -49,7 +54,7 @@
         <member name="M:Quantum.Editor.QuantumUnityDBUtilities.ExportAsJson(System.String)">
             <summary>
             Export the global DB to a JSON file with <see cref="T:Quantum.QuantumUnityJsonSerializer"/>. None of the asset will have its
-            <see cref="M:Quantum.AssetObject.Loaded(Quantum.IResourceManager,Photon.Deterministic.Native.Allocator)"/> called, as they are loaded with <see cref="P:Quantum.IQuantumAssetObjectSource.EditorInstance"/>.
+            <see cref="M:Quantum.AssetObject.Loaded(Quantum.IResourceManager)"/> called, as they are loaded with <see cref="P:Quantum.IQuantumAssetObjectSource.EditorInstance"/>.
             </summary>
             <param name="path">Output path.</param>
         </member>
@@ -100,6 +105,13 @@
             <summary>
             Appends the <see cref="T:Quantum.AssetGuid"/> to the hash.
             </summary>
+        </member>
+        <member name="M:Quantum.Editor.QuantumUnityDBUtilities.IsAssetIgnored(System.String)">
+            <summary>
+            Returns true if asset has <see cref="F:Quantum.Editor.QuantumUnityDBUtilities.IgnoreAssetLabel"/> set.
+            </summary>
+            <param name="assetPath"></param>
+            <returns></returns>
         </member>
         <member name="M:Quantum.Editor.QuantumMapNavMeshUnityEditor.UpdateDefaultMinAgentRadius">
             <summary>
@@ -299,7 +311,7 @@
         </member>
         <member name="T:Quantum.Editor.ReplayMenu">
             <summary>
-            Unity menu items to export replays and save games.
+            Unity menu items to export replays and snapshots.
             </summary>
         </member>
         <member name="T:Quantum.Editor.QuantumUnityDBInspector">
@@ -428,6 +440,12 @@
             <param name="saveScene">Save the scene</param>
             <param name="addToBuildSettings">Add the scene to build settings</param>
             <param name="createSceneInfoAsset"></param>
+        </member>
+        <member name="M:Quantum.Editor.QuantumEditorMenuCreateScene.CreateSimpleLocalGameScene(System.String)">
+            <summary>
+            Create a simple local game scene.
+            </summary>
+            <param name="scenePath">Path to the new scene</param>
         </member>
         <member name="M:Quantum.Editor.QuantumEditorMenuCreateScene.CreateSimpleConnectionScene(System.String)">
             <summary>
@@ -642,6 +660,23 @@
             Find the Quantum stats prefab and instantiate it in the current scene.
             </summary>
         </member>
+        <member name="T:Quantum.Editor.QuantumEditorFrameDifferWindow">
+            <summary>
+            The class is only used in tests.
+            Prevents opening the window, as this lead to random 
+            Unhandled log message: '[Assert] Assertion failed on expression: 'SUCCEEDED(hr)''. Use UnityEngine.TestTools.LogAssert.Expect
+            UnityEditor.EditorWindow:GetWindow(System.Type)
+            </summary>
+            <summary>
+            The Quantum Frame Differ window shown in the Unity Editor.
+            Readable and comparable frame dumps are sent by other clients and can be compared after a desync error.
+            </summary>
+        </member>
+        <member name="M:Quantum.Editor.QuantumEditorFrameDifferWindow.ShowWindow">
+            <summary>
+            Open the Frame Differ window.
+            </summary>
+        </member>
         <member name="M:Quantum.Editor.QuantumEditorObjectFactory.CreateAllPrimitives(UnityEditor.MenuCommand)">
             <summary>
             Creates an array of all the primitives we can create from the menu entries.
@@ -686,6 +721,11 @@
         <member name="P:Quantum.Editor.QuantumAssetSourceFactoryContext.AssetPath">
             <summary>
             Asset Unity path.
+            </summary>
+        </member>
+        <member name="P:Quantum.Editor.QuantumAssetSourceFactoryContext.Object">
+            <summary>
+            The object pointed to be <see cref="F:Quantum.Editor.QuantumAssetSourceFactoryContext.InstanceID"/>
             </summary>
         </member>
         <member name="M:Quantum.Editor.QuantumAssetSourceFactoryContext.#ctor(System.String,System.Int32,System.String,System.Boolean)">
@@ -749,6 +789,11 @@
             Creates <see cref="T:Quantum.QuantumAssetSourceAddressable`1"/> if the asset is an Addressable.
             </summary>
         </member>
+        <member name="T:Quantum.Editor.QuantumEditorFPConverterWindow">
+            <summary>
+            Debug windows that converts between double and FP values.
+            </summary>
+        </member>
         <member name="T:Quantum.Editor.QuantumMachineIdImporter">
             <summary>
             Assets ending with .quantum-id will be tried for a <see cref="T:Quantum.QuantumMachineId"/> script.
@@ -787,7 +832,7 @@
         </member>
         <member name="F:Quantum.Editor.QuantumEditorMenuDllToggle.ExtractToDirectory">
             <summary>
-            Directory where the Quantum DLLs (Debug or Release) are extracted to.
+            Directory where the Quantum Dlls (Debug or Release) are extracted to.
             </summary>
         </member>
         <member name="P:Quantum.Editor.QuantumEditorMenuDllToggle.IsQuantumDeterministicDllDebug">
@@ -806,7 +851,7 @@
             Use this to check if <see cref="M:Quantum.Editor.QuantumEditorMenuDllToggle.SetToDebug"/> needs to be called in order to switch to Debug.
             </summary>
             <returns>
-            <c>true</c> if either Quantum.Deterministic or Quantum.Engine.dll are NOT Debug.
+            <c>true</c> if Quantum.Engine.dll is NOT Debug.
             <c>false</c> otherwise.
             </returns>
             <example>
@@ -979,17 +1024,6 @@
             <typeparam name="T">Asset type</typeparam>
             <param name="name">Asset name</param>
             <returns>The asset matching the type and name</returns>
-        </member>
-        <member name="T:Quantum.Editor.QuantumEditorFrameDifferWindow">
-            <summary>
-            The Quantum Frame Differ window shown in the Unity Editor.
-            Readable and comparable frame dumps are sent by other clients and can be compared after a desync error.
-            </summary>
-        </member>
-        <member name="M:Quantum.Editor.QuantumEditorFrameDifferWindow.ShowWindow">
-            <summary>
-            Open the Frame Differ window.
-            </summary>
         </member>
         <member name="T:Quantum.Editor.AssetDatabaseUtils">
             <summary>
@@ -1510,6 +1544,11 @@
             The path to the Photon Server SDK.
             </summary>
         </member>
+        <member name="F:Quantum.Editor.QuantumDotnetBuildSettings.PluginSolutionPath">
+            <summary>
+            The path to the Photon Server plugin solution file.
+            </summary>
+        </member>
         <member name="F:Quantum.Editor.QuantumDotnetBuildSettings.TargetPlatform">
             <summary>
             The target platform to build for.
@@ -1562,6 +1601,14 @@
             <param name="copyOutputDir">Copy result to output dir</param>
             <param name="disablePopup">Disable file explorer popup</param>
         </member>
+        <member name="M:Quantum.Editor.QuantumDotnetBuildSettings.RunDotnetCommand(System.String,System.String)">
+            <summary>
+            Attempts to run a Dotnet command.
+            </summary>
+            <param name="arguments">Arguments to the command</param>
+            <param name="dotnetCommandPath">Optionally set a dotnet command path.</param>
+            <returns>True when succeeded.</returns>
+        </member>
         <member name="M:Quantum.Editor.QuantumDotnetBuildSettings.TryFindPluginSdkFolderWithPopup(System.String@)">
             <summary>
             Attempts to find the Photon Server SDK folder. If not found, opens a folder selection dialog.
@@ -1588,9 +1635,20 @@
             </summary>
             <param name="destinationPath">The path to export the files.</param>
         </member>
-        <member name="M:Quantum.Editor.QuantumDotnetBuildSettings.LaunchPhotonServer">
+        <member name="M:Quantum.Editor.QuantumDotnetBuildSettings.LaunchPhotonServer(System.Boolean)">
             <summary>
             Launches PhotonServer.exe from the Plugin SDK folder.
+            If <see cref="F:Quantum.Editor.QuantumDotnetBuildSettings.PluginSolutionPath"/> exists the solution will be compiled first.
+            </summary>
+        </member>
+        <member name="M:Quantum.Editor.QuantumDotnetBuildSettings.CreateConsoleRunnerLaunchSettingsFromReplay(Quantum.Editor.QuantumDotnetBuildSettings,UnityEngine.TextAsset)">
+            <summary>
+            Create a launchSettings.json file pointing to the selected replay file.
+            </summary>
+        </member>
+        <member name="M:Quantum.Editor.QuantumDotnetBuildSettings.CompileAndRunConsoleRunnerWithReplay(Quantum.Editor.QuantumDotnetBuildSettings,UnityEngine.TextAsset)">
+            <summary>
+            Compile the console runner and launch it with the selected replay file.
             </summary>
         </member>
         <member name="T:Quantum.Editor.QuantumDotnetProjectSettings">
@@ -1626,6 +1684,7 @@
         <member name="F:Quantum.Editor.QuantumDotnetProjectSettings.IncludePaths">
             <summary>
             The search paths to collect all simulation source files from.E.g. files that are included in the Quantum.Simulation.asmdef.
+            Adds the UPM package path by default even if not used.
             </summary>
         </member>
         <member name="M:Quantum.Editor.QuantumDotnetProjectSettings.Export">
@@ -1746,6 +1805,12 @@
             <summary>
             A list of Quantum assets that enabled GUID Override. This list is tracked automatically.
             </summary>
+        </member>
+        <member name="M:Quantum.QuantumEditorSettings.RemoveOutdatedGuidOverrides">
+            <summary>
+            Removes outdated entries in Asset Guid overrides.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Quantum.QuantumToolbarZone">
             <summary>

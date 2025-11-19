@@ -8,14 +8,20 @@ namespace Quantum.Editor {
   using UnityEngine.Profiling;
   using UnityEngine.Serialization;
   using Debug = UnityEngine.Debug;
+  using Object = UnityEngine.Object;
 
+#if UNITY_6000_3_OR_NEWER
+  using InstanceIdType = UnityEngine.EntityId;
+#else 
+  using InstanceIdType = System.Int32;
+#endif
+  
   [ScriptedImporter(6, Extension, importQueueOffset: 200000)]
   internal unsafe partial class QuantumUnityDBImporter : ScriptedImporter {
     public const  string Extension              = "qunitydb";
     public const  string ExtensionWithDot       = ".qunitydb";
 
     private const string LogPrefix              = "[QuantumUnityDBImporter] ";
-    private const string AddressablesDependency = "QuantumUnityDBImporterAddressablesDependency";
     private const string AssetObjectsDependency = "QuantumUnityDBImporterAssetObjectsDependency";
     
     /// <summary>
@@ -28,7 +34,7 @@ namespace Quantum.Editor {
     [InitializeOnLoadMethod]
     static void RegisterAddressableEventListeners() {
       AssetDatabaseUtils.AddAddressableAssetsWithLabelMonitor(QuantumUnityDBUtilities.AssetLabel, (hash) => {
-        AssetDatabaseUtils.RegisterCustomDependencyWithMppmWorkaround(AddressablesDependency, hash);
+        AddressablesDependency.Refresh();
       });
     }
 #endif
@@ -55,9 +61,9 @@ namespace Quantum.Editor {
 
       {
         Profiler.BeginSample("Iterating Assets");
-        foreach (HierarchyProperty it in QuantumUnityDBUtilities.IterateAssets(rootFolder)) {
+        foreach (var it in QuantumUnityDBUtilities.IterateAssets(rootFolder)) {
           try {
-            var source = CreateAssetSource(factory, it.instanceID, it.name, it.isMainRepresentation);
+            var source = CreateAssetSource(factory, it.GetObjectId(), it.name, it.isMainRepresentation);
             if (source != default) {
               sources.Add(source);
             }
@@ -109,14 +115,14 @@ namespace Quantum.Editor {
       }
 
       ctx.AddObjectToAsset("root", db);
-      ctx.DependsOnCustomDependency(AssetObjectsDependency);
-      ctx.DependsOnCustomDependency(AddressablesDependency);
+      ctx.DependsOnCustomDependency(AssetObjectHashDependency.Name);
+      ctx.DependsOnCustomDependency(AddressablesDependency.Name);
       QuantumUnityDBUtilities.AddAssetGuidOverridesDependency(ctx);
       
       ctx.SetMainObject(db);
     }
 
-    private (IQuantumAssetObjectSource, AssetGuid, string) CreateAssetSource(QuantumAssetSourceFactory factory, int instanceID, string unityAssetName, bool isMain) {
+    private (IQuantumAssetObjectSource, AssetGuid, string) CreateAssetSource(QuantumAssetSourceFactory factory, InstanceIdType instanceID, string unityAssetName, bool isMain) {
       
       var (unityAssetGuid, fileId) = AssetDatabaseUtils.GetGUIDAndLocalFileIdentifierOrThrow(instanceID);
       
@@ -126,40 +132,49 @@ namespace Quantum.Editor {
       var quantumAssetPath = QuantumUnityDBUtilities.GetExpectedAssetPath(instanceID, unityAssetName, isMain);
       Debug.Assert(!string.IsNullOrEmpty(quantumAssetPath));
 
-      IQuantumAssetObjectSource source = null;
-
       var context = new QuantumAssetSourceFactoryContext(unityAssetGuid, instanceID, unityAssetName, isMain);
-      source = factory.TryCreateAssetObjectSource(context);
+      IQuantumAssetObjectSource source = factory.TryCreateAssetObjectSource(context);
 
       if (source == null) {
-        QuantumEditorLog.ErrorImport($"No source found for asset {unityAssetName} ({unityAssetGuid})", EditorUtility.InstanceIDToObject(instanceID));
+        QuantumEditorLog.ErrorImport($"No source found for asset {unityAssetName} ({unityAssetGuid})", new LazyLoadReference<Object>(instanceID).asset);
         return default;
       }
 
       return (source, quantumAssetGuid, quantumAssetPath);
     }
-    
-    public static void RefreshAssetObjectHash() {
-      var sw = Stopwatch.StartNew();
-      
+
+    static readonly QuantumCustomDependency AssetObjectHashDependency = new QuantumCustomDependency("QuantumUnityDBImporterAssetObjectsDependency", () => {
       var hash = new Hash128();
+
       foreach (var it in QuantumUnityDBUtilities.IterateAssets()) {
         // any new/deleted asset should alter the hash right here
         hash.Append(it.guid);
         // so does moving...
         hash.Append(AssetDatabase.GUIDToAssetPath(it.guid));
+
         // ... and renaming, if this is a nested asset
         if (!it.isMainRepresentation) {
           hash.Append(it.name);
         }
+
         // any changes to asset's guid affects the hash
-        var assetGuid = QuantumUnityDBUtilities.GetExpectedAssetGuid(it.instanceID, out _);
+        var assetGuid = QuantumUnityDBUtilities.GetExpectedAssetGuid(it.GetObjectId(), out _);
         hash.Append(assetGuid);
       }
-      
-      QuantumEditorLog.TraceImport($"Refreshing {AssetObjectsDependency} dependency hash: {hash} (took: {sw.Elapsed}");
-      AssetDatabaseUtils.RegisterCustomDependencyWithMppmWorkaround(AssetObjectsDependency, hash);
-    }
 
+      return hash;
+    });
+
+    static readonly QuantumCustomDependency AddressablesDependency = new QuantumCustomDependency("QuantumUnityDBImporterAddressablesDependency", () => {
+#if QUANTUM_ENABLE_ADDRESSABLES && !QUANTUM_DISABLE_ADDRESSABLES
+      var assetsSettings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+      if (assetsSettings) {
+        return assetsSettings.currentHash;
+      }
+#endif
+      return default;
+    });
+    
+    public static void RefreshAssetObjectHash(bool immediate) => AssetObjectHashDependency.Refresh(immediate);
   }
 }

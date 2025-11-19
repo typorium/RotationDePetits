@@ -17,7 +17,6 @@ namespace Quantum {
     /// The default path of the global Quantum editor settings asset.
     /// </summary>
     public const   string DefaultPath                 = "Assets/QuantumUser/Editor/QuantumEditorSettings.asset";
-    internal const string AssetGuidOverrideDependency = "QuantumUnityDBUtilitiesAssetGuidOverrideDependency";
     
     /// <summary>
     /// Get the global Quantum editor settings instance and run the provided action and return result of a certain type.
@@ -150,6 +149,15 @@ namespace Quantum {
     
     private void OnValidate() {
       QuantumEditorLog.TraceImport($"OnValidate");
+      RemoveOutdatedGuidOverrides();
+    }
+
+    /// <summary>
+    /// Removes outdated entries in Asset Guid overrides.
+    /// </summary>
+    /// <returns></returns>
+    public int RemoveOutdatedGuidOverrides() {
+      int count = 0;
       
       _assetIdToAssetGuidOverride.Clear();
 
@@ -159,25 +167,30 @@ namespace Quantum {
         if (!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(entry.Asset, out var unityGuid, out var fileId)) {
           QuantumEditorLog.WarnImport($"Invalid or outdated AssetGuid override for {entry.Asset} ({entry.Guid}), removing");
           AssetGuidOverrides.RemoveAt(i);
+          ++count;
           continue;
         } 
         
         if (string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(unityGuid))) {
           QuantumEditorLog.TraceImport($"Invalid asset override for {entry.Asset}, removing");
           AssetGuidOverrides.RemoveAt(i);
+          ++count;
           continue;
         }
         
         var key = (new GUID(unityGuid), fileId);
         if (_assetIdToAssetGuidOverride.ContainsKey(key)) {
           QuantumEditorLog.TraceImport($"Duplicate asset override for {key}");
+          ++count;
           AssetGuidOverrides.RemoveAt(i);
         } else {
           _assetIdToAssetGuidOverride.Add(key, entry);
         }
       }
+
+      return count;
     }
-    
+
     internal bool TryGetAssetGuidOverride(GUID guid, long fileId, out AssetGuid assetGuid) {
       if (_assetIdToAssetGuidOverride.TryGetValue((guid, fileId), out var entry)) {
         assetGuid = entry.Guid;
@@ -242,20 +255,24 @@ namespace Quantum {
 
     #endregion
 
-    internal void RefreshGuidOverridesHash() {
+    internal static readonly QuantumCustomDependency AssetGuidOverrideDependency = new QuantumCustomDependency("QuantumUnityDBUtilitiesAssetGuidOverrideDependency", () => {
+      if (!TryGetGlobal(out var global)) {
+        return default;
+      }
+      
       Hash128 hash = new Hash128();
-      var sw = System.Diagnostics.Stopwatch.StartNew();
-      foreach (var entry in AssetGuidOverrides) {
+      
+      foreach (var entry in global.AssetGuidOverrides) {
         if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(entry.Asset, out var unityGuid, out var fileId)) {
           hash.Append(unityGuid);
           hash.Append(fileId);
         }
+
         hash.Append(entry.Guid);
       }
-      
-      QuantumEditorLog.TraceImport($"Hash for {nameof(AssetGuidOverrides)}: {hash} (took {sw.Elapsed})");
-      AssetDatabaseUtils.RegisterCustomDependencyWithMppmWorkaround(AssetGuidOverrideDependency, hash);
-    }
+
+      return hash;
+    });
     
     [CanBeNull]
     internal string GetAssetLookupRoot() {

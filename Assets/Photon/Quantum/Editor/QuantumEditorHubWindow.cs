@@ -85,7 +85,14 @@ namespace Quantum.Editor {
          pages.AddRange(c);
        }
      }
-     
+
+    public static void CloseOpenInstance() {
+      if (HasOpenInstances<QuantumEditorHubWindow>()) {
+        var window = GetWindow<QuantumEditorHubWindow>();
+        window?.Close();
+      }
+    }
+
     protected static List<QuantumEditorHubPage> Pages {
       get {
         if (_pagesInitialized == false) {

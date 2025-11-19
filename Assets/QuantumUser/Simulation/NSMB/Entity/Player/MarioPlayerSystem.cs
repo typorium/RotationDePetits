@@ -1,13 +1,12 @@
 using Photon.Deterministic;
 using Quantum.Collections;
-using Quantum.Profiling;
 using System;
 using static IInteractableTile;
 
 namespace Quantum {
     public unsafe class MarioPlayerSystem : SystemMainThreadEntityFilter<MarioPlayer, MarioPlayerSystem.Filter>, ISignalOnComponentRemoved<Projectile>,
         ISignalOnGameStarting, ISignalOnBobombExplodeEntity, ISignalOnTryLiquidSplash, ISignalOnEntityBumped, ISignalOnBeforeInteraction,
-        ISignalOnPlayerDisconnected, ISignalOnIceBlockBroken, ISignalOnStageReset, ISignalOnEntityChangeUnderwaterState, ISignalOnEntityFreeze {
+        ISignalOnPlayerRemoved, ISignalOnIceBlockBroken, ISignalOnStageReset, ISignalOnEntityChangeUnderwaterState, ISignalOnEntityFreeze {
 
         private static readonly FPVector2 DeathUpForce = new FPVector2(0, FP.FromString("6.5"));
         private static readonly FPVector2 DeathUpGravity = new FPVector2(0, FP.FromString("-12.75"));
@@ -1193,17 +1192,19 @@ namespace Quantum {
                     f.Events.MarioPlayerMegaStart(filter.Entity);
                 } else {
                     // Still growing...
-                    if ((f.Number + filter.Entity.Index) % 4 == 0 && PhysicsObjectSystem.BoxInGround(f, transform->Position, collider->Shape, false, stage)) {
-                        // Cancel growing
-                        mario->CurrentPowerupState = PowerupState.Mushroom;
-                        mario->MegaMushroomEndFrames = (byte) (90 - mario->MegaMushroomStartFrames);
-                        mario->MegaMushroomStartFrames = 0;
+                    if ((f.Number + filter.Entity.Index) % 4 == 0) {
+                        if (PhysicsObjectSystem.BoxInGround(f, transform->Position, collider->Shape, false, stage)) {
+                            // Cancel growing
+                            mario->CurrentPowerupState = PowerupState.Mushroom;
+                            mario->MegaMushroomEndFrames = (byte) (90 - mario->MegaMushroomStartFrames);
+                            mario->MegaMushroomStartFrames = 0;
 
-                        physicsObject->IsFrozen = true;
-                        mario->MegaMushroomStationaryEnd = true;
-                        mario->SetReserveItem(f, QuantumUtils.FindPowerupAsset(f, PowerupState.MegaMushroom));
+                            physicsObject->IsFrozen = true;
+                            mario->MegaMushroomStationaryEnd = true;
+                            mario->SetReserveItem(f, QuantumUtils.FindPowerupAsset(f, PowerupState.MegaMushroom));
 
-                        f.Events.MarioPlayerMegaEnd(filter.Entity, true, mario->MegaMushroomEndFrames);
+                            f.Events.MarioPlayerMegaEnd(filter.Entity, true, mario->MegaMushroomEndFrames);
+                        }
                     }
                     return true;
                 }
@@ -1927,11 +1928,11 @@ namespace Quantum {
             // Waiting to prerespawn
             if (QuantumUtils.Decrement(ref mario->PreRespawnFrames)) {
                 mario->PreRespawn(f, entity, stage);
-                f.Events.StartCameraFadeIn(f, entity);
+                f.Events.StartCameraFadeIn(entity);
                 return true;
 
             } else if (mario->PreRespawnFrames == 20) {
-                f.Events.StartCameraFadeOut(f, entity);
+                f.Events.StartCameraFadeOut(entity);
                 return true;
             }
 
@@ -2525,7 +2526,7 @@ namespace Quantum {
                 || (mario->MegaMushroomEndFrames > 0 && mario->MegaMushroomStationaryEnd));
         }
 
-        public void OnPlayerDisconnected(Frame f, PlayerRef player) {
+        public void OnPlayerRemoved(Frame f, PlayerRef player) {
             foreach ((var entity, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                 if (mario->PlayerRef != player) {
                     continue;

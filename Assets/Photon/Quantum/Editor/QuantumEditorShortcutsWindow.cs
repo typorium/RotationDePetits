@@ -58,7 +58,7 @@ namespace Quantum.Editor {
     /// Search and select the Quantum .net project settings.
     /// </summary>
     [MenuItem("Tools/Quantum/Find Config/Quantum Dotnet Project Settings", priority = (int)QuantumEditorMenuPriority.GlobalConfigs + 33)]
-    public static void SearchQuantumDotnetProjectSettings() => Selection.activeObject = QuantumDotnetProjectSettings.TryGetGlobal(out var settings) ? settings : null; 
+    public static void SearchQuantumDotnetProjectSettings() => Selection.activeObject = QuantumDotnetProjectSettings.TryGetGlobal(out var settings) ? settings : null;
     
     /// <summary>
     /// Open the global config shortcut window.

@@ -32,4 +32,4 @@ MonoBehaviour:
       A: 255
     HatUsesOverallsColor: 0
   translationKey: skin.yellow
-  order: 4
+  order: -979

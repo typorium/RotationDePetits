@@ -1,9 +1,16 @@
 using Photon.Deterministic;
 
-namespace Quantum {
-    public unsafe class BulletBillSystem : SystemMainThread, ISignalOnBobombExplodeEntity, ISignalOnComponentRemoved<BulletBill>, ISignalOnIceBlockBroken {
-
-        private static readonly FPVector2 SpawnOffset = new FPVector2(0, FP.FromString("-0.45"));
+namespace Quantum
+{
+    public unsafe class BulletBillSystem : SystemMainThreadEntityFilter<BulletBill, BulletBillSystem.Filter>, ISignalOnBobombExplodeEntity, ISignalOnIceBlockBroken {
+        public struct Filter {
+            public EntityRef Entity;
+            public BulletBill* BulletBill;
+            public Transform2D* Transform;
+            public Enemy* Enemy;
+            public PhysicsObject* PhysicsObject;
+            public Freezable* Freezable;
+        }
 
         public override void OnInit(Frame f) {
             f.Context.Interactions.Register<BulletBill, MarioPlayer>(f, OnBulletBillMarioInteraction);
@@ -11,87 +18,36 @@ namespace Quantum {
             f.Context.Interactions.Register<BulletBill, IceBlock>(f, OnBulletBillIceBlockInteraction);
         }
 
-        public override void Update(Frame f) {
-            VersusStageData stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
+        public override void Update(Frame f, ref Filter filter, VersusStageData stage) {
+            var enemy = filter.Enemy;
+            var bulletBill = filter.BulletBill;
 
-            var launchers = f.Filter<BulletBillLauncher, BreakableObject, PhysicsCollider2D, Transform2D>();
-            while (launchers.NextUnsafe(out EntityRef entity, out var launcher, out var breakable, out var collider, out var transform)) {
-                if (breakable->IsBroken) {
-                    continue;
-                }
-                if (launcher->BulletBillCount >= 3) {
-                    continue;
+            if (!enemy->IsAlive) {
+                if (bulletBill->DespawnFrames == 0) {
+                    // Just died.
+                    bulletBill->DespawnFrames = 255;
                 }
 
-                FPVector2 spawnpoint = transform->Position + FPVector2.Up * (collider->Shape.Box.Extents.Y * 2) + SpawnOffset;
-                var allPlayers = f.Filter<MarioPlayer, Transform2D>();
-                FP smallestDistance = FP.UseableMax;
-                bool tooClose = false;
-                while (allPlayers.NextUnsafe(out _, out _, out Transform2D* marioTransform)) {
-                    QuantumUtils.WrappedDistance(stage, spawnpoint, marioTransform->Position, out FP distance);
-                    FP abs = FPMath.Abs(distance);
-
-                    // Player is too close
-                    if (abs < launcher->MinimumShootRadius) {
-                        smallestDistance = FP.UseableMax;
-                        tooClose = true;
-                        break;
-                    }
-
-                    if (abs < FPMath.Abs(smallestDistance)) {
-                        smallestDistance = distance;
-                    }
+                if (QuantumUtils.Decrement(ref bulletBill->DespawnFrames)) {
+                    f.Destroy(filter.Entity);
                 }
-
-                if (FPMath.Abs(smallestDistance) > launcher->MaximumShootRadius) {
-                    if (!tooClose) {
-                        launcher->TimeToShootFrames = launcher->TimeToShoot;
-                    }
-                    continue;
-                }
-
-                if (QuantumUtils.Decrement(ref launcher->TimeToShootFrames)) {
-                    // Attempt a shot
-                    bool right = smallestDistance < 0;
-
-                    EntityRef newBillEntity = f.Create(launcher->BulletBillPrototype);
-                    var newBill = f.Unsafe.GetPointer<BulletBill>(newBillEntity);
-                    var newBillTransform = f.Unsafe.GetPointer<Transform2D>(newBillEntity);
-                    newBill->Initialize(f, newBillEntity, entity, right);
-                    newBillTransform->Position = spawnpoint;
-
-                    launcher->BulletBillCount++;
-                    launcher->TimeToShootFrames = launcher->TimeToShoot;
-
-                    f.Events.BulletBillLauncherShoot(entity, newBillEntity, right);
-                }
+                return;
             }
 
-            var bulletBills = f.Filter<BulletBill, Transform2D, Enemy, PhysicsObject, Freezable>();
-            while (bulletBills.NextUnsafe(out EntityRef entity, out var bulletBill, out var transform, out var enemy, out var physicsObject, out var freezable)) {
-                if (!enemy->IsAlive) {
-                    if (bulletBill->DespawnFrames == 0) {
-                        bulletBill->DespawnFrames = 255;
-                    }
-
-                    if (QuantumUtils.Decrement(ref bulletBill->DespawnFrames)) {
-                        f.Destroy(entity);
-                    }
-                    continue;
-                }
-
-                if (freezable->IsFrozen(f)) {
-                    continue;
-                }
-
-                physicsObject->DisableCollision = true;
-                physicsObject->Velocity.X = bulletBill->Speed * (enemy->FacingRight ? 1 : -1);
-
-                DespawnCheck(f, entity, transform, bulletBill, stage);
+            if (filter.Freezable->IsFrozen(f)) {
+                return;
             }
+
+            var physicsObject = filter.PhysicsObject;
+            physicsObject->DisableCollision = true;
+            physicsObject->Velocity.X = bulletBill->Speed * (enemy->FacingRight ? 1 : -1);
+
+            DespawnCheck(f, ref filter, stage);
         }
 
-        public void DespawnCheck(Frame f, EntityRef entity, Transform2D* transform, BulletBill* bulletBill, VersusStageData stage) {
+        public void DespawnCheck(Frame f, ref Filter filter, VersusStageData stage) {
+            var transform = filter.Transform;
+            var bulletBill = filter.BulletBill;
             var allPlayers = f.Filter<MarioPlayer, Transform2D>();
             while (allPlayers.NextUnsafe(out _, out _, out Transform2D* marioTransform)) {
                 QuantumUtils.WrappedDistance(stage, transform->Position, marioTransform->Position, out FP distance);
@@ -101,7 +57,7 @@ namespace Quantum {
             }
 
             // Do despawn
-            f.Destroy(entity);
+            f.Destroy(filter.Entity);
         }
 
         #region Interactions
@@ -117,7 +73,7 @@ namespace Quantum {
             FPVector2 damageDirection = (theirPos - ourPos).Normalized;
             bool attackedFromAbove = FPVector2.Dot(damageDirection, FPVector2.Up) > 0;
             bool groundpounded = attackedFromAbove && mario->IsGroundpoundActive && mario->CurrentPowerupState != PowerupState.MiniMushroom;
-            
+
             if (mario->InstakillsEnemies(marioPhysicsObject, true) || groundpounded) {
                 bulletBill->Kill(f, bulletBillEntity, marioEntity, groundpounded ? KillReason.Groundpounded : KillReason.Special);
                 mario->DoEntityBounce |= mario->IsDrilling;
@@ -177,13 +133,6 @@ namespace Quantum {
                 bulletBill->Kill(f, entity, bobomb, KillReason.Special);
             }
         }
-
-        public void OnRemoved(Frame f, EntityRef entity, BulletBill* component) {
-            if (f.Unsafe.TryGetPointer(component->Owner, out BulletBillLauncher* launcher)) {
-                launcher->BulletBillCount--;
-            }
-        }
-
         public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason) {
             var iceBlock = f.Unsafe.GetPointer<IceBlock>(brokenIceBlock);
             if (f.Unsafe.TryGetPointer(iceBlock->Entity, out BulletBill* bulletBill)) {

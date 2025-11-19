@@ -1,14 +1,19 @@
-using NSMB.UI.Game;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
 namespace NSMB.Utilities {
     public class Utils {
+
+        public static T IndexIntoArrayOrFirstElement<T>(T[] array, int index) {
+            if (index < 0 || index >= array.Length) {
+                return array[0];
+            }
+            return array[index];
+        }
 
         public static bool BitTest(long v, int index) {
             return (v & (1L << index)) != 0;

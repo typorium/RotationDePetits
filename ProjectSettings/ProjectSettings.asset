@@ -55,7 +55,7 @@ PlayerSettings:
   mipStripping: 0
   numberOfMipsStripped: 0
   numberOfMipsStrippedPerMipmapLimitGroup: {}
-  m_StackTraceTypes: 020000000100000001000000000000000200000001000000
+  m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
   iosUseCustomAppBackgroundBehavior: 0
@@ -86,6 +86,7 @@ PlayerSettings:
   muteOtherAudioSources: 0
   Prepare IOS For Recording: 0
   Force IOS Speakers When Recording: 0
+  audioSpatialExperience: 0
   deferSystemGesturesMode: 0
   hideHomeButton: 0
   submitAnalytics: 1
@@ -140,7 +141,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 2.0.5.0
+  bundleVersion: 2.1.0.0
   preloadedAssets:
   - {fileID: 11400000, guid: 49335f30d253220488d2d332ade6e901, type: 2}
   - {fileID: -944628639613478452, guid: d29805f34fe91da4e94010a38823fab7, type: 3}
@@ -274,6 +275,9 @@ PlayerSettings:
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
   AndroidIsGame: 1
+  androidAppCategory: 3
+  useAndroidAppCategory: 1
+  androidAppCategoryOther: 
   AndroidEnableTango: 0
   androidEnableBanner: 1
   androidUseLowAccuracyLocation: 0
@@ -547,6 +551,7 @@ PlayerSettings:
   - serializedVersion: 2
     m_BuildTarget: WebGL
     m_EncodingQuality: 1
+  m_BuildTargetGroupHDRCubemapEncodingQuality: []
   m_BuildTargetGroupLightmapSettings:
   - m_BuildTarget: WebGL
     m_TextureStreamingEnabled: 0
@@ -823,27 +828,29 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    Android: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
+    Android: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
     CloudRendering: 
-    EmbeddedLinux: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    GameCoreScarlett: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    GameCoreXboxOne: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    Kepler: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    LinuxHeadlessSimulation: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
+    EmbeddedLinux: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    GameCoreScarlett: QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    GameCoreXboxOne: QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    Kepler: QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    LinuxHeadlessSimulation: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
     Lumin: 
-    Nintendo Switch: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    PS4: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    PS5: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    QNX: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
+    Nintendo Switch: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    Nintendo Switch 2: QUANTUM_XY
+    PS4: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    PS5: QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    QNX: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
     ReservedCFE: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
+    Server: ENABLE_JSON_CATALOG
     Stadia: QUANTUM_XY
-    Standalone: QUANTUM_DISABLE_AI;QUANTUM_DISABLE_PHYSICS3D;QUANTUM_XY;QUANTUM_LOGLEVEL_WARN;QUANTUM_ENABLE_REMOTE_PROFILER
-    VisionOS: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    WebGL: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    Windows Store Apps: FUSION_WEAVER;QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    XboxOne: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    iPhone: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
-    tvOS: QUANTUM_XY;QUANTUM_LOGLEVEL_WARN
+    Standalone: ENABLE_JSON_CATALOG;QUANTUM_DISABLE_AI;QUANTUM_DISABLE_PHYSICS3D;QUANTUM_LOGLEVEL_WARN;QUANTUM_ENABLE_REMOTE_PROFILER;QUANTUM_XY
+    VisionOS: QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    WebGL: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    Windows Store Apps: ENABLE_JSON_CATALOG;FUSION_WEAVER;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    XboxOne: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    iPhone: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
+    tvOS: ENABLE_JSON_CATALOG;QUANTUM_LOGLEVEL_WARN;QUANTUM_XY
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

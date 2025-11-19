@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.default.pipes
   GroupingTranslationKey: level.header.default
   DiscordStageImage: level-pipes
+  SortOrder: 3
   Icon: {fileID: 21300000, guid: c82b36c5c4874c44d9e79480880ddc16, type: 3}
+  MainMenuPreviewPrefab: {fileID: 5384428554227338400, guid: f59ff470347d23a45941276a7c224fb3,
+    type: 3}
   OverrideAutomaticTilemapSettings: 0
   TileDimensions:
     X: 64

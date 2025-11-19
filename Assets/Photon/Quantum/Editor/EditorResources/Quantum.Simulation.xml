@@ -104,12 +104,11 @@
             Gets the half-size of the map, used for boundary calculations.
             </summary>
         </member>
-        <member name="M:Quantum.Asteroids.AsteroidsGameConfig.Loaded(Quantum.IResourceManager,Photon.Deterministic.Native.Allocator)">
+        <member name="M:Quantum.Asteroids.AsteroidsGameConfig.Loaded(Quantum.IResourceManager)">
             <summary>
             Called when the asset is loaded. Initializes the map extents based on the game map size.
             </summary>
             <param name="resourceManager">The resource manager used to load assets.</param>
-            <param name="allocator">The memory allocator used during loading.</param>
         </member>
         <member name="M:Quantum.Asteroids.AsteroidsGameConfig.IsOutOfBounds(Photon.Deterministic.FPVector2,Photon.Deterministic.FPVector2@)">
             <summary>
@@ -434,9 +433,19 @@
         <member name="M:Quantum.CallbackDispatcher.HasAnyListeners(Quantum.CallbackBase)">
             <inheritdoc cref="M:Quantum.ICallbackDispatcher.HasAnyListeners(Quantum.CallbackBase)"/>
         </member>
+        <member name="T:Quantum.ShutdownCause">
+            <summary>
+            The cause of the SessionRunner shutdown.
+            </summary>
+        </member>
         <member name="F:Quantum.ShutdownCause.Ok">
             <summary>
             Expected shutdown
+            </summary>
+        </member>
+        <member name="F:Quantum.ShutdownCause.Error">
+            <summary>
+            An error occurred
             </summary>
         </member>
         <member name="F:Quantum.ShutdownCause.StartFailed">
@@ -986,7 +995,7 @@
         </member>
         <member name="P:Quantum.QuantumGame.HeapExtraCount">
             <summary> 
-            Extra heaps to allocate for a session in case you need to create 'auxiliary' frames than actually required for the simulation itself. 
+            The number of additional heaps to create for the session, useful for "auxiliary" frames that are managed outside of Quantum. 
             </summary>
         </member>
         <member name="P:Quantum.QuantumGame.GameFlags">
@@ -1083,17 +1092,21 @@
             The game is destroyed. This is called from inside the <see cref="T:Photon.Deterministic.DeterministicSession"/>.
             </summary>
         </member>
-        <member name="M:Quantum.QuantumGame.CreateFrame">
+        <member name="M:Quantum.QuantumGame.CreateFrame(System.Boolean,System.Boolean)">
             <summary>
             Create a new frame object using the internal frame context.
             </summary>
+            <param name="verified">Whether or not this is a verified frame.</param>
+            <param name="enableHeapTrackerDuringInit">Enables frame heap tracking immediately.</param>
             <returns>Frame</returns>
         </member>
-        <member name="M:Quantum.QuantumGame.Photon#Deterministic#IDeterministicGame#CreateFrame(System.IDisposable)">
+        <member name="M:Quantum.QuantumGame.Photon#Deterministic#IDeterministicGame#CreateFrame(System.IDisposable,System.Boolean,System.Boolean)">
             <summary>
             Create a new frame object using an external context.
             </summary>
-            <param name="context"></param>
+            <param name="context">The context the frame should be created under.</param>
+            <param name="verified">Whether or not this is a verified frame.</param>
+            <param name="enableHeapTrackerDuringInit">Enables frame heap tracking immediately.</param>
             <returns>Frame</returns>
         </member>
         <member name="M:Quantum.QuantumGame.Photon#Deterministic#IDeterministicGame#CreateFrame(System.IDisposable,System.Byte[])">
@@ -1167,17 +1180,24 @@
             <param name="encoded">The source input</param>
             <param name="result">The destination input</param>
         </member>
+        <member name="M:Quantum.QuantumGame.OnBeforeSimulationStage(Photon.Deterministic.SimulatorContext)">
+            <inheritdoc cref="M:Photon.Deterministic.IDeterministicGame.OnBeforeSimulationStage(Photon.Deterministic.SimulatorContext)"/>
+        </member>
+        <member name="M:Quantum.QuantumGame.OnSimulationStageFinished(Photon.Deterministic.SimulatorContext)">
+            <inheritdoc cref="M:Photon.Deterministic.IDeterministicGame.OnSimulationStageFinished(Photon.Deterministic.SimulatorContext)"/>
+        </member>
         <member name="M:Quantum.QuantumGame.OnSimulate(Photon.Deterministic.DeterministicFrame)">
             <summary>
             The callback is called when any simulation step was executed.
             </summary>
             <param name="state">Frame that was simulated</param>
         </member>
-        <member name="M:Quantum.QuantumGame.OnSimulateFinished(Photon.Deterministic.DeterministicFrame)">
+        <member name="M:Quantum.QuantumGame.OnSimulateFinished(Photon.Deterministic.DeterministicFrame,Photon.Deterministic.SimulatorContext)">
             <summary>
             The callback is called after any simulation step was executed and after the <see cref="M:Quantum.QuantumGame.OnSimulate(Photon.Deterministic.DeterministicFrame)"/> callback.
             </summary>
             <param name="state">Frame that was simulated</param>
+            <param name="context">The current <see cref="T:Photon.Deterministic.SimulatorContext"/>.</param>
         </member>
         <member name="M:Quantum.QuantumGame.OnUpdateDone">
             <summary>
@@ -1382,7 +1402,7 @@
             <param name="endFrame">End frame</param>
             <param name="frames">Resulting frames</param>
         </member>
-        <member name="M:Quantum.QuantumGame.CreateSavegame(System.Boolean)">
+        <member name="M:Quantum.QuantumGame.GetSnapshotFile(System.Boolean)">
             <summary>
             Create a <see cref="T:Quantum.QuantumReplayFile"/> file that represents a save game.
             </summary>
@@ -1624,6 +1644,31 @@
             <param name="frame">Frame</param>
             <param name="player">Player</param>
             <returns>Input object</returns>
+        </member>
+        <member name="T:Quantum.ShutdownArgs">
+            <summary>
+            SessionRunner shutdown information.
+            </summary>
+        </member>
+        <member name="F:Quantum.ShutdownArgs.Cause">
+            <summary>
+            The cause of the shutdown, error or expected.
+            </summary>
+        </member>
+        <member name="F:Quantum.ShutdownArgs.Message">
+            <summary>
+            A debug message that can be used to provide more information about the shutdown.
+            </summary>
+        </member>
+        <member name="F:Quantum.ShutdownArgs.Runner">
+            <summary>
+            The affected Runner object.
+            </summary>
+        </member>
+        <member name="P:Quantum.ShutdownArgs.IsError">
+            <summary>
+            Is the shutdown an error?
+            </summary>
         </member>
         <member name="T:Quantum.SystemBase">
             <summary>
@@ -1985,7 +2030,7 @@
             <para>If assigned value is different than the current one, signal <see cref="T:Quantum.ISignalOnMapChanged"/> is raised.</para>
             </summary>
         </member>
-        <member name="M:Quantum.Frame.#ctor(Quantum.Core.FrameContext,Quantum.SystemBase[],Quantum.SystemBase[],Photon.Deterministic.DeterministicSessionConfig,Quantum.RuntimeConfig,Quantum.SimulationConfig,Photon.Deterministic.FP)">
+        <member name="M:Quantum.Frame.#ctor(Quantum.Core.FrameContext,Quantum.SystemBase[],Quantum.SystemBase[],Photon.Deterministic.DeterministicSessionConfig,Quantum.RuntimeConfig,Quantum.SimulationConfig,Photon.Deterministic.FP,System.Boolean,System.Boolean)">
             <summary>
             Create a new frame object.
             </summary>
@@ -2303,6 +2348,11 @@
             Access the recording flags that the runner was started with.
             </summary>
         </member>
+        <member name="P:Quantum.SessionRunner.OnShutdownCallback">
+            <summary>
+            Get and set the shutdown callback.
+            </summary>
+        </member>
         <member name="M:Quantum.SessionRunner.op_Implicit(Quantum.SessionRunner)~System.Boolean">
             <summary>
             Support Unity null checks.
@@ -2315,17 +2365,12 @@
             This is also called from inside Session.Destroy() to signal shutdown by the simulation.
             </summary>
         </member>
-        <member name="M:Quantum.SessionRunner.Destroy">
-            <summary>
-            Calls shutdown. Backwards compatibility.
-            </summary>
-        </member>
-        <member name="M:Quantum.SessionRunner.OnShutdown(Quantum.ShutdownCause)">
+        <member name="M:Quantum.SessionRunner.OnShutdown(Quantum.ShutdownArgs)">
             <summary>
             Can be overridden in a subclass not be notified on shutdowns.
-            Is called right after tje <see cref="F:Quantum.SessionRunner.Arguments.OnShutdown"/> callback.
+            Is called right after the <see cref="F:Quantum.SessionRunner.Arguments.ShutdownCallback"/> callback.
             </summary>
-            <param name="cause">The shutdown cause</param>
+            <param name="args">The shutdown arguments</param>
         </member>
         <member name="M:Quantum.SessionRunner.Service(System.Nullable{System.Double})">
             <summary>
@@ -2349,7 +2394,7 @@
             <summary>
             Async version of the start sequence. Will return the runner object once the connection is complete.
             <see cref="F:Quantum.SessionRunner.Arguments.StartGameTimeoutInSeconds"/> must be greater than 0.
-            Set explicit <see cref="F:Quantum.SessionRunner.Arguments.TaskRunner"/> or the default Task.Factory is used.
+            Set explicit <see cref="P:Quantum.SessionRunner.Arguments.TaskRunner"/> or the default Task.Factory is used.
             Use <see cref="F:Quantum.SessionRunner.Arguments.CancellationToken"/> to cancel this task.
             Make sure to run this from a Unity "async void" method to not lose the unhandled exceptions.
             </summary>
@@ -2358,20 +2403,22 @@
             <exception cref="T:System.ArgumentException">Arguments were invalid, check exception message.</exception>
             <exception cref="T:Quantum.SessionRunnerException">Session failed to start.</exception>
         </member>
-        <member name="M:Quantum.SessionRunner.Shutdown(Quantum.ShutdownCause)">
+        <member name="M:Quantum.SessionRunner.Shutdown(Quantum.ShutdownCause,System.String)">
             <summary>
             Shutdown the runner. 
             Can be called from inside the simulation (during a simulation callback), the shutdown will commence during the next <see cref="M:Quantum.SessionRunner.Service(System.Nullable{System.Double})"/> call.
             </summary>
             <param name="cause">Shutdown cause</param>
+            <param name="message">The message for <see cref="T:Quantum.ShutdownArgs"/></param>
         </member>
-        <member name="M:Quantum.SessionRunner.ShutdownAsync(Quantum.ShutdownCause)">
+        <member name="M:Quantum.SessionRunner.ShutdownAsync(Quantum.ShutdownCause,System.String)">
             <summary>
             Shutdown the runner asynchronously. 
             Can be called from a simulation callback.
             Will also wait for the connection to be properly disconnected.
             </summary>
             <param name="cause">Shutdown cause</param>
+            <param name="message">The message for <see cref="T:Quantum.ShutdownArgs"/></param>
             <returns>Once the complete shutdown is completed.</returns>
             <exception cref="T:Quantum.SessionRunnerException">TaskFactory was never set.</exception>
         </member>
@@ -2391,14 +2438,14 @@
         </member>
         <member name="M:Quantum.SessionRunner.WaitForShutdownAsync(System.Threading.CancellationToken)">
             <summary>
-            Wait for the simulation shutdown is signaled. This is an alternative way to listen for the <see cref="F:Quantum.SessionRunner.Arguments.OnShutdown"/> callback.
+            Wait for the simulation shutdown is signaled. This is an alternative way to listen for the <see cref="F:Quantum.SessionRunner.Arguments.ShutdownCallback"/> callback.
             </summary>
             <param name="cancellationToken">Token to cancel this task</param>
             <returns>After the runner shut down.</returns>
         </member>
         <member name="M:Quantum.SessionRunner.WaitForShutdownAsync">
             <summary>
-            Wait for the simulation shutdown is signaled. This is an alternative way to listen for the <see cref="F:Quantum.SessionRunner.Arguments.OnShutdown"/> callback.
+            Wait for the simulation shutdown is signaled. This is an alternative way to listen for the <see cref="F:Quantum.SessionRunner.Arguments.ShutdownCallback"/> callback.
             </summary>
             <returns>After the runner shut down.</returns>
         </member>
@@ -2409,12 +2456,13 @@
             <param name="arguments">Start arguments.</param>
             <returns>Initialized runner object.</returns>
         </member>
-        <member name="M:Quantum.SessionRunner.ShutdownInternal(Quantum.SessionRunner,Quantum.ShutdownCause)">
+        <member name="M:Quantum.SessionRunner.ShutdownInternal(Quantum.SessionRunner,Quantum.ShutdownCause,System.String)">
             <summary>
             Internal shutdown method. 
             </summary>
             <param name="runner">Session runner object.</param>
             <param name="cause">Shutdown code.</param>
+            <param name="message">The message for <see cref="T:Quantum.ShutdownArgs"/></param>
         </member>
         <member name="M:Quantum.SessionRunner.WrapShutdownAsync">
             <summary>
@@ -2476,7 +2524,8 @@
         </member>
         <member name="F:Quantum.SessionRunner.Arguments.RunnerId">
             <summary>
-            Optionally name the runner to access it from by id. This is useful when multiple runners are active on the client (for example an instant replay).
+            Optionally name the runner to access it from by id. By default the GameMode is used the runner id.
+            Setting a custom runner id is useful when multiple runners are active on the client.
             </summary>
         </member>
         <member name="F:Quantum.SessionRunner.Arguments.PlayerCount">
@@ -2498,6 +2547,11 @@
             The LoadBalancingClient object needs to be connected to game sever (joined a room) when handed to Quantum. Is not required for Replay or Local game modes.
             </summary>
         </member>
+        <member name="F:Quantum.SessionRunner.Arguments.ShutdownCallback">
+            <summary>
+            The LoadBalancingClient object needs to be connected to game sever (joined a room) when handed to Quantum. Is not required for Replay or Local game modes.
+            </summary>
+        </member>
         <member name="F:Quantum.SessionRunner.Arguments.Communicator">
             <summary>
             Quantum communicator which encapsulates the connection object (from Photon Realtime).
@@ -2506,11 +2560,6 @@
         <member name="F:Quantum.SessionRunner.Arguments.RunnerFactory">
             <summary>
             Runner factory to create platform dependent objects.
-            </summary>
-        </member>
-        <member name="F:Quantum.SessionRunner.Arguments.TaskRunner">
-            <summary>
-            The Quantum internal task runner.
             </summary>
         </member>
         <member name="F:Quantum.SessionRunner.Arguments.CancellationToken">
@@ -2532,11 +2581,6 @@
             <summary>
             The recording flags will enable the recording of input and checksums (requires memory and allocations).
             When enabled QuantumGame.GetRecordedReplay can be used access the replay data.
-            </summary>
-        </member>
-        <member name="M:Quantum.SessionRunner.Arguments.CreateDefault">
-            <summary>
-            Initializes struct with default values.
             </summary>
         </member>
         <member name="P:Quantum.SessionRunner.Arguments.ResourceManager">
@@ -2581,6 +2625,16 @@
             <summary>
             GameFlags from <see cref="T:Quantum.QuantumGameFlags"/>.
             Will set <see cref="F:Quantum.QuantumGameStartParameters.GameFlags"/>.
+            </summary>
+        </member>
+        <member name="P:Quantum.SessionRunner.Arguments.TaskRunner">
+            <summary>
+            The Quantum internal task runner.
+            </summary>
+        </member>
+        <member name="M:Quantum.SessionRunner.Arguments.CreateDefault">
+            <summary>
+            Initializes struct with default values.
             </summary>
         </member>
         <member name="M:Quantum.SessionRunner.Arguments.Validate">
@@ -3044,6 +3098,15 @@
             <param name="stream">Stream</param>
             <param name="frame">Frame to fast forward to</param>
         </member>
+        <member name="M:Quantum.StreamReplayInputProvider.Clone(System.Int32,System.Int32)">
+            <summary>
+            Clone a part of the input provider, copying internal buffers.
+            Is not implemented for this stream.
+            </summary>
+            <param name="startFrame">The frame to start from</param>
+            <param name="endFrame">The last frame this input provider can produce input for.</param>
+            <returns>New input provider of the same type.</returns>
+        </member>
         <member name="T:Quantum.DotNetRunnerFactory">
             <summary>
             Platform dependent information and factory methods for the <see cref="T:Quantum.SessionRunner"/>.
@@ -3051,7 +3114,7 @@
             standalone Quantum applications and on the Quantum server plugin.
             </summary>
         </member>
-        <member name="P:Quantum.DotNetRunnerFactory.CreatePlaformInfo">
+        <member name="P:Quantum.DotNetRunnerFactory.CreatePlatformInfo">
             <summary>
             Gather the platform information.
             </summary>
@@ -3073,19 +3136,13 @@
             <param name="startParameters">Start parameters</param>
             <returns>Instance of IDeterministicGame</returns>
         </member>
-        <member name="M:Quantum.DotNetRunnerFactory.CreateRunner(Quantum.SessionRunner.Arguments)">
+        <member name="M:Quantum.DotNetRunnerFactory.CreateRunner(Quantum.SessionRunner.Arguments,System.String)">
             <summary>
             Instantiate a <see cref="T:Quantum.SessionRunner"/>.
             </summary>
             <param name="arguments">Session arguments</param>
+            <param name="defaultRunnerId">Optional default runner id.</param>
             <returns>A session runner</returns>
-        </member>
-        <member name="M:Quantum.DotNetRunnerFactory.CreatePlatformInfo">
-            <summary>
-            Static method to create platform info.
-            Initializes statics <see cref="F:Photon.Deterministic.Native.Utils"/> and <see cref="F:Quantum.MemoryLayoutVerifier.Platform"/>.
-            </summary>
-            <returns>Platform information data</returns>
         </member>
         <member name="T:Quantum.SessionRunnerException">
             <summary>
@@ -3389,6 +3446,14 @@
             Unused.
             </summary>
         </member>
+        <member name="M:Quantum.BitStreamReplayInputProvider.Clone(System.Int32,System.Int32)">
+            <summary>
+            Clone a part of the input provider, copying internal buffers.
+            </summary>
+            <param name="startFrame">The frame to start from</param>
+            <param name="endFrame">The last frame this input provider can produce input for.</param>
+            <returns>New input provider of the same type.</returns>
+        </member>
         <member name="T:Quantum.CallbackId">
             <summary>
             Quantum game callback ids.
@@ -3487,6 +3552,16 @@
         <member name="F:Quantum.CallbackId.ProfilerReportGenerated">
             <summary>
             Callback when profiler report has been generated.
+            </summary>
+        </member>
+        <member name="F:Quantum.CallbackId.BeforeSimulationStage">
+            <summary>
+            Callback before the Verified or Prediction stages of the simulation are about to start.
+            </summary>
+        </member>
+        <member name="F:Quantum.CallbackId.SimulationStageFinished">
+            <summary>
+            Callback after the Verified or Prediction stages have finished.
             </summary>
         </member>
         <member name="F:Quantum.CallbackId.UserCallbackIdStart">
@@ -3614,6 +3689,36 @@
             The const CallbackUpdateView callback id.
             </summary>
         </member>
+        <member name="T:Quantum.CallbackBeforeSimulationStage">
+            <summary>
+            Callback called before the Verified or Predicted stages of the simulation start.
+            </summary>
+        </member>
+        <member name="F:Quantum.CallbackBeforeSimulationStage.ID">
+            <summary>
+            The const CallbackBeforeSimulationStage callback id.
+            </summary>
+        </member>
+        <member name="F:Quantum.CallbackBeforeSimulationStage.SimulatorContext">
+            <summary>
+            The current <see cref="F:Quantum.CallbackBeforeSimulationStage.SimulatorContext"/>.
+            </summary>
+        </member>
+        <member name="T:Quantum.CallbackSimulationStageFinished">
+            <summary>
+            Callback called after the Verified or Predicted stages of the simulation have finished.
+            </summary>
+        </member>
+        <member name="F:Quantum.CallbackSimulationStageFinished.ID">
+            <summary>
+            The const CallbackSimulationStageFinished callback id.
+            </summary>
+        </member>
+        <member name="F:Quantum.CallbackSimulationStageFinished.SimulatorContext">
+            <summary>
+            The current <see cref="F:Quantum.CallbackSimulationStageFinished.SimulatorContext"/>.
+            </summary>
+        </member>
         <member name="T:Quantum.CallbackSimulateFinished">
             <summary>
             Callback called when frame simulation has completed.
@@ -3627,6 +3732,11 @@
         <member name="F:Quantum.CallbackSimulateFinished.Frame">
             <summary>
             The frame that was simulated.
+            </summary>
+        </member>
+        <member name="F:Quantum.CallbackSimulateFinished.SimulatorContext">
+            <summary>
+            The current <see cref="F:Quantum.CallbackSimulateFinished.SimulatorContext"/>.
             </summary>
         </member>
         <member name="T:Quantum.CallbackEventCanceled">
@@ -4123,7 +4233,7 @@
         <member name="M:Quantum.QuantumUnityDB.GetGlobalAssetEditorInstance(Quantum.AssetRef)">
             <summary>
             Returns the editor instance of the asset with the given <paramref name="assetRef"/>. Use in editor code only, for inspectors
-            and editors. Returned asset will not have its <see cref="M:Quantum.AssetObject.Loaded(Quantum.IResourceManager,Photon.Deterministic.Native.Allocator)"/> called.
+            and editors. Returned asset will not have its <see cref="M:Quantum.AssetObject.Loaded(Quantum.IResourceManager)"/> called.
             </summary>
             <param name="assetRef"></param>
             <returns>Asset instance or <c>null</c> if not found.</returns>
@@ -4137,7 +4247,7 @@
         <member name="M:Quantum.QuantumUnityDB.TryGetGlobalAssetEditorInstance``1(Quantum.AssetRef,``0@)">
             <summary>
             Attempts to get the editor instance of the asset with the given <paramref name="assetRef"/>. Use in editor code only, for inspectors
-            and editors. Returned asset will not have its <see cref="M:Quantum.AssetObject.Loaded(Quantum.IResourceManager,Photon.Deterministic.Native.Allocator)"/> called..
+            and editors. Returned asset will not have its <see cref="M:Quantum.AssetObject.Loaded(Quantum.IResourceManager)"/> called..
             </summary>
         </member>
         <member name="M:Quantum.QuantumUnityDB.TryGetGlobalAssetEditorInstance``1(Quantum.AssetRef{``0},``0@)">
@@ -4302,17 +4412,22 @@
         </member>
         <member name="F:Quantum.SimulationConfig.Entities">
             <summary>
-            Global entities configuration
+            Global entities settings.
             </summary>
         </member>
         <member name="F:Quantum.SimulationConfig.Physics">
             <summary>
-            Global physics configurations.
+            Global physics settings.
             </summary>
         </member>
         <member name="F:Quantum.SimulationConfig.Navigation">
             <summary>
-            Global navmesh configurations.
+            Global navmesh settings.
+            </summary>
+        </member>
+        <member name="F:Quantum.SimulationConfig.Heap">
+            <summary>
+            Global heap settings.
             </summary>
         </member>
         <member name="F:Quantum.SimulationConfig.AutoLoadSceneFromMap">
@@ -4342,39 +4457,11 @@
             Additional options for checksum dumps, if the default settings don't provide a clear picture. 
             </summary>
         </member>
-        <member name="F:Quantum.SimulationConfig.HeapTrackingMode">
-            <summary>
-            If and to which extent allocations in the Frame Heap should be tracked when in Debug mode.
-            Recommended modes for development is `DetectLeaks`.
-            While actively debugging a memory leak,`TraceAllocations` mode can be enabled (warning: tracing is very slow).
-            </summary>
-        </member>
-        <member name="F:Quantum.SimulationConfig.HeapPageShift">
-            <summary>
-            Define the max heap size for one page of memory the frame class uses for custom allocations like QList for example. The default is 15.
-            </summary>
-            <remarks>2^15 = 32.768 bytes</remarks>
-            <remarks><code>TotalHeapSizeInBytes = (1 &lt;&lt; HeapPageShift) * HeapPageCount</code></remarks>
-        </member>
-        <member name="F:Quantum.SimulationConfig.HeapPageCount">
-            <summary>
-            Define the max heap page count for memory the frame class uses for custom allocations like QList for example. Default is 256.
-            </summary>
-            <remarks><code>TotalHeapSizeInBytes = (1 &lt;&lt; HeapPageShift) * HeapPageCount</code></remarks>
-        </member>
-        <member name="F:Quantum.SimulationConfig.HeapExtraCount">
-            <summary>
-            Sets extra heaps to allocate for a session in case you need to
-            create 'auxiliary' frames than actually required for the simulation itself.
-            Default is 0.
-            </summary>
-        </member>
-        <member name="M:Quantum.SimulationConfig.Loaded(Quantum.IResourceManager,Photon.Deterministic.Native.Allocator)">
+        <member name="M:Quantum.SimulationConfig.Loaded(Quantum.IResourceManager)">
             <summary>
             The asset loaded callback, caches fixed calculation results.
             </summary>
             <param name="resourceManager">Resource manager.</param>
-            <param name="allocator">The allocator.</param>
         </member>
         <member name="M:Quantum.SimulationConfig.Reset">
             <summary>
@@ -4412,6 +4499,12 @@
             Creates 32 physics layer masks from Unity.
             </summary>
             <param name="physicsType"></param>
+        </member>
+        <member name="M:Quantum.SimulationConfig.OnBeforeSerialize">
+            <inheritdoc cref="M:UnityEngine.ISerializationCallbackReceiver.OnBeforeSerialize"/>
+        </member>
+        <member name="M:Quantum.SimulationConfig.OnAfterDeserialize">
+            <inheritdoc cref="M:UnityEngine.ISerializationCallbackReceiver.OnAfterDeserialize"/>
         </member>
         <member name="T:Quantum.SimulationConfigChecksumErrorDumpOptions">
             <summary>
@@ -4681,6 +4774,12 @@
             <param name="frame"></param>
             <returns></returns>
         </member>
+        <member name="M:Quantum.DotNetHardwareInfoCollector.CreatePlatformInfo">
+            <summary>
+            Static method to create platform info.
+            </summary>
+            <returns>Platform information data</returns>
+        </member>
         <member name="T:Quantum.DotNetSessionContext">
             <summary>
             This class implements the <see cref="T:Photon.Deterministic.IDeterministicSessionContext"/> interface inside the simulation project.
@@ -4836,7 +4935,7 @@
             The interface for the runner factory. It creates platform specific objects to run the Quantum simulation.
             </summary>
         </member>
-        <member name="P:Quantum.IRunnerFactory.CreatePlaformInfo">
+        <member name="P:Quantum.IRunnerFactory.CreatePlatformInfo">
             <summary>
             Gather the platform information.
             There is a spelling mistake in the method name, but it's considered a bigger annoyance to change the interface.
@@ -4859,12 +4958,13 @@
             The action to when an update to the AssetDB is required.
             </summary>
         </member>
-        <member name="M:Quantum.IRunnerFactory.CreateRunner(Quantum.SessionRunner.Arguments)">
+        <member name="M:Quantum.IRunnerFactory.CreateRunner(Quantum.SessionRunner.Arguments,System.String)">
             <summary>
             Create an object that the SessionRunner is running on.
             For Unity it is wrapped in a MonoBehaviour.
             </summary>
             <param name="arguments">Session arguments</param>
+            <param name="defaultRunnerId">Optionally a default runner name</param>
             <returns>A session runner</returns>
         </member>
         <member name="T:Quantum.SystemSignalsOnly">

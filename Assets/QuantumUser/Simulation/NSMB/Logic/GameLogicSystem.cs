@@ -19,10 +19,6 @@ namespace Quantum {
             } else {
                 f.Events.GameStateChanged(f.Global->GameState);
             }
-
-
-            // wouldn't exist if codegen didn't run.
-            f.Global->Test = 0;
         }
 
         public override void Update(Frame f) {
@@ -374,8 +370,10 @@ namespace Quantum {
                     continue;
                 }
 
-                int characterIndex = FPMath.Clamp(data->Character, 0, config.CharacterDatas.Length - 1);
-                CharacterAsset character = f.FindAsset(config.CharacterDatas[characterIndex]);
+                CharacterAsset character = f.FindAsset(data->Character);
+                if (character == null) {
+                    character = f.Context.CharacterDatas[0];
+                }
 
                 EntityRef newPlayer = f.Create(character.Prototype);
                 var mario = f.Unsafe.GetPointer<MarioPlayer>(newPlayer);
@@ -392,7 +390,7 @@ namespace Quantum {
                     PlayerRef = data->PlayerRef,
                     Nickname = runtimePlayer.PlayerNickname,
                     NicknameColor = runtimePlayer.NicknameColor,
-                    Character = (byte) characterIndex,
+                    Character = runtimePlayer.Character,
                     Team = data->RealTeam,
                 };
             }

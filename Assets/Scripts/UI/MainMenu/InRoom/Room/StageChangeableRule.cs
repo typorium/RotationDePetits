@@ -1,3 +1,4 @@
+using NSMB.Utilities;
 using Quantum;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         public override bool CanIncreaseValue {
             get {
                 QuantumGame game = QuantumRunner.DefaultGame;
-                var allStages = game.Configurations.Simulation.AllStages;
+                var allStages = QuantumViewUtils.Maps;
                 int currentIndex = allStages.IndexOf(map => map == (AssetRef<Map>) value);
                 return currentIndex < allStages.Length - 1;
             }
@@ -17,7 +18,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         public override bool CanDecreaseValue {
             get {
                 QuantumGame game = QuantumRunner.DefaultGame;
-                var allStages = game.Configurations.Simulation.AllStages;
+                var allStages = QuantumViewUtils.Maps;
                 int currentIndex = allStages.IndexOf(map => map == (AssetRef<Map>) value);
                 return currentIndex > 0;
             }
@@ -29,7 +30,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         protected override void IncreaseValueInternal() {
             QuantumGame game = QuantumRunner.DefaultGame;
-            var allStages = game.Configurations.Simulation.AllStages;
+            var allStages = QuantumViewUtils.Maps;
             int currentIndex = allStages.IndexOf(map => map == (AssetRef<Map>) value);
             int newIndex = Mathf.Min(currentIndex + 1, allStages.Length - 1);
 
@@ -42,7 +43,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         protected override void DecreaseValueInternal() {
             QuantumGame game = QuantumRunner.DefaultGame;
-            var allStages = game.Configurations.Simulation.AllStages;
+            var allStages = QuantumViewUtils.Maps;
             int currentIndex = allStages.IndexOf(map => map == (AssetRef<Map>) value);
             int newIndex = Mathf.Max(currentIndex - 1, 0);
 

@@ -46,4 +46,4 @@ MonoBehaviour:
       A: 255
     HatUsesOverallsColor: 0
   translationKey: skin.smb3
-  order: 11
+  order: -920

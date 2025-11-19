@@ -105,7 +105,8 @@ namespace Quantum {
           MaxPlayers = Input.MAX_COUNT,
           RoomName = startParameter.RoomName,
           PluginName = "QuantumPlugin",
-          AuthValues = new AuthenticationValues(startParameter.PlayerName),
+          // Add randomization to make it possible to run multiple builds on one machine, that all used the same name
+          AuthValues = new AuthenticationValues($"{startParameter.PlayerName}({new System.Random().Next(99999999):00000000}"),
           AsyncConfig = new AsyncConfig() {
             TaskFactory = AsyncConfig.CreateUnityTaskFactory(),
             CancellationToken = _linkedCancellationTokenSource.Token,
@@ -114,12 +115,6 @@ namespace Quantum {
 
         // Create and wait for a connection to the game server room
         Client = await MatchmakingExtensions.ConnectToRoomAsync(arguments);
-
-        if (startParameter.OnConnectionError != null) {
-          _pluginDisconnectSubscription = QuantumCallback.SubscribeManual<CallbackPluginDisconnect>(m =>
-            startParameter.OnConnectionError(m.Reason)
-          );
-        }
 
 #if QUANTUM_ENABLE_MPPM && UNITY_EDITOR
       if (EnableMultiplayerPlayMode) {
@@ -131,31 +126,28 @@ namespace Quantum {
 #endif
       }
 
-      // Close the runtime config change it (map, simulation config)
-      var runtimeConfig = new QuantumUnityJsonSerializer().CloneConfig(RuntimeConfig);
+      var connectionErrorCallback = startParameter.OnConnectionError;
 
-      var mapData = FindFirstObjectByType<QuantumMapData>();
-      if (mapData != null) {
-        runtimeConfig.Map = mapData.AssetRef;
+      var sessionRunnerArguments = new SessionRunner.Arguments();
+
+      if (startParameter.IsOnline) {
+        sessionRunnerArguments.InitForMultiplayer(RuntimeConfig, Client, Client.UserId);
+      } else {
+        sessionRunnerArguments.InitForLocal(RuntimeConfig);
       }
 
-      if (runtimeConfig.SimulationConfig.Id.IsValid == false && QuantumDefaultConfigs.TryGetGlobal(out var defaultConfigs)) {
-        runtimeConfig.SimulationConfig = defaultConfigs.SimulationConfig;
-      }
-
-      var sessionRunnerArguments = new SessionRunner.Arguments {
-        RunnerFactory = QuantumRunnerUnityFactory.DefaultFactory,
-        GameParameters = QuantumRunnerUnityFactory.CreateGameParameters,
-        ClientId = startParameter.PlayerName,
-        RuntimeConfig = runtimeConfig,
-        SessionConfig = (SessionConfig != null ? SessionConfig.Config : null) ?? QuantumDeterministicSessionConfigAsset.DefaultConfig,
-        PlayerCount = Input.MaxCount,
-        GameMode = startParameter.IsOnline ? DeterministicGameMode.Multiplayer : DeterministicGameMode.Local,
-        Communicator = startParameter.IsOnline ? new QuantumNetworkCommunicator(Client) : null,
-        CancellationToken = _linkedCancellationTokenSource.Token,
-        RecordingFlags = RecordingFlags,
-        InstantReplaySettings = InstantReplayConfig,
-        DeltaTimeType = DeltaTimeType,
+      sessionRunnerArguments.SessionConfig = SessionConfig != null ? SessionConfig.Config : sessionRunnerArguments.SessionConfig;
+      sessionRunnerArguments.CancellationToken = _linkedCancellationTokenSource.Token;
+      sessionRunnerArguments.RecordingFlags = RecordingFlags;
+      sessionRunnerArguments.InstantReplaySettings = InstantReplayConfig;
+      sessionRunnerArguments.DeltaTimeType = DeltaTimeType;
+      sessionRunnerArguments.ShutdownCallback = (args) => {
+        if (args.IsError) {
+          // Don't bubble up errors when the application has already stopped
+          if (AsyncConfig.Global.IsCancellationRequested == false) {
+            connectionErrorCallback?.Invoke(args.Message);
+          }
+        }
       };
 
       // Commence and wait for the started local or online Quantum game session
