@@ -45,6 +45,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 338d137db932aad45b8d78a8cd23b001
+    m_Address: Resources/EntityPrototypes/World/WaterEntityPrototype.qprototype
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3b58d65b123c6954b8edc77ca3964b95
     m_Address: Assets/Scenes/Levels
     m_ReadOnly: 0
@@ -87,11 +92,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b94809923e051c1439b7211f08ff5b57
     m_Address: Models
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d59caf8734d00eb468a7862c8b8dbcf1
-    m_Address: Resources/EntityPrototypes/World/PoisonEntityPrototype.qprototype
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

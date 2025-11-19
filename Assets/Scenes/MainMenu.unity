@@ -32335,7 +32335,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Navigation.m_SelectOnUp
       value: 
-      objectReference: {fileID: 1385857149}
+      objectReference: {fileID: 849551800}
     - target: {fileID: 2183712391376134120, guid: 14e74ec86b338aa40b231b757683abbc,
         type: 3}
       propertyPath: m_Navigation.m_SelectOnDown
@@ -33092,7 +33092,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Navigation.m_SelectOnDown
       value: 
-      objectReference: {fileID: 1385857149}
+      objectReference: {fileID: 836658200}
     - target: {fileID: 2183712391376134120, guid: 14e74ec86b338aa40b231b757683abbc,
         type: 3}
       propertyPath: m_Navigation.m_SelectOnLeft
@@ -43127,7 +43127,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 791989380}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.8260737
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -51249,6 +51249,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BtnAddons
       objectReference: {fileID: 0}
+    - target: {fileID: 3679952337097565689, guid: 14e74ec86b338aa40b231b757683abbc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3755963707600281268, guid: 14e74ec86b338aa40b231b757683abbc,
         type: 3}
       propertyPath: m_text
@@ -51359,18 +51364,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 14e74ec86b338aa40b231b757683abbc, type: 3}
---- !u!114 &1385857149 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2183712391376134120, guid: 14e74ec86b338aa40b231b757683abbc,
-    type: 3}
-  m_PrefabInstance: {fileID: 1385857148}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &1385857150 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4117573547597502648, guid: 14e74ec86b338aa40b231b757683abbc,
@@ -57200,7 +57193,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -24.01}
-  m_SizeDelta: {x: 406.48505, y: 0}
+  m_SizeDelta: {x: 406.25275, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1532295032
 MonoBehaviour:
@@ -58407,7 +58400,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1576260155

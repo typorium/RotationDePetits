@@ -70,8 +70,6 @@ namespace NSMB.Sound {
             }
             allProviders.AddRange(GlobalProviders);
 
-            Debug.Log($"Resolving {sfx} with providers [{string.Join(", ", allProviders.Select(x => x.GetType().Name))}]");
-
             var sortedOverrides = allProviders
                 .Select(op => op.GetOverrideForSfx(sfx))
                 .Where(o => o != null)
