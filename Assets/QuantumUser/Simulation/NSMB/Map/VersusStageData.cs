@@ -63,7 +63,7 @@ public unsafe class VersusStageData : AssetObject, ISoundEffectOverrideProvider 
 
     [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
     public SoundEffectOverride GetOverrideForSfx(SoundEffect sfx) {
-        if (overridesDict == null) {
+        if (overridesDict == null && SfxOverrides != null) {
             overridesDict = new();
             foreach (var @override in SfxOverrides) {
                 overridesDict[@override.SoundEffect] = @override;
