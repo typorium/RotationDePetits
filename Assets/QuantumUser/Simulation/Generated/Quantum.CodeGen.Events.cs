@@ -148,11 +148,10 @@ namespace Quantum {
           default: break;
         }
       }
-      public EventMarioPlayerCollectedStar MarioPlayerCollectedStar(EntityRef Entity, MarioPlayer Mario, FPVector2 Position) {
+      public EventMarioPlayerCollectedStar MarioPlayerCollectedStar(EntityRef Entity, FPVector2 Position) {
         if (_f.IsPredicted) return null;
         var ev = _f.Context.AcquireEvent<EventMarioPlayerCollectedStar>(EventMarioPlayerCollectedStar.ID);
         ev.Entity = Entity;
-        ev.Mario = Mario;
         ev.Position = Position;
         _f.AddEvent(ev);
         return ev;
@@ -222,16 +221,14 @@ namespace Quantum {
         _f.AddEvent(ev);
         return ev;
       }
-      public EventStartCameraFadeOut StartCameraFadeOut(Frame Frame, EntityRef Entity) {
+      public EventStartCameraFadeOut StartCameraFadeOut(EntityRef Entity) {
         var ev = _f.Context.AcquireEvent<EventStartCameraFadeOut>(EventStartCameraFadeOut.ID);
-        ev.Frame = Frame;
         ev.Entity = Entity;
         _f.AddEvent(ev);
         return ev;
       }
-      public EventStartCameraFadeIn StartCameraFadeIn(Frame Frame, EntityRef Entity) {
+      public EventStartCameraFadeIn StartCameraFadeIn(EntityRef Entity) {
         var ev = _f.Context.AcquireEvent<EventStartCameraFadeIn>(EventStartCameraFadeIn.ID);
-        ev.Frame = Frame;
         ev.Entity = Entity;
         _f.AddEvent(ev);
         return ev;
@@ -733,12 +730,13 @@ namespace Quantum {
         _f.AddEvent(ev);
         return ev;
       }
-      public EventTileBroken TileBroken(EntityRef Entity, IntVector2 Position, StageTileInstance Tile, QBoolean BrokenByMega) {
+      public EventTileBroken TileBroken(EntityRef Entity, IntVector2 Position, StageTileInstance Tile, QBoolean BrokenByMega, FP BreakSpeed) {
         var ev = _f.Context.AcquireEvent<EventTileBroken>(EventTileBroken.ID);
         ev.Entity = Entity;
         ev.Position = Position;
         ev.Tile = Tile;
         ev.BrokenByMega = BrokenByMega;
+        ev.BreakSpeed = BreakSpeed;
         _f.AddEvent(ev);
         return ev;
       }
@@ -753,7 +751,6 @@ namespace Quantum {
   public unsafe partial class EventMarioPlayerCollectedStar : EventBase {
     public new const Int32 ID = 1;
     public EntityRef Entity;
-    public MarioPlayer Mario;
     public FPVector2 Position;
     protected EventMarioPlayerCollectedStar(Int32 id, EventFlags flags) : 
         base(id, flags) {
@@ -773,7 +770,6 @@ namespace Quantum {
       unchecked {
         var hash = 41;
         hash = hash * 31 + Entity.GetHashCode();
-        hash = hash * 31 + Mario.GetHashCode();
         hash = hash * 31 + Position.GetHashCode();
         return hash;
       }
@@ -1021,7 +1017,6 @@ namespace Quantum {
   }
   public unsafe partial class EventStartCameraFadeOut : EventBase {
     public new const Int32 ID = 11;
-    public Frame Frame;
     public EntityRef Entity;
     protected EventStartCameraFadeOut(Int32 id, EventFlags flags) : 
         base(id, flags) {
@@ -1047,7 +1042,6 @@ namespace Quantum {
   }
   public unsafe partial class EventStartCameraFadeIn : EventBase {
     public new const Int32 ID = 12;
-    public Frame Frame;
     public EntityRef Entity;
     protected EventStartCameraFadeIn(Int32 id, EventFlags flags) : 
         base(id, flags) {
@@ -2909,6 +2903,7 @@ namespace Quantum {
     public IntVector2 Position;
     public StageTileInstance Tile;
     public QBoolean BrokenByMega;
+    public FP BreakSpeed;
     protected EventTileBroken(Int32 id, EventFlags flags) : 
         base(id, flags) {
     }
@@ -2930,6 +2925,7 @@ namespace Quantum {
         hash = hash * 31 + Position.GetHashCode();
         hash = hash * 31 + Tile.GetHashCode();
         hash = hash * 31 + BrokenByMega.GetHashCode();
+        hash = hash * 31 + BreakSpeed.GetHashCode();
         return hash;
       }
     }

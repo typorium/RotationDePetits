@@ -7,7 +7,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
     public class PaletteButton : MonoBehaviour, ISelectHandler {
 
         //---Public Variables
-        public PaletteSet palette;
+        [HideInInspector] public PaletteSet palette;
+        public Button button;
 
         //---Serialized Variables
         [SerializeField] private TMP_Text colorNameString;

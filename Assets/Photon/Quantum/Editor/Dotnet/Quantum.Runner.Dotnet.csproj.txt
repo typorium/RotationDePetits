@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="[UnityProjectPath]/Assets/Photon/Quantum/Editor/Dotnet/QuantumConsoleRunner.cs" />
+    <Compile Include="[UnityProjectPath]/Editor/Dotnet/QuantumConsoleRunner.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,9 +30,6 @@
   <ItemGroup>
     <Reference Include="Quantum.Log">
       <HintPath>../Lib/Release/Quantum.Log.dll</HintPath>
-    </Reference>
-    <Reference Include="Quantum.Deterministic">
-      <HintPath>../Lib/$(Configuration)/Quantum.Deterministic.dll</HintPath>
     </Reference>
     <Reference Include="Quantum.Engine">
       <HintPath>../Lib/$(Configuration)/Quantum.Engine.dll</HintPath>

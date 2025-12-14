@@ -11,15 +11,15 @@ namespace Quantum {
             systems.Clear();
 
             systems.Add(new EntityPrototypeSystem());
-            systems.Add(new PlayerConnectedSystem());
             systems.Add(new MvLCullingSystem());
             systems.Add(new GameLogicSystem());
             systems.Add(
-                new StartDisabledSystemGroup("gameplay",
+                new StartDisabledSystemGroup(
                     new PrePhysicsObjectSystem(),
                     new InteractionPhysicsQuerySystem(),
                     new GenericMoverSystem(),
                     new SpinnerSystem(),
+                    new DonutBlockSystem(),
                     new MovingPlatformPhysicsQuerySystem(),
                     new PhysicsSystem2D(),
                     new MovingPlatformSystem(),
@@ -30,6 +30,7 @@ namespace Quantum {
                     new KoopaSystem(),
                     new BobombSystem(),
                     new PiranhaPlantSystem(),
+                    new BulletBillLauncherSystem(),
                     new BulletBillSystem(),
                     new BooSystem(),
                     new ProjectileSystem(),
@@ -55,10 +56,9 @@ namespace Quantum {
             );
             systems.Add(new StageSystem());
 
-#if MVL_DEBUG
-            // This HAS to be the last system otherwise it breaks replays.
-            systems.Add(new MvLDebugSystem());
-#endif
+            if (!gameConfig.IsRealGame) {
+                systems.Add(new MvLDebugSystem());
+            }
         }
     }
 }

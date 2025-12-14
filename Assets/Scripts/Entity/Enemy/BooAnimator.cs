@@ -1,3 +1,4 @@
+using NSMB.Sound;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace NSMB.Entities.Enemies {
         [SerializeField] private Transform bobber;
         [SerializeField] private SpriteRenderer sRenderer;
         [SerializeField] private Animator animator;
-        [SerializeField] private AudioSource sfx;
+        [SerializeField] private SoundEffectPlayer sfx;
         [SerializeField] private float sinSpeed = 1f, sinAmplitude = 0.0875f;
 
         public void OnValidate() {

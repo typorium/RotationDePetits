@@ -21,6 +21,9 @@ input {
 	button PowerupAction;
 	button FireballPowerupAction;
 	button PropellerPowerupAction;
+
+	// Buttons can be packed. And we want this to be packed.
+	button AllowGroundpoundWithLeftRight;
 }
 
 enum JumpState : Byte {
@@ -30,7 +33,7 @@ enum JumpState : Byte {
     TripleJump,
 }
 
-component MarioPlayer {
+table component MarioPlayer {
 	AssetRef<MarioPlayerPhysicsInfo> PhysicsAsset;
 	AssetRef<CharacterAsset> CharacterAsset;
 

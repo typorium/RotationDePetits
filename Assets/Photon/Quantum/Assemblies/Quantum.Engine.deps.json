@@ -7,63 +7,53 @@
   "targets": {
     ".NETStandard,Version=v2.1": {},
     ".NETStandard,Version=v2.1/": {
-      "Quantum.Engine/3.0.0.1548-UnityDebug": {
+      "Quantum.Engine/3.1.0.1871-UnityDebug": {
         "dependencies": {
-          "JetBrains.Annotations": "2023.3.0",
-          "Quantum.Deterministic": "3.0.0.1548-UnityDebug"
+          "Fody": "6.9.2",
+          "InlineIL.Fody": "1.10.0",
+          "Quantum.Log": "3.1.0.1871-UnityDebug"
         },
         "runtime": {
           "Quantum.Engine.dll": {}
         }
       },
-      "JetBrains.Annotations/2023.3.0": {
-        "runtime": {
-          "lib/netstandard2.0/JetBrains.Annotations.dll": {
-            "assemblyVersion": "4242.42.42.42",
-            "fileVersion": "2023.3.0.0"
-          }
-        }
-      },
-      "Quantum.Deterministic/3.0.0.1548-UnityDebug": {
+      "Fody/6.9.2": {},
+      "InlineIL.Fody/1.10.0": {
         "dependencies": {
-          "Quantum.Log": "3.0.0.1548-UnityDebug"
-        },
-        "runtime": {
-          "Quantum.Deterministic.dll": {
-            "assemblyVersion": "3.0.0.1548-UnityDebug",
-            "fileVersion": "3.0.0.1548"
-          }
+          "Fody": "6.9.2"
         }
       },
-      "Quantum.Log/3.0.0.1548-UnityDebug": {
+      "Quantum.Log/3.1.0.1871-UnityDebug": {
         "runtime": {
           "Quantum.Log.dll": {
-            "assemblyVersion": "3.0.0.1548-UnityDebug",
-            "fileVersion": "3.0.0.1548"
+            "assemblyVersion": "3.1.0.1871",
+            "fileVersion": "3.1.0.1871"
           }
         }
       }
     }
   },
   "libraries": {
-    "Quantum.Engine/3.0.0.1548-UnityDebug": {
+    "Quantum.Engine/3.1.0.1871-UnityDebug": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "JetBrains.Annotations/2023.3.0": {
+    "Fody/6.9.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-PHfnvdBUdGaTVG9bR/GEfxgTwWM0Z97Y6X3710wiljELBISipSfF5okn/vz+C2gfO+ihoEyVPjaJwn8ZalVukA==",
-      "path": "jetbrains.annotations/2023.3.0",
-      "hashPath": "jetbrains.annotations.2023.3.0.nupkg.sha512"
+      "sha512": "sha512-YBHobPGogb0vYhGYIxn/ndWqTjNWZveDi5jdjrcshL2vjwU3gQGyDeI7vGgye+2rAM5fGRvlLgNWLW3DpviS/w==",
+      "path": "fody/6.9.2",
+      "hashPath": "fody.6.9.2.nupkg.sha512"
     },
-    "Quantum.Deterministic/3.0.0.1548-UnityDebug": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
+    "InlineIL.Fody/1.10.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BndPPxQ0mwbWPP61pk29UE5/qLtbsC0ZL4SUst5Lrmde9KWjnjYcQlfIZVbzoIY+wyfPsH6B7dPzOadABC435Q==",
+      "path": "inlineil.fody/1.10.0",
+      "hashPath": "inlineil.fody.1.10.0.nupkg.sha512"
     },
-    "Quantum.Log/3.0.0.1548-UnityDebug": {
+    "Quantum.Log/3.1.0.1871-UnityDebug": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

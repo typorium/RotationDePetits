@@ -3542,7 +3542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 994733591}
   - component: {fileID: 994733592}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: BluePillarL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3660,7 +3660,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1017538730}
   - component: {fileID: 1017538731}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: RedPillarL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3961,7 +3961,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1090718754}
   - component: {fileID: 1090718755}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: RedPillarR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4814,7 +4814,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1371898792}
   - component: {fileID: 1371898793}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: BluePillarR
   m_TagString: Untagged
   m_Icon: {fileID: 0}

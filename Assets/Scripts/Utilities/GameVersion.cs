@@ -4,6 +4,13 @@ using System.IO;
 public struct GameVersion : IEquatable<GameVersion>, IComparable<GameVersion> {
     public byte Major, Minor, Patch, Hotfix;
 
+    public GameVersion(byte major, byte minor, byte patch, byte hotfix = 0) {
+        Major = major;
+        Minor = minor;
+        Patch = patch;
+        Hotfix = hotfix;
+    }
+
     public bool Equals(GameVersion other) {
         return Major == other.Major && Minor == other.Minor && Patch == other.Patch && Hotfix == other.Hotfix;
     }
@@ -87,10 +94,13 @@ public struct GameVersion : IEquatable<GameVersion>, IComparable<GameVersion> {
         for (int i = 0; i < parsed.Length; i++) {
             int separator = version.IndexOf('.');
             if (separator == -1) {
-                break;
+                separator = version.Length;
             }
 
             byte.TryParse(version[..separator], out parsed[i]);
+            if (version.Length - separator <= 0) {
+                break;
+            }
             version = version[(separator + 1)..];
         }
 

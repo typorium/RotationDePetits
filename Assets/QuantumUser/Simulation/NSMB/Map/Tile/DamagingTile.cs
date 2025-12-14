@@ -1,0 +1,46 @@
+using Photon.Deterministic;
+using Quantum;
+
+public unsafe class DamagingTile : StageTile, IInteractableTile {
+
+    public bool DamageRight = true, DamageUp = true, Damageleft = true, DamageDown = true;
+    public bool InstantKill = false;
+
+    public bool Interact(Frame f, EntityRef entity, IInteractableTile.InteractionDirection direction, IntVector2 tilePosition, StageTileInstance tileInstance, out bool playBumpSound) {
+        playBumpSound = false;
+
+        switch (direction) {
+        case IInteractableTile.InteractionDirection.Right:
+            if (!DamageRight) {
+                return false;
+            }
+            break;
+        case IInteractableTile.InteractionDirection.Up:
+            if (!DamageUp) {
+                return false;
+            }
+            break;
+        case IInteractableTile.InteractionDirection.Left:
+            if (!Damageleft) {
+                return false;
+            }
+            break;
+        case IInteractableTile.InteractionDirection.Down:
+            if (!DamageDown) {
+                return false;
+            }
+            break;
+        }
+
+        if (!f.Unsafe.TryGetPointer(entity, out MarioPlayer* mario)) {
+            return false;
+        }
+
+        if (InstantKill) {
+            mario->Death(f, entity, false, true, EntityRef.None);
+        } else {
+            mario->Powerdown(f, entity, false, EntityRef.None);
+        }
+        return true;
+    }
+}

@@ -1,14 +1,19 @@
-using NSMB.UI.Game;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
 namespace NSMB.Utilities {
     public class Utils {
+
+        public static T IndexIntoArrayOrFirstElement<T>(T[] array, int index) {
+            if (index < 0 || index >= array.Length) {
+                return array[0];
+            }
+            return array[index];
+        }
 
         public static bool BitTest(long v, int index) {
             return (v & (1L << index)) != 0;
@@ -50,11 +55,11 @@ namespace NSMB.Utilities {
             }
         }
 
-        public static string SecondsToMinuteSeconds(int number) {
+        public static string SecondsToMinuteSeconds(int secondsInput) {
             StringBuilder builder = new StringBuilder();
-            int seconds = number % 60;
-            int minutes = number / 60;
-            int hours = minutes / 60;
+            int seconds = secondsInput % 60;
+            int minutes = (secondsInput / 60) % 60;
+            int hours = secondsInput / 60 / 60;
 
             if (hours > 0) {
                 builder.Append(hours).Append(':')

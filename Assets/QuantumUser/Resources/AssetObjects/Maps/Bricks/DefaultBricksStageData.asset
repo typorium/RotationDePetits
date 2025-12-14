@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.default.bricks
   GroupingTranslationKey: level.header.default
   DiscordStageImage: level-brick
+  SortOrder: 1
   Icon: {fileID: 21300000, guid: 65555cf07e4679c4aa3fa452beea4d47, type: 3}
+  MainMenuPreviewPrefab: {fileID: 3494129927716701336, guid: 56d105dbe4368f540a6c3c4fa03e53ff,
+    type: 3}
   OverrideAutomaticTilemapSettings: 1
   TileDimensions:
     X: 32

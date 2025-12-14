@@ -36,7 +36,7 @@ Windows, Linux, and Mac Builds: https://github.com/ipodtouch0218/NSMB-MarioVsLui
 <details>
   <summary><h2>Opening in Unity Editor</h2></summary>
 
-1. Install Unity 6000.0.48f1 (or newer) via Unity Hub (Installs > Install Editor > Scroll to bottom, if you do not see the version of your choice here, switch to the "Archive" tab and open the "download archive" link)
+1. Install Unity 6000.0.58f2 (or newer) via Unity Hub (Installs > Install Editor > Scroll to bottom, if you do not see the version of your choice here, switch to the "Archive" tab and open the "download archive" link)
 2. Download and install [git](https://git-scm.com/downloads). Do NOT use the .zip download, as it will cause errors within Unity.
 3. Open Command Prompt (Windows) or Terminal (MacOS / Linux)
 4. Navigate to the folder you want the source code to be in using `cd <path>`. For example, `cd %USERPROFILE%\Documents` will save it in My Documents.
@@ -62,6 +62,7 @@ Windows, Linux, and Mac Builds: https://github.com/ipodtouch0218/NSMB-MarioVsLui
 * [DonKaiStorm](https://github.com/DonKaiStorm)
 * [dotjp](https://github.com/windows10isnotavailable)
 * [GithubSPerez](https://github.com/GithubSPerez)
+* [GoldyFredy9](https://github.com/GoldyFredy9)
 * GradedWarrior
 * [HyperC@T](https://github.com/SuperSonic392)
 * [Jeffjewett27](https://github.com/Jeffjewett27)
@@ -100,6 +101,7 @@ Windows, Linux, and Mac Builds: https://github.com/ipodtouch0218/NSMB-MarioVsLui
 * Atwer *(fr-FR)*
 * Bilhal *(el-gr)*
 * Cecilia *(es-es)*
+* Cleeaf *(sv-SE)*
 * Davodio *(de-de)*
 * Filipianosol *(pl-pl)*
 * Floofdoge *(ar-eg)*

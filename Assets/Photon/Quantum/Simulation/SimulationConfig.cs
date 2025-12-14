@@ -12,7 +12,11 @@ namespace Quantum {
   /// <summary>
   /// The SimulationConfig holds parameters used in the ECS layer and inside core systems like physics and navigation.
   /// </summary>
-  public partial class SimulationConfig : AssetObject {
+  public partial class SimulationConfig : AssetObject
+#if QUANTUM_UNITY
+    , ISerializationCallbackReceiver
+#endif
+    {
     /// <summary>
     /// Obsolete: Don't use the hard coded guids instead reference the simulation config used in the RuntimeConfig.
     /// </summary>
@@ -45,22 +49,43 @@ namespace Quantum {
     }
 
     /// <summary>
-    /// Global entities configuration
+    /// Global entities settings.
     /// </summary>
     [Space, InlineHelp]
     public FrameBase.EntitiesConfig Entities;
     
     /// <summary>
-    /// Global physics configurations.
+    /// Global physics settings.
     /// </summary>
     [Space, InlineHelp]
     public PhysicsCommon.Config Physics;
     
     /// <summary>
-    /// Global navmesh configurations.
+    /// Global navmesh settings.
     /// </summary>
     [Space, InlineHelp]
     public Navigation.Config Navigation;
+
+    /// <summary>
+    /// Global heap settings.
+    /// </summary>
+    [Space, InlineHelp]
+    public FrameHeapConfig Heap;
+
+    #region Legacy
+
+    [HideInInspector, Obsolete("Use Heap.TrackingMode")]
+    public HeapTrackingMode HeapTrackingMode;
+    [HideInInspector, Obsolete("Use Heap.PageShift")]
+    public int HeapPageShift;
+    [HideInInspector, Obsolete("Use Heap.PageCount")]
+    public int HeapPageCount;
+    [HideInInspector, Obsolete("Use Heap.ExtraHeapCount")]
+    public int HeapExtraCount;
+    [HideInInspector]
+    public bool HeapSettingsMigrated;
+
+    #endregion
 
     /// <summary>
     /// This option will trigger a Unity scene load during the Quantum start sequence.\n
@@ -81,6 +106,7 @@ namespace Quantum {
     /// Override the number of threads used internally. Default is 2.
     /// </summary>
     [InlineHelp]
+    [ErrorIf(nameof(ThreadCount), 0, "Thread Count must be greater than 0.", CompareOperator.LessOrEqual)]
     public int ThreadCount = 2;
 
     /// <summary>
@@ -96,44 +122,12 @@ namespace Quantum {
     public SimulationConfigChecksumErrorDumpOptions ChecksumErrorDumpOptions;
 
     /// <summary>
-    /// If and to which extent allocations in the Frame Heap should be tracked when in Debug mode.
-    /// Recommended modes for development is `DetectLeaks`.
-    /// While actively debugging a memory leak,`TraceAllocations` mode can be enabled (warning: tracing is very slow).
-    /// </summary>
-    [Header("Frame Heap Settings")]
-    [InlineHelp]
-    public HeapTrackingMode HeapTrackingMode = HeapTrackingMode.DetectLeaks;
-
-    /// <summary>
-    /// Define the max heap size for one page of memory the frame class uses for custom allocations like QList for example. The default is 15.
-    /// </summary>
-    /// <remarks>2^15 = 32.768 bytes</remarks>
-    /// <remarks><code>TotalHeapSizeInBytes = (1 &lt;&lt; HeapPageShift) * HeapPageCount</code></remarks>
-    [InlineHelp]
-    public int HeapPageShift = 15;
-
-    /// <summary>
-    /// Define the max heap page count for memory the frame class uses for custom allocations like QList for example. Default is 256.
-    /// </summary>
-    /// <remarks><code>TotalHeapSizeInBytes = (1 &lt;&lt; HeapPageShift) * HeapPageCount</code></remarks>
-    [InlineHelp]
-    public int HeapPageCount = 256;
-
-    /// <summary>
-    /// Sets extra heaps to allocate for a session in case you need to
-    /// create 'auxiliary' frames than actually required for the simulation itself.
-    /// Default is 0.
-    /// </summary>
-    [InlineHelp]
-    public int HeapExtraCount = 0;
-
-    /// <summary>
     /// The asset loaded callback, caches fixed calculation results.
     /// </summary>
     /// <param name="resourceManager">Resource manager.</param>
-    /// <param name="allocator">The allocator.</param>
-    public override void Loaded(IResourceManager resourceManager, Native.Allocator allocator) {
+    public override void Loaded(IResourceManager resourceManager) {
       Physics.PenetrationCorrection = FPMath.Clamp01(Physics.PenetrationCorrection);
+      ThreadCount = Math.Max(1, ThreadCount);
     }
     
 #if QUANTUM_UNITY
@@ -143,6 +137,7 @@ namespace Quantum {
     public override void Reset() {
       Physics    = new PhysicsCommon.Config();
       Navigation = new Navigation.Config();
+      Heap       = new FrameHeapConfig();
 
       ImportLayersFromUnity(PhysicsType.Physics3D);
     }
@@ -235,8 +230,32 @@ namespace Quantum {
       }
 
       return matrix;
-    }    
-#endif
+    }
+
+    /// <inheritdoc cref="ISerializationCallbackReceiver.OnBeforeSerialize"/>
+    public void OnBeforeSerialize() {
+    }
+
+    /// <inheritdoc cref="ISerializationCallbackReceiver.OnAfterDeserialize"/>
+    public void OnAfterDeserialize() {
+#if UNITY_EDITOR
+      // 3.1 Migrating heap config
+#pragma warning disable CS0618 // Type or member is obsolete
+      if (HeapSettingsMigrated == false && HeapPageCount > 0) {
+        Heap.PageShift = HeapPageShift;
+        Heap.PageCount = HeapPageCount;
+        Heap.TrackingMode = HeapTrackingMode;
+        Heap.ExtraHeapCount = HeapExtraCount;
+        // Force to new page based management and migrate page size, actual required size could be smaller
+        // PageCount not required because heap grows dynamically now
+        Heap.Management = HeapManagement.PageBased;
+        Heap.PageSize = (HeapPageSize) Math.Clamp(HeapPageShift - 10, 0, (int)HeapPageSize.Size_128_KiB);
+        HeapSettingsMigrated = true;
+      }
+#pragma warning restore CS0618 // Type or member is obsolete
+#endif // UNITY_EDITOR
+    }
+#endif // QUANTUM_UNITY
   }
 
   /// <summary>
@@ -260,6 +279,10 @@ namespace Quantum {
     /// Dumps component checksums.
     /// </summary>
     ComponentChecksums   = 1 << 3,
+    /// <summary>
+    /// Dumps 3D Physics SceneMesh metadata.
+    /// </summary>
+    SceneMesh3D          = 1 << 4,
   }
 
 }

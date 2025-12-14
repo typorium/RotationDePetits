@@ -5,22 +5,26 @@ using Quantum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEditor;
 using AssetObjectQuery = Quantum.AssetObjectQuery;
+using Quantum.Editor;
 
 [assembly: QuantumMapBakeAssembly]
 namespace NSMB.Quantum { 
     public class VersusStageBaker : MapDataBakerCallback {
 
+        private static readonly StageTile.TileCollisionData Grid = new() {
+            IsFullTile = true,
+        };
+
         private static readonly FPVector2[] GridCoords = new FPVector2[] {
-        new(FP._0_50, FP._0_50),
-        new(FP._0_50, -FP._0_50),
-        new(-FP._0_50, -FP._0_50),
-        new(-FP._0_50, FP._0_50),
-    };
+            new(FP._0_50, FP._0_50),
+            new(FP._0_50, -FP._0_50),
+            new(-FP._0_50, -FP._0_50),
+            new(-FP._0_50, FP._0_50),
+        };
 
         private QuantumMapData data;
 
@@ -31,7 +35,7 @@ namespace NSMB.Quantum {
             int changed = 0;
             foreach (var stageTile in FindAssetsByType<StageTile>()) {
                 var shapes = stageTile.CollisionData.Shapes;
-                if (shapes.Length != 1) {
+                if (shapes == null || shapes.Length != 1) {
                     continue;
                 }
 
@@ -46,12 +50,12 @@ namespace NSMB.Quantum {
             }
 
             this.data = data;
-            var stage = QuantumUnityDB.GetGlobalAssetEditorInstance<VersusStageData>(data.Asset.UserAsset);
+            var stage = QuantumUnityDB.GetGlobalAssetEditorInstance<VersusStageData>(data.GetAsset(true).UserAsset);
             if (!stage) {
                 LogError("Scene does not have a VersusStageData instance as the Map's UserAsset", data);
                 return;
             }
-
+            
             GameObject tilemapGo = GameObject.FindFirstObjectByType<TilemapAnimator>().gameObject;
             if (!tilemapGo || !tilemapGo.TryGetComponent(out Tilemap tilemap)) {
                 LogError("Could not find a main tilemap (one that has a TilemapAnimator component!)");
@@ -112,7 +116,15 @@ namespace NSMB.Quantum {
                 enemy.Prototype.Spawnpoint = enemy.transform.position.ToFPVector2();
                 EditorUtility.SetDirty(enemy);
             }
-            LogInfo($"Baked {enemies.Length} enemies");
+            LogInfo($"Baked {enemies.Length} enemy(s)");
+
+            // --- Bake Donut Blocks(' spawnpoints)
+            QPrototypeDonutBlock[] donutBlocks = GameObject.FindObjectsByType<QPrototypeDonutBlock>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (var donutBlock in donutBlocks) {
+                donutBlock.Prototype.Origin = donutBlock.transform.position.ToFPVector2();
+            }
+            LogInfo($"Baked {donutBlocks.Length} donut block(s)");
+
 
             /*
             // --- Bake Breakable Objects
@@ -154,9 +166,8 @@ namespace NSMB.Quantum {
                 return default;
             }
 
-            StageTile existingTile = QuantumUnityDB.FindGlobalAssetGuids(new AssetObjectQuery(typeof(StageTile)))
-                .Select(guid => new AssetRef<StageTile>(guid))
-                .Select(QuantumUnityDB.GetGlobalAssetEditorInstance)
+            StageTile existingTile = QuantumUnityDB.Global.GetAssets(new AssetObjectQuery { Type = typeof(StageTile) })
+                .Cast<StageTile>()
                 .FirstOrDefault(st => st.Tile == tile);
 
             if (existingTile) {
@@ -169,6 +180,7 @@ namespace NSMB.Quantum {
         public StageTile CreateStageTile(TileBase tile) {
             StageTile newTile = ScriptableObject.CreateInstance<StageTile>();
             newTile.Tile = tile;
+            newTile.name = tile.name + "StageTile";
 
             switch (tile) {
             case Tile t: {
@@ -201,19 +213,18 @@ namespace NSMB.Quantum {
                 throw new ArgumentException();
             }
 
+            /*
             string existingTilePath = AssetDatabase.GetAssetPath(tile);
-            string newTilePath = Regex.Replace(existingTilePath, @"\..+", "") + "StageTile.asset";
-            AssetDatabase.CreateAsset(newTile, newTilePath);
+            AssetDatabase.AddObjectToAsset(newTile, existingTilePath);
             AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            (var guid, var fileId) = AssetDatabaseUtils.GetGUIDAndLocalFileIdentifierOrThrow(newTile);
+            newTile.Guid = QuantumUnityDBUtilities.CreateDeterministicAssetGuid(new GUID(guid), fileId);
+            Debug.Log(newTile.Guid);
             QuantumUnityDB.Global.AddAsset(newTile);
-
+            */
+            throw new Exception("this shit's fucked, man");
             return newTile;
         }
-
-        private static readonly StageTile.TileCollisionData Grid = new() {
-            IsFullTile = true,
-        };
 
         private static StageTile.TileCollisionData GetTileCollisionData(Tile.ColliderType collider, Sprite sprite) {
             switch (collider) {
@@ -247,7 +258,7 @@ namespace NSMB.Quantum {
         }
 
         private void LogError(string message, UnityEngine.Object focus = null) {
-            Debug.LogWarning($"[VersusStageBaker] Unable to bake scene \"{data.Asset.ScenePath}\": {message}", focus);
+            Debug.LogWarning($"[VersusStageBaker] Unable to bake scene \"{data.GetAsset(true).ScenePath}\": {message}", focus);
         }
 
         // https://discussions.unity.com/t/getting-all-assets-of-the-specified-type/75031/5

@@ -1,4 +1,5 @@
 using JimmysUnityUtilities;
+using NSMB.Utilities;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using System;
@@ -21,28 +22,28 @@ namespace NSMB.UI.Intro {
         [SerializeField] private float logoBounceDuration = 0.1f, logoBounceHeight = 15f;
 
         //---Private Variables
-        private SoundEffectDataAttribute[] possibleSfx;
-        private CharacterAsset[] possibleCharacters;
+        // private SoundEffectDataAttribute[] possibleSfx;
         private Coroutine logoBounceRoutine;
 
         public void Start() {
             StartCoroutine(IntroSequence());
+            /*
             possibleSfx = ((SoundEffect[]) Enum.GetValues(typeof(SoundEffect)))
                 .Where(se => !excludedSounds.Contains(se))
                 .Select(se => se.GetSoundData())
-                .Where(sd => sd.Sound.Contains("{char}"))
                 .ToArray();
-            possibleCharacters = GlobalController.Instance.config.CharacterDatas
-                .Select(ar => QuantumUnityDB.GetGlobalAsset(ar))
-                .ToArray();
+            */
         }
 
         public void PlayRandomCharacterSound() {
+            /* TODO: fix
+            var possibleCharacters = QuantumViewUtils.Characters;
             SoundEffectDataAttribute data = possibleSfx[UnityEngine.Random.Range(0, possibleSfx.Length)];
             CharacterAsset character = possibleCharacters[UnityEngine.Random.Range(0, possibleCharacters.Length)];
             int variant = data.Variants <= 1 ? 0 : UnityEngine.Random.Range(1, data.Variants + 1);
 
             sfx.PlayOneShot(data, character, variant);
+            */
 
             if (logoBounceRoutine != null) {
                 StopCoroutine(logoBounceRoutine);

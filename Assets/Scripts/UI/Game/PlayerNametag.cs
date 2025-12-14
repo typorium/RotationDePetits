@@ -62,7 +62,7 @@ namespace NSMB.UI.Game {
                 UpdateText(game.Frames.Predicted);
             }
         }
-
+        
         public unsafe void LateUpdate() {
             // If our parent object despawns, we also die.
             if (!parent) {

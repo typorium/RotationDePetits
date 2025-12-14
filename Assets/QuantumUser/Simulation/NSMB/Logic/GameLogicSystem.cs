@@ -24,10 +24,10 @@ namespace Quantum {
         public override void Update(Frame f) {
             // Tick RNG
             _ = f.RNG->Next();
-            
+
             // Parse lobby commands
             var playerDataDictionary = f.ResolveDictionary(f.Global->PlayerDatas);
-            for (int i = 0; i < f.PlayerCount; i++) {
+            for (int i = 0; i < f.MaxPlayerCount; i++) {
                 if (f.GetPlayerCommand(i) is ILobbyCommand lobbyCommand) {
                     var playerData = QuantumUtils.GetPlayerData(f, i, playerDataDictionary);
                     if (playerData == null) {
@@ -370,8 +370,10 @@ namespace Quantum {
                     continue;
                 }
 
-                int characterIndex = FPMath.Clamp(data->Character, 0, config.CharacterDatas.Length - 1);
-                CharacterAsset character = f.FindAsset(config.CharacterDatas[characterIndex]);
+                CharacterAsset character = f.FindAsset(data->Character);
+                if (character == null) {
+                    character = f.Context.CharacterDatas[0];
+                }
 
                 EntityRef newPlayer = f.Create(character.Prototype);
                 var mario = f.Unsafe.GetPointer<MarioPlayer>(newPlayer);
@@ -388,7 +390,7 @@ namespace Quantum {
                     PlayerRef = data->PlayerRef,
                     Nickname = runtimePlayer.PlayerNickname,
                     NicknameColor = runtimePlayer.NicknameColor,
-                    Character = (byte) characterIndex,
+                    Character = runtimePlayer.Character,
                     Team = data->RealTeam,
                 };
             }

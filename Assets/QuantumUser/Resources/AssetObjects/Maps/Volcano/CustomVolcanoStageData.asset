@@ -22,7 +22,10 @@ MonoBehaviour:
   TranslationKey: level.custom.volcano
   GroupingTranslationKey: level.header.custom
   DiscordStageImage: level-volcano
+  SortOrder: 3
   Icon: {fileID: 21300000, guid: db2bb15e68990db4582869c4a4d80c44, type: 3}
+  MainMenuPreviewPrefab: {fileID: 3317826608246276711, guid: ebdf6168af9c95b4e9acde47e15bd152,
+    type: 3}
   OverrideAutomaticTilemapSettings: 1
   TileDimensions:
     X: 80
@@ -66,6 +69,7 @@ MonoBehaviour:
   HidePlayersOnMinimap: 0
   SpawnBigPowerups: 0
   SpawnVerticalPowerups: 1
+  SfxOverrides: []
   MainMusic:
   - Id:
       Value: 458588638148856391

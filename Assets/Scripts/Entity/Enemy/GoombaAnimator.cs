@@ -1,3 +1,4 @@
+using NSMB.Sound;
 using NSMB.Utilities.Components;
 using NSMB.Utilities.Extensions;
 using Quantum;
@@ -12,7 +13,7 @@ namespace NSMB.Entities.Enemies {
         [SerializeField] private Sprite deadSprite;
         [SerializeField] private GameObject specialKillParticle;
         [SerializeField] private LegacyAnimateSpriteRenderer legacyAnimation;
-        [SerializeField] private AudioSource sfx;
+        [SerializeField] private SoundEffectPlayer sfx;
 
         public void OnValidate() {
             this.SetIfNull(ref sRenderer, UnityExtensions.GetComponentType.Children);

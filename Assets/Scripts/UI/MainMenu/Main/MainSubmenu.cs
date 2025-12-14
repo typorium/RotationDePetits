@@ -27,10 +27,8 @@ namespace NSMB.UI.MainMenu.Submenus {
         }
 
         private IEnumerator QuitCorotuine() {
-            AudioClip clip = SoundEffect.UI_Quit.GetClip();
-            Canvas.PlaySound(SoundEffect.UI_Quit);
-            yield return new WaitForSeconds(clip.length);
-
+            float duration = Canvas.PlaySound(SoundEffect.UI_Quit);
+            yield return new WaitForSecondsRealtime(duration);
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else

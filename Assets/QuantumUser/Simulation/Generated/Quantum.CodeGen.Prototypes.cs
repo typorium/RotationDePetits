@@ -78,7 +78,7 @@ namespace Quantum.Prototypes {
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.BetterPhysicsObject))]
   public unsafe partial class BetterPhysicsObjectPrototype : ComponentPrototype<Quantum.BetterPhysicsObject> {
-    public Shape2D Shape;
+    public Quantum.Shape2DConfig Shape;
     public FPVector2 Gravity;
     public QBoolean ColliderDisabled;
     partial void MaterializeUser(Frame frame, ref Quantum.BetterPhysicsObject result, in PrototypeMaterializationContext context);
@@ -88,7 +88,7 @@ namespace Quantum.Prototypes {
         return f.Set(entity, component) == SetResult.ComponentAdded;
     }
     public void Materialize(Frame frame, ref Quantum.BetterPhysicsObject result, in PrototypeMaterializationContext context = default) {
-        result.Shape = this.Shape;
+        this.Shape.Materialize(frame, ref result.Shape, in context);
         result.Gravity = this.Gravity;
         result.ColliderDisabled = this.ColliderDisabled;
         MaterializeUser(frame, ref result, in context);
@@ -215,8 +215,6 @@ namespace Quantum.Prototypes {
     public UInt16 TimeToShoot;
     public FP MinimumShootRadius;
     public FP MaximumShootRadius;
-    public Byte BulletBillCount;
-    public UInt16 TimeToShootFrames;
     partial void MaterializeUser(Frame frame, ref Quantum.BulletBillLauncher result, in PrototypeMaterializationContext context);
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.BulletBillLauncher component = default;
@@ -228,8 +226,6 @@ namespace Quantum.Prototypes {
         result.TimeToShoot = this.TimeToShoot;
         result.MinimumShootRadius = this.MinimumShootRadius;
         result.MaximumShootRadius = this.MaximumShootRadius;
-        result.BulletBillCount = this.BulletBillCount;
-        result.TimeToShootFrames = this.TimeToShootFrames;
         MaterializeUser(frame, ref result, in context);
     }
   }
@@ -325,6 +321,27 @@ namespace Quantum.Prototypes {
     public void Materialize(Frame frame, ref Quantum.Cullable result, in PrototypeMaterializationContext context = default) {
         result.Offset = this.Offset;
         result.BroadRadius = this.BroadRadius;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.DonutBlock))]
+  public unsafe partial class DonutBlockPrototype : ComponentPrototype<Quantum.DonutBlock> {
+    public UInt16 FramesUntilFall;
+    public UInt16 FramesUntilRespawn;
+    public FP FallSpeed;
+    public FPVector2 Origin;
+    partial void MaterializeUser(Frame frame, ref Quantum.DonutBlock result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.DonutBlock component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.DonutBlock result, in PrototypeMaterializationContext context = default) {
+        result.FramesUntilFall = this.FramesUntilFall;
+        result.FramesUntilRespawn = this.FramesUntilRespawn;
+        result.FallSpeed = this.FallSpeed;
+        result.Origin = this.Origin;
         MaterializeUser(frame, ref result, in context);
     }
   }
@@ -527,6 +544,7 @@ namespace Quantum.Prototypes {
     public Button PowerupAction;
     public Button FireballPowerupAction;
     public Button PropellerPowerupAction;
+    public Button AllowGroundpoundWithLeftRight;
     partial void MaterializeUser(Frame frame, ref Quantum.Input result, in PrototypeMaterializationContext context);
     public void Materialize(Frame frame, ref Quantum.Input result, in PrototypeMaterializationContext context = default) {
         result.Up = this.Up;
@@ -538,6 +556,7 @@ namespace Quantum.Prototypes {
         result.PowerupAction = this.PowerupAction;
         result.FireballPowerupAction = this.FireballPowerupAction;
         result.PropellerPowerupAction = this.PropellerPowerupAction;
+        result.AllowGroundpoundWithLeftRight = this.AllowGroundpoundWithLeftRight;
         MaterializeUser(frame, ref result, in context);
     }
   }
@@ -618,7 +637,7 @@ namespace Quantum.Prototypes {
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.Liquid))]
   public unsafe partial class LiquidPrototype : ComponentPrototype<Quantum.Liquid> {
-    public LiquidType LiquidType;
+    public Quantum.QEnum8<LiquidType> LiquidType;
     public Int32 WidthTiles;
     public FP HeightTiles;
     partial void MaterializeUser(Frame frame, ref Quantum.Liquid result, in PrototypeMaterializationContext context);
@@ -746,7 +765,7 @@ namespace Quantum.Prototypes {
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.PhysicsObjectData))]
   public unsafe partial class PhysicsObjectDataPrototype : StructPrototype {
-    public PhysicsFlags Flags;
+    public Quantum.QEnum8<PhysicsFlags> Flags;
     public FP FloorAngle;
     partial void MaterializeUser(Frame frame, ref Quantum.PhysicsObjectData result, in PrototypeMaterializationContext context);
     public void Materialize(Frame frame, ref Quantum.PhysicsObjectData result, in PrototypeMaterializationContext context = default) {
@@ -774,8 +793,8 @@ namespace Quantum.Prototypes {
     public PlayerRef PlayerRef;
     public QBoolean IsRoomHost;
     public QBoolean IsLoaded;
-    public Byte Character;
-    public Byte Palette;
+    public AssetRef<CharacterAsset> Character;
+    public AssetRef<PaletteSet> Palette;
     public Byte RequestedTeam;
     public QBoolean IsSpectator;
     public QBoolean ManualSpectator;
@@ -822,7 +841,7 @@ namespace Quantum.Prototypes {
     [MaxStringByteCount(46, "UTF-8")]
     public string NicknameColor;
     public Byte Team;
-    public Byte Character;
+    public AssetRef<CharacterAsset> Character;
     public QBoolean Disconnected;
     public QBoolean Disqualified;
     partial void MaterializeUser(Frame frame, ref Quantum.PlayerInformation result, in PrototypeMaterializationContext context);

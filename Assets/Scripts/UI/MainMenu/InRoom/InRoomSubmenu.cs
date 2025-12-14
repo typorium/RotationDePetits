@@ -79,12 +79,17 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
 
             QuantumCallback.Subscribe<CallbackLocalPlayerAddConfirmed>(this, OnLocalPlayerAddConfirmed);
+            QuantumCallback.Subscribe<CallbackLocalPlayerAddFailed>(this, OnLocalPlayerAddFailed);
             QuantumCallback.Subscribe<CallbackGameDestroyed>(this, OnGameDestroyed);
             QuantumEvent.Subscribe<EventStartingCountdownChanged>(this, OnStartingCountdownChanged);
             QuantumEvent.Subscribe<EventGameStateChanged>(this, OnGameStateChanged);
             QuantumEvent.Subscribe<EventHostChanged>(this, OnHostChanged);
             QuantumEvent.Subscribe<EventCountdownTick>(this, OnCountdownTick);
             QuantumEvent.Subscribe<EventPlayerDataChanged>(this, OnPlayerDataChanged);
+        }
+
+        private void OnLocalPlayerAddFailed(CallbackLocalPlayerAddFailed callback) {
+            Debug.Log(callback.Message);
         }
 
         public void OnEnable() {
@@ -298,6 +303,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         private void OnLocalPlayerAddConfirmed(CallbackLocalPlayerAddConfirmed e) {
             UpdateStartButton(e.Game, e.Game.Frames.Predicted);
+            GlobalController.Instance.connecting.SetActive(false);
         }
 
         private void OnGameStateChanged(EventGameStateChanged e) {
@@ -342,6 +348,10 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 startGameButton.interactable = QuantumUtils.IsGameStartable(f);
             } else {
                 startGameButton.interactable = f.Global->GameStartFrames == 0;
+            }
+
+            if (e.Game.PlayerIsLocal(e.Player)) {
+                UpdateStartButton(e.Game, f);
             }
         }
 
