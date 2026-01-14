@@ -147,7 +147,7 @@ namespace NSMB.Replay {
                         // Failed to create file; maybe they have two copies of the game open?
                         finalFilePath = Path.Combine(replayFolder, $"Replay-{now}-{++attempts}.mvlreplay");
                     }
-                } while (outputStream == null);
+                } while (outputStream == null && attempts < 5);
 
                 ref GameRules rules = ref f.Global->Rules;
                 BinaryReplayHeader header = new() {
