@@ -283,6 +283,11 @@
             The icon marking missing installation steps.
             </summary>
         </member>
+        <member name="F:Quantum.Editor.QuantumEditorHubWindow.DocumentationIcon">
+            <summary>
+            The icon indicating documentation.
+            </summary>
+        </member>
         <member name="P:Quantum.Editor.QuantumEditorHubWindow.CurrentPage">
             <summary>
             Get and sets current page from PlayerPrefs. It's handy for domain reloads.

@@ -338,9 +338,11 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             PlayerRef host = f.Global->Host;
 
             if (game.PlayerIsLocal(host)) {
-                game.AddCommand(game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)], new CommandAssignTeam {
+                int hostSlot = game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)];
+                game.AddCommand(hostSlot, new CommandAssignTeam {
                     Target = player,
                     Team = (byte) selector.TeamIndex,
+                    Clear = selector.TeamIndex >= f.SimulationConfig.Teams.Length,
                 });
             }
 

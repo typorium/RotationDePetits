@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Photon.Deterministic;
 
 namespace NSMB.UI.MainMenu.Submenus.InRoom {
 

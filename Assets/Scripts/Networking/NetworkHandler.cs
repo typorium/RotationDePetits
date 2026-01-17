@@ -26,9 +26,6 @@ namespace NSMB.Networking {
         //---Constants
         public static readonly string RoomIdValidChars = "BCDFGHJKLMNPRQSTVWXYZ";
         public static readonly int RoomIdLength = 4;
-        private static readonly List<DisconnectCause> NonErrorDisconnectCauses = new() {
-            DisconnectCause.None, DisconnectCause.DisconnectByClientLogic, DisconnectCause.ApplicationQuit,
-        };
 
         //---Static Variables
         public static RealtimeClient Client => Instance ? Instance.realtimeClient : null;
@@ -37,7 +34,6 @@ namespace NSMB.Networking {
         public static QuantumGame Game => Runner?.Game ?? QuantumRunner.DefaultGame;
         public static IEnumerable<Region> Regions => Client?.RegionHandler?.EnabledRegions?.OrderBy(r => r.Code);
         public static string Region => Client?.CurrentRegion ?? Instance.lastRegion;
-        public static bool WasDisconnectedViaError { get; set; }
 
         //---Private Variables
         private RealtimeClient realtimeClient;
@@ -101,11 +97,10 @@ namespace NSMB.Networking {
             WaitForSeconds seconds = new(1);
             CommandUpdatePing pingCommand = new();
             while (true) {
-                QuantumGame game;
-                if (Runner && (game = Runner.Game) != null) {
+                if (Game != null) {
                     pingCommand.PingMs = (int) Ping.Value;
-                    foreach (int slot in game.GetLocalPlayerSlots()) {
-                        game.AddCommand(slot, pingCommand);
+                    foreach (int slot in Game.GetLocalPlayerSlots()) {
+                        Game.AddCommand(slot, pingCommand);
                     }
                 }
                 yield return seconds;
@@ -419,7 +414,7 @@ namespace NSMB.Networking {
             BooleanProperties props = (int) Client.CurrentRoom.CustomProperties[Enums.NetRoomProperties.BoolProperties];
             props.GameStarted = e.NewState != GameState.PreGameRoom;
 
-            Client.CurrentRoom.SetCustomProperties(new Photon.Client.PhotonHashtable {
+            Client.CurrentRoom.SetCustomProperties(new PhotonHashtable {
                 { Enums.NetRoomProperties.BoolProperties, (int) props }
             });
 

@@ -63,9 +63,11 @@ namespace NSMB.Replay {
             writer.Write(WinningTeam);
 
             // Addons
-            writer.Write(AddonGuids.Count);
-            for (int i = 0; i < AddonGuids.Count; i++) {
-                writer.Write(AddonGuids[i].ToByteArray());
+            if (Version >= new GameVersion(2, 1, 0)) {
+                writer.Write(AddonGuids.Count);
+                for (int i = 0; i < AddonGuids.Count; i++) {
+                    writer.Write(AddonGuids[i].ToByteArray());
+                }
             }
 
             return writer.BaseStream.Length;

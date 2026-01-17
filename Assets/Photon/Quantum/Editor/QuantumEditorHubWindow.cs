@@ -104,6 +104,21 @@ namespace Quantum.Editor {
             if (_pages.Count == 0) {
               FindPages(_pages, QuantumEditorHubPage.AssetLabel);
             }
+            
+            // pages can be hidden based on custom conditions
+            QuantumEditorHubWindow window = null;
+            if (EditorWindow.HasOpenInstances<QuantumEditorHubWindow>()) {
+              window = GetWindow<QuantumEditorHubWindow>();
+            }
+
+            if (window != null) {
+              for (int i = _pages.Count - 1; i >= 0; i--) {
+                var page = _pages[i];
+                if (page.CheckIsHidden(window.CustomConditionCheck)) {
+                  _pages.RemoveAt(i);
+                }
+              }
+            }
 
             // Pages can overwrite each other by title
             for (int i = _pages.Count - 1; i >= 0; i--) {

@@ -5058,7 +5058,7 @@ namespace Quantum {
 
   /// <summary>
   /// Callback called when the game has been re-synchronized from a snapshot and is about to start.
-  /// Will be followed by the <see cref="CallbackGameStarted"/> callback."/>
+  /// Will be followed by the <see cref="CallbackGameStarted"/> callback.
   /// </summary>
   public sealed class CallbackGameResynced : QuantumGame.CallbackBase {
     /// <summary>

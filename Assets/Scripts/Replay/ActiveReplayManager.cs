@@ -207,7 +207,7 @@ namespace NSMB.Replay {
             if (NetworkHandler.Runner && NetworkHandler.Runner.IsRunning) {
                 await NetworkHandler.Runner.ShutdownAsync();
             }
-
+            /*
             var loadAddonResult = await GlobalController.Instance.addonManager.LoadAllAddons(replay.Header.AddonGuids);
             if (loadAddonResult != Addons.AddonManager.LoadAllAddonsResult.Success) {
                 NetworkHandler.ThrowError(
@@ -217,6 +217,7 @@ namespace NSMB.Replay {
                     false);
                 return;
             }
+            */
 
             CurrentReplay = replay;
 
@@ -302,7 +303,7 @@ namespace NSMB.Replay {
         }
 
         private unsafe void OnReplaysEnabledChanged(bool enable) {
-            var game = QuantumRunner.DefaultGame;
+            QuantumGame game = QuantumRunner.DefaultGame;
             if (game == null) {
                 return;
             }

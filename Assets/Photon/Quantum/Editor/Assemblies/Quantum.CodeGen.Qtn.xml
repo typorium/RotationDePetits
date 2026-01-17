@@ -96,7 +96,7 @@
  <summary>File with legacy prototypes. Generated if <see cref="GeneratorLegacyOptions.UnderscorePrototypesSuffix"/> is used.</summary>
 </member>
 <member name="F:Quantum.CodeGen.GeneratorOutputFileKind.LegacyAssetRefs">
- <summary>File with legacy AssetRef structs. Generated if <see cref="GeneratorLegacyOptions.AssetRefs/> is used."/></summary>
+ <summary>File with legacy AssetRef structs. Generated if <see cref="GeneratorLegacyOptions.AssetRefs"/> is used.</summary>
 </member>
 <member name="F:Quantum.CodeGen.GeneratorOutputFileKind.LegacyAssetObjects">
  <summary>File with code generated due to legacy <c>asset</c> directives.</summary>

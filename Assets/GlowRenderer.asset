@@ -31,7 +31,10 @@ MonoBehaviour:
   m_RendererFeatureMap: a6ce989f1ba54579
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 0}
-  m_AssetVersion: 2
+  m_AssetVersion: 3
+  m_PrepassLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_OpaqueLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -68,7 +71,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: RenderGlows
-    Event: 1000
+    Event: 550
     filterSettings:
       RenderQueueType: 0
       LayerMask:
@@ -81,7 +84,7 @@ MonoBehaviour:
     overrideShaderPassIndex: 0
     overrideMode: 1
     overrideDepthState: 0
-    depthCompareFunction: 2
+    depthCompareFunction: 6
     enableWrite: 0
     stencilSettings:
       overrideStencilState: 0
@@ -94,4 +97,4 @@ MonoBehaviour:
       overrideCamera: 0
       restoreCamera: 0
       offset: {x: 0, y: 0, z: 0, w: 0}
-      cameraFieldOfView: 60
+      cameraFieldOfView: 4

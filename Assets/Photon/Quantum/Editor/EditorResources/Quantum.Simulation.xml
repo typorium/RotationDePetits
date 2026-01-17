@@ -3693,7 +3693,7 @@
         <member name="T:Quantum.CallbackGameResynced">
             <summary>
             Callback called when the game has been re-synchronized from a snapshot and is about to start.
-            Will be followed by the <see cref="T:Quantum.CallbackGameStarted"/> callback."/>
+            Will be followed by the <see cref="T:Quantum.CallbackGameStarted"/> callback.
             </summary>
         </member>
         <member name="F:Quantum.CallbackGameResynced.ID">
@@ -5001,6 +5001,14 @@
             <param name="arguments">Session arguments</param>
             <param name="defaultRunnerId">Optionally a default runner name</param>
             <returns>A session runner</returns>
+        </member>
+        <member name="M:Quantum.Physics3DBenchmark.GenerateFibonacciSphere(System.Int32,System.Collections.Generic.ICollection{Photon.Deterministic.FPVector3})">
+            <summary>
+            Generates evenly distributed points on a unit-sphere's surface by using the Golden Angle (approx 137.5 deg.) to generate coordinates.
+            Based on a python implementation shared in: https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere
+            </summary>
+            <param name="samples">The number of points to be generated.</param>
+            <param name="points">A collection to hold the generated points. Must be non-null.</param>
         </member>
         <member name="T:Quantum.SystemSignalsOnly">
             <summary>

@@ -2035,6 +2035,22 @@ namespace Quantum {
 #endregion
 
 
+#region Assets/Photon/Quantum/Runtime/Entity/IQuantumSnapshotInterpolationTimer.cs
+
+namespace Quantum {
+	/// <summary>
+	/// Interface to access the interpolation timer state.
+	/// </summary>
+	public interface IQuantumSnapshotInterpolationTimer
+	{
+		float Alpha { get; }
+		int CurrentFrom { get; }
+	}
+}
+
+#endregion
+
+
 #region Assets/Photon/Quantum/Runtime/Entity/IQuantumViewComponent.cs
 
 namespace Quantum {
@@ -2075,7 +2091,7 @@ namespace Quantum {
     /// <param name="game"></param>
     void GameChanged(QuantumGame game);
     /// <summary>
-    /// Is toggled during <see cref="Activate"/> and <see cref="Deactivate"/>."/>
+    /// Is toggled during <see cref="Activate"/> and <see cref="Deactivate"/>.
     /// </summary>
     bool IsActive { get; }
     /// <summary>
@@ -2548,7 +2564,7 @@ namespace Quantum {
   /// Configuration of the snapshot interpolation mode when selected in <see cref="QuantumEntityView.InterpolationMode"/>.
   /// </summary>
   [Serializable]
-  public class QuantumSnapshotInterpolationTimer {
+  public class QuantumSnapshotInterpolationTimer : IQuantumSnapshotInterpolationTimer {
     
     [Range(1.0f, 5.0f)]
     public float TimeDilationPercentage = 2;
@@ -2559,11 +2575,9 @@ namespace Quantum {
     [Range(0.25f, 1.0f)]
     public float ElasticWindowTicks = 0.5f;
 
-    [HideInInspector]
-    public int CurrentFrom;
+    public int CurrentFrom { get; private set; }
 
-    [HideInInspector]
-    public float Alpha = 0;
+    public float Alpha { get; private set; }
 
     int _verified;
     float _accumulatedDelta;
@@ -8182,7 +8196,7 @@ namespace Quantum {
     /// <param name="game">Quantum game</param>
     public virtual void OnGameResync(QuantumGame game) { }
     /// <summary>
-    /// Is called by <see cref="CallbackGameDestroyed"/> when the session has been destroyed."/>
+    /// Is called by <see cref="CallbackGameDestroyed"/> when the session has been destroyed.
     /// </summary>
     /// <param name="game">Quantum game</param>
     public virtual void OnGameDestroyed(QuantumGame game) { }
@@ -23473,7 +23487,7 @@ namespace Quantum {
     }
 
     /// <summary>
-    /// Calls <see cref="SessionRunner.WaitForShutdownAsync(System.Threading.CancellationToken)"/> on all runners."/>
+    /// Calls <see cref="SessionRunner.WaitForShutdownAsync(System.Threading.CancellationToken)"/> on all runners.
     /// </summary>
     public System.Threading.Tasks.Task ShutdownAllAsync() {
       var tasks = new List<System.Threading.Tasks.Task>();
@@ -28136,7 +28150,7 @@ namespace Quantum {
     }
 
     /// <summary>
-    /// Will <see cref="GameObject.SetActive(bool)"/> to false if the game object is not null and is active."/>
+    /// Will <see cref="GameObject.SetActive(bool)"/> to false if the game object is not null and is active.
     /// </summary>
     /// <param name="gameObject">Game object to hide</param>
     public static void Hide(this GameObject gameObject) {
@@ -29331,7 +29345,7 @@ namespace Quantum {
     }
 
     /// <summary>
-    /// Uses <see cref="Progress"/> property."/>
+    /// Uses <see cref="Progress"/> property.
     /// </summary>
     /// <param name="value">Progress value between 0..1</param>
     public void SetProgress(float value) {

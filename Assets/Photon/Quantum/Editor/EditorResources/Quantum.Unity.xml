@@ -398,7 +398,7 @@
         <member name="M:Quantum.Profiling.QuantumGraphProfilerValueSeries.AddValues(System.Single,System.Nullable{System.Single},System.Nullable{System.Single},System.Nullable{System.Single})">
             <summary>
             Add multiple values to the series.
-            Requires ValueDimensions to be set accordingly."/>
+            Requires ValueDimensions to be set accordingly.
             </summary>
             <param name="value1">Default value</param>
             <param name="value2">Extra value</param>
@@ -1768,7 +1768,7 @@
         </member>
         <member name="P:Quantum.IQuantumViewComponent.IsActive">
             <summary>
-            Is toggled during <see cref="M:Quantum.IQuantumViewComponent.Activate(Quantum.Frame,Quantum.QuantumGame,Quantum.QuantumEntityView)"/> and <see cref="M:Quantum.IQuantumViewComponent.Deactivate"/>."/>
+            Is toggled during <see cref="M:Quantum.IQuantumViewComponent.Activate(Quantum.Frame,Quantum.QuantumGame,Quantum.QuantumEntityView)"/> and <see cref="M:Quantum.IQuantumViewComponent.Deactivate"/>.
             </summary>
         </member>
         <member name="P:Quantum.IQuantumViewComponent.IsActiveAndEnabled">
@@ -2147,6 +2147,11 @@
             A reference to the entity view updater that controls this entity view.
             </summary>
         </member>
+        <member name="P:Quantum.QuantumEntityView.SnapshotInterpolationTimer">
+            <summary>
+            Snapshot interpolation information, usually stored on <see cref="F:Quantum.QuantumEntityViewUpdater.SnapshotInterpolation"/>.
+            </summary>
+        </member>
         <member name="P:Quantum.QuantumEntityView.Game">
             <summary>
             A reference to the current game that this entity view belongs to <see cref="P:Quantum.QuantumEntityViewUpdater.ObservedGame"/>.
@@ -2154,7 +2159,7 @@
         </member>
         <member name="P:Quantum.QuantumEntityView.ViewContexts">
             <summary>
-            All contexts found on the <see cref="P:Quantum.QuantumEntityView.EntityViewUpdater"/> game object accessible by their type.
+            All contexts found on the <see cref="T:Quantum.QuantumEntityViewUpdater"/> game object accessible by their type.
             </summary>
         </member>
         <member name="M:Quantum.QuantumEntityView.SetViewFlag(Quantum.QuantumEntityViewFlags,System.Boolean)">
@@ -2992,7 +2997,7 @@
         </member>
         <member name="F:Quantum.QuantumStats.CompactStatsText">
             <summary>
-            The text field set when <see cref="F:Quantum.QuantumStats.ShowCompactStats"/> is <see langword="true"/>."/>
+            The text field set when <see cref="F:Quantum.QuantumStats.ShowCompactStats"/> is <see langword="true"/>.
             </summary>
         </member>
         <member name="M:Quantum.QuantumStats.ResetNetworkStats">
@@ -4438,7 +4443,7 @@
         </member>
         <member name="M:Quantum.GameObjectUtils.Hide(UnityEngine.GameObject)">
             <summary>
-            Will <see cref="M:UnityEngine.GameObject.SetActive(System.Boolean)"/> to false if the game object is not null and is active."/>
+            Will <see cref="M:UnityEngine.GameObject.SetActive(System.Boolean)"/> to false if the game object is not null and is active.
             </summary>
             <param name="gameObject">Game object to hide</param>
         </member>
@@ -6722,6 +6727,11 @@
             Called when the <see cref="T:Quantum.SessionRunner"/> is shutting down async.
             </summary>
         </member>
+        <member name="T:Quantum.IQuantumSnapshotInterpolationTimer">
+            <summary>
+            Interface to access the interpolation timer state.
+            </summary>
+        </member>
         <member name="T:Quantum.QuantumMeshCollection">
             <summary>
             A collection of Unity mesh asset to draw gizmos or scene object. 
@@ -6886,7 +6896,7 @@
         </member>
         <member name="M:Quantum.QuantumCallbacks.OnGameDestroyed(Quantum.QuantumGame)">
             <summary>
-            Is called by <see cref="T:Quantum.CallbackGameDestroyed"/> when the session has been destroyed."/>
+            Is called by <see cref="T:Quantum.CallbackGameDestroyed"/> when the session has been destroyed.
             </summary>
             <param name="game">Quantum game</param>
         </member>
@@ -7673,7 +7683,7 @@
         </member>
         <member name="M:Quantum.ProgressBar.SetProgress(System.Single)">
             <summary>
-            Uses <see cref="P:Quantum.ProgressBar.Progress"/> property."/>
+            Uses <see cref="P:Quantum.ProgressBar.Progress"/> property.
             </summary>
             <param name="value">Progress value between 0..1</param>
         </member>
@@ -8652,6 +8662,20 @@
             Unity Awake() callback, register callbacks and load view contexts.
             </summary>
         </member>
+        <member name="M:Quantum.QuantumEntityViewUpdater.AddViewContext``1(Quantum.IQuantumViewContext)">
+            <summary>
+            Add a view context.
+            </summary>
+            <typeparam name="T">Context type</typeparam>
+            <param name="context">Context instance</param>
+        </member>
+        <member name="M:Quantum.QuantumEntityViewUpdater.RemoveViewContext``1">
+            <summary>
+            Remove a view context.
+            It's possible that the removed context still is used inside <see cref="T:Quantum.QuantumViewComponent`1"/> instances.
+            </summary>
+            <typeparam name="T">Context type to remove</typeparam>
+        </member>
         <member name="M:Quantum.QuantumEntityViewUpdater.AddViewComponent(Quantum.IQuantumViewComponent)">
             <summary>
             Attach a non-entity view component that is then updated by the EntityViewUpdater.
@@ -8739,7 +8763,7 @@
         </member>
         <member name="M:Quantum.QuantumRunnerRegistry.ShutdownAllAsync">
             <summary>
-            Calls <see cref="M:Quantum.SessionRunner.WaitForShutdownAsync(System.Threading.CancellationToken)"/> on all runners."/>
+            Calls <see cref="M:Quantum.SessionRunner.WaitForShutdownAsync(System.Threading.CancellationToken)"/> on all runners.
             </summary>
         </member>
         <member name="M:Quantum.QuantumRunnerRegistry.AddRunner(Quantum.SessionRunner)">

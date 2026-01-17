@@ -14,7 +14,6 @@ namespace Quantum {
   using UnityEngine.SceneManagement;
   using UnityEngine.Serialization;
   using System.Linq;
-  using Photon.Realtime;
 
   /// <summary>
   /// A simple menu to utilize the most common Photon connection and game start modes.
@@ -337,12 +336,14 @@ namespace Quantum {
     /// Unity Awake() method to register button listeners and get components.
     /// </summary>
     protected virtual void Awake() {
+#if QUANTUM_UNITY
       var eventSystem = FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>();
       if (eventSystem == null) {
         // UI does not work without a UI input module, create it lazily because EventSystem quickly complains about multiple instance.
         gameObject.AddComponent<UnityEngine.EventSystems.EventSystem>();
         gameObject.AddComponent<QuantumUnityInputSystemWithLegacyFallback>();
       }
+#endif
 
       Connection = Connection != null ? Connection : GetComponent<QuantumStartUIConnectionBase>();
       Animator = Animator != null ? Animator : GetComponent<Animator>();
@@ -515,11 +516,13 @@ namespace Quantum {
         // Only process and show errors if the menu is still connecting.
         if (CurrentState == State.Starting) {
           Debug.LogException(e);
-          if (AsyncConfig.Global.IsCancellationRequested) {
+#if QUANTUM_UNITY
+          if (Photon.Realtime.AsyncConfig.Global.IsCancellationRequested) {
             // Any code after await will never run when the tasks are cancelled.
             // Don't proceed here when the global cancellation is already triggered to avoid UI issues and error logs.
             return;
           }
+#endif
           await ShowPopupAsync(e.Message);
           await ShutdownGameAsync();
         }

@@ -39,9 +39,8 @@ namespace Quantum {
 
             bool canSpawnMega = true;
 
-            var allPlayers = f.Filter<MarioPlayer>();
-            allPlayers.UseCulling = false;
-            while (allPlayers.NextUnsafe(out _, out MarioPlayer* otherPlayer)) {
+
+            foreach ((var _, var otherPlayer) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                 // Check if another player is actively mega (not growing or shrinking)
                 if (otherPlayer->CurrentPowerupState == PowerupState.MegaMushroom
                     && otherPlayer->MegaMushroomStartFrames == 0) {
@@ -51,8 +50,7 @@ namespace Quantum {
             }
 
             bool onlyOneAlreadyExists = false;
-            var allCoinItems = f.Filter<CoinItem>();
-            while (allCoinItems.NextUnsafe(out _, out var coinItem)) {
+            foreach ((var _, var coinItem) in f.Unsafe.GetComponentBlockIterator<CoinItem>()) {
                 if (f.FindAsset(coinItem->Scriptable).OnlyOneCanExist) {
                     onlyOneAlreadyExists = true;
                     break;
@@ -137,14 +135,11 @@ namespace Quantum {
         }
 
         public virtual void GetAllTeamsObjectiveCounts(Frame f, Span<int> teamObjectiveCounts) {
-            var allPlayers = f.Filter<MarioPlayer>();
-            allPlayers.UseCulling = false;
-
             for (int i = 0; i < teamObjectiveCounts.Length; i++) {
                 teamObjectiveCounts[i] = -1;
             }
 
-            while (allPlayers.NextUnsafe(out _, out MarioPlayer* mario)) {
+            foreach ((var _, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                 if (mario->Disconnected || (mario->Lives <= 0 && f.Global->Rules.IsLivesEnabled)) {
                     continue;
                 }
@@ -171,9 +166,7 @@ namespace Quantum {
 
         public virtual int GetTeamObjectiveCount(Frame f, byte team) {
             int sum = 0;
-            var allPlayers = f.Filter<MarioPlayer>();
-            allPlayers.UseCulling = false;
-            while (allPlayers.NextUnsafe(out _, out MarioPlayer* mario)) {
+            foreach ((var _, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                 if (mario->GetTeam(f) != team
                     || (mario->Lives <= 0 && f.Global->Rules.IsLivesEnabled)
                     || mario->Disconnected) {

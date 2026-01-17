@@ -52,7 +52,7 @@ namespace NSMB.Sound {
 
         public void HandleMusic(QuantumGame game, bool force) {
             Frame f = game.Frames.Predicted;
-            var rules = f.Global->Rules;
+            ref var rules = ref f.Global->Rules;
 
             if (!force && !musicPlayer.IsPlaying) {
                 return;
@@ -62,11 +62,8 @@ namespace NSMB.Sound {
             bool mega = false;
             bool speedup = false;
 
-            var allPlayers = f.Filter<MarioPlayer>();
-            allPlayers.UseCulling = false;
-
             int playersWithOneLife = 0;
-            while (allPlayers.NextUnsafe(out EntityRef entity, out MarioPlayer* mario)) {
+            foreach ((var entity, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                 if (rules.IsLivesEnabled && mario->Lives == 0) {
                     continue;
                 }
@@ -93,6 +90,7 @@ namespace NSMB.Sound {
 
             speedup |= rules.IsTimerEnabled && f.Global->Timer <= 60;
 
+            // TODO: abstract into the GamemodeAsset (?)
             var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
             if (gamemode is StarChasersGamemode) {
                 speedup |= gamemode.GetFirstPlaceObjectiveCount(f) >= rules.StarsToWin - 1;

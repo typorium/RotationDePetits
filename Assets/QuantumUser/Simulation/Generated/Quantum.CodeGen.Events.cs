@@ -716,11 +716,12 @@ namespace Quantum {
         _f.AddEvent(ev);
         return ev;
       }
-      public EventPlayerTeamChangedByHost PlayerTeamChangedByHost(PlayerRef Player, Byte Team) {
+      public EventPlayerTeamChangedByHost PlayerTeamChangedByHost(PlayerRef Player, Byte Team, QBoolean Clear) {
         if (_f.IsPredicted) return null;
         var ev = _f.Context.AcquireEvent<EventPlayerTeamChangedByHost>(EventPlayerTeamChangedByHost.ID);
         ev.Player = Player;
         ev.Team = Team;
+        ev.Clear = Clear;
         _f.AddEvent(ev);
         return ev;
       }
@@ -2856,6 +2857,7 @@ namespace Quantum {
     public new const Int32 ID = 81;
     public PlayerRef Player;
     public Byte Team;
+    public QBoolean Clear;
     protected EventPlayerTeamChangedByHost(Int32 id, EventFlags flags) : 
         base(id, flags) {
     }
@@ -2875,6 +2877,7 @@ namespace Quantum {
         var hash = 487;
         hash = hash * 31 + Player.GetHashCode();
         hash = hash * 31 + Team.GetHashCode();
+        hash = hash * 31 + Clear.GetHashCode();
         return hash;
       }
     }

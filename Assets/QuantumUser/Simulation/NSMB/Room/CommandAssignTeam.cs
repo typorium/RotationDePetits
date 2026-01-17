@@ -5,17 +5,18 @@ namespace Quantum {
 
         public PlayerRef Target;
         public byte Team;
+        public bool Clear;
 
         public override void Serialize(BitStream stream) {
             stream.Serialize(ref Target);
             stream.Serialize(ref Team);
+            stream.Serialize(ref Clear);
         }
 
         public unsafe void Execute(Frame f, PlayerRef sender, PlayerData* playerData) {
             if (f.Global->GameState != GameState.PreGameRoom
                 || !playerData->IsRoomHost
-                || sender == Target
-                || !f.PlayerIsConnected(Target)) {
+                || sender == Target) {
                 // Can't do this
                 return;
             }
@@ -24,16 +25,16 @@ namespace Quantum {
             if (targetData == null) {
                 return;
             }
-
-            if (Team != 255) {
-                // Set team
+            
+            if (Clear) {
+                // Clear
                 targetData->IsTeamLocked = false;
             } else {
-                // Clear
+                // Set team
                 targetData->RequestedTeam = Team;
                 targetData->IsTeamLocked = true;
             }
-            f.Events.PlayerTeamChangedByHost(Target, Team);
+            f.Events.PlayerTeamChangedByHost(Target, Team, Clear);
         }
     }
 }

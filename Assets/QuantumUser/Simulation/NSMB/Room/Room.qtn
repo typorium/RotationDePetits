@@ -30,4 +30,5 @@ synced event PlayerUnbanned {
 synced event PlayerTeamChangedByHost {
 	PlayerRef Player;
 	byte Team;
+	bool Clear;
 }

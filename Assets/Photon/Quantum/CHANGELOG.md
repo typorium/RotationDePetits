@@ -49,11 +49,73 @@ Disclaimer: The Quantum SDK 3.1.0 development snapshots are not intended to be u
 - `QuantumUnityDB` does not throw exceptions in `TryGet*` methods if the DB was failed to be loaded
 - `QuantumCallbackHandler_UnityCallbacks.LoadAddressableScenePathsAsync` is now static
 
+### Build 1960 (Jan 13, 2026)
+
+**Changes**
+
+- Updated `FSharp.Core` assembly used in Quantum CodeGen
+
+**Removed**
+
+- Removed the `QuantumEditorConfig.editorconfig` file from the package, please manually delete the file in migrating projects
+
+**Bug Fixes**
+
+- Fixed: The 2D Linecast query was detecting hits at the cast origin even when 'detectOverlapsAtCastOrigin' was disabled
+
+### Build 1957 (Jan 10, 2026)
+
+**Changes**
+
+- `DynamicAssetDB.AddAsset` - both overloads allow the asset to already have a guid assigned, as long as it is of `DynamicExplicit` type
+
+### Build 1956 (Jan 09, 2026)
+
+**What's New**
+
+- `AddViewContext()` and `RemoveViewContext()` to the `QuantumEntityViewUpdater` to support alternatives way to register view contexts
+- Adding a toolbar button to quickly open the Photon server settings
+
+**Changes**
+
+- Removed passing `QuantumEntityViewUpdater` into `QuantumEntityView.Initialize()`, instead set the `SnapshotInterpolationTimer`, which is actually required, later as a property
+
+### Build 1950 (Jan 07, 2026)
+
+**What's New**
+
+- Added the attribute `[UnityNavMeshArea]` to assign a Unity navmesh area drawer
+
+### Build 1949 (Jan 06, 2026)
+
+**Bug Fixes**
+
+- Fixed: An issue in 3D broad-phase queries against meshes that would cause an `AssertException` in Debug due to null triangle pointers
+
+### Build 1946 (Jan 05, 2026)
+
+**Improvements**
+
+- Improved the accuracy of 2D and 3D ShapeCasts in some scenarios
+
+**Bug Fixes**
+
+- Fixed: Physics config layer matrix not being drawn correctly
+- Fixed: `PropertyAttributes` not being applied on collections
+- Fixed: `frame.DestroyPending(entity)` giving incorrect results
+
+### Build 1942 (Dec 18, 2025)
+
+**Bug Fixes**
+
+- Fixed: `PropertyAttributes` not being applied on collections
+- Fixed: Physics config layer matrix not being drawn correctly
+
 ### Build 1940 (Dec 16, 2025)
 
 **What's New**
 
-- Bringing back the Quantum open scene toolbar for Unity 6.3
+- Bringing back the Quantum open scene toolbar for Unity 6.3 embedded into Unity official toolbar API
 
 ### Build 1939 (Dec 15, 2025)
 

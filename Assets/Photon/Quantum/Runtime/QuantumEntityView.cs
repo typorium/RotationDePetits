@@ -5,7 +5,6 @@ using Quantum;
 using System;
 using System.Collections.Generic;
 using Photon.Deterministic;
-using Quantum.Profiling;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -72,7 +71,8 @@ namespace Quantum {
     /// <summary>
     /// Obsolete property, use ManualDisposal
     /// </summary>
-    [Obsolete("Use ManualDisposal")] public bool ManualDiposal => ManualDisposal;
+    [Obsolete("Use ManualDisposal")] 
+    public bool ManualDiposal => ManualDisposal;
 
     /// <summary>
     /// Set the <see cref="QuantumEntityViewFlags"/> to further configure the entity view.
@@ -311,7 +311,12 @@ namespace Quantum {
     /// <summary>
     /// A reference to the entity view updater that controls this entity view.
     /// </summary>
-    public QuantumEntityViewUpdater EntityViewUpdater { get; private set; }
+    public QuantumEntityViewUpdater EntityViewUpdater { get; internal set; }
+
+    /// <summary>
+    /// Snapshot interpolation information, usually stored on <see cref="QuantumEntityViewUpdater.SnapshotInterpolation"/>.
+    /// </summary>
+    public IQuantumSnapshotInterpolationTimer SnapshotInterpolationTimer { get; internal set; }
 
     /// <summary>
     /// A reference to the current game that this entity view belongs to <see cref="QuantumEntityViewUpdater.ObservedGame"/>.
@@ -319,7 +324,7 @@ namespace Quantum {
     public QuantumGame Game { get; internal set; }
 
     /// <summary>
-    /// All contexts found on the <see cref="EntityViewUpdater"/> game object accessible by their type.
+    /// All contexts found on the <see cref="QuantumEntityViewUpdater"/> game object accessible by their type.
     /// </summary>
     public Dictionary<Type, IQuantumViewContext> ViewContexts { get; private set; }
 
@@ -376,8 +381,8 @@ namespace Quantum {
     bool _useSnapshotInterpolation = false;
     QuantumSnapshotInterpolationTimer.InterpolationBuffer<QuantumSnapshotInterpolationTimer.QuantumTransformData> _interpolationBuffer;
 
-    float InterpolationAlpha => _useSnapshotInterpolation ? EntityViewUpdater.SnapshotInterpolation.Alpha : Game.InterpolationFactor;
-    int InterpolationFrameFrom => EntityViewUpdater.SnapshotInterpolation.CurrentFrom;
+    float InterpolationAlpha => _useSnapshotInterpolation ? SnapshotInterpolationTimer.Alpha : Game.InterpolationFactor;
+    int InterpolationFrameFrom => SnapshotInterpolationTimer.CurrentFrom;
 
     /// <summary>
     /// The struct is used to gather all transform and interpolation data to apply new transform data to the entity view.
@@ -452,15 +457,13 @@ namespace Quantum {
     /// </summary>
     public virtual void OnGameChanged() { }
 
-    void Initialize(Dictionary<Type, IQuantumViewContext> contexts, QuantumEntityViewUpdater entityViewUpdater) {
+    void Initialize(Dictionary<Type, IQuantumViewContext> contexts) {
       if ((ViewFlags & QuantumEntityViewFlags.DisableSearchChildrenForEntityViewComponents) > 0) {
         _viewComponents = GetComponents<IQuantumViewComponent>();
       } else {
         _viewComponents = GetComponentsInChildren<IQuantumViewComponent>(
           includeInactive: (ViewFlags & QuantumEntityViewFlags.DisableSearchInactiveForEntityViewComponents) == 0);
       }
-
-      EntityViewUpdater = entityViewUpdater;
 
       OnInitialize();
 
@@ -485,7 +488,7 @@ namespace Quantum {
           QuantumCallback.Subscribe(this, (CallbackSimulateFinished callback) => RegisterSnapshot(callback.Frame));
     }
 
-    internal void Activate(QuantumGame game, Frame frame, Dictionary<Type, IQuantumViewContext> contexts, QuantumEntityViewUpdater entityViewUpdater) {
+    internal void Activate(QuantumGame game, Frame frame, Dictionary<Type, IQuantumViewContext> contexts) {
       // TODO: When the observed game is switched, this needs to be propagated here.
       _lastPredictedPosition2D = default(FPVector2);
       _lastPredictedRotation2D = default(FP);
@@ -505,7 +508,7 @@ namespace Quantum {
       ViewContexts = contexts;
 
       if (_viewComponents == null) {
-        Initialize(contexts, entityViewUpdater);
+        Initialize(contexts);
       }
 
       Game = game;

@@ -1,9 +1,11 @@
+using NSMB.UI.MainMenu.Submenus.InRoom;
 using NSMB.Utilities;
+using Quantum;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Scripting;
-using UnityEngine.UI;
+using Button = UnityEngine.UI.Button;
 
 namespace NSMB.UI.Elements {
     public class ContextMenuTeamSelector : Button {
@@ -12,20 +14,39 @@ namespace NSMB.UI.Elements {
         [SerializeField] private TMP_Text label;
         [SerializeField] private string teamTranslationKey, clearTranslationKey;
         [SerializeField] private GameObject[] showOnSelect;
+        [SerializeField] private PlayerListEntry parent;
 
         //---Properties
         private int _teamIndex;
         public int TeamIndex {
             get => _teamIndex;
             set {
-                _teamIndex = Mathf.Clamp(value, 0, QuantumViewUtils.Teams.Length + 1);
+                var game = QuantumRunner.DefaultGame;
+                int entries = game.Configurations.Simulation.Teams.Length;
+                if (isTeamLocked) {
+                    entries++;
+                }
+
+                _teamIndex = Mathf.Clamp(value, 0, entries - 1);
                 UpdateLabel();
             }
         }
 
-        protected override void OnEnable() {
+        //---Private Variables
+        private bool isTeamLocked;
+
+        protected override unsafe void OnEnable() {
             base.OnEnable();
-            TeamIndex = 0;
+
+            if (parent.player.IsValid) {
+                var game = QuantumRunner.DefaultGame;
+                Frame f = game.Frames.Predicted;
+                var playerData = QuantumUtils.GetPlayerData(f, parent.player);
+                TeamIndex = playerData->RequestedTeam;
+                isTeamLocked = playerData->IsTeamLocked;
+            } else {
+                TeamIndex = 0;
+            }
         }
 
         protected override void OnDisable() {
@@ -75,9 +96,10 @@ namespace NSMB.UI.Elements {
             var tm = GlobalController.Instance.translationManager;
             string text;
 
-            var teams = QuantumViewUtils.Teams;
+            Frame f = QuantumRunner.DefaultGame.Frames.Predicted;
+            var teams = f.SimulationConfig.Teams;
             if (TeamIndex < teams.Length) {
-                var team = teams[TeamIndex];
+                var team = f.FindAsset(teams[TeamIndex]);
                 string teamName = tm.GetTranslation(team.nameTranslationKey);
                 text = tm.GetTranslationWithReplacements("ui.inroom.player.changeteam",
                     "team", (Settings.Instance.GraphicsColorblind ? team.textSpriteColorblind : team.textSpriteNormal) + teamName);

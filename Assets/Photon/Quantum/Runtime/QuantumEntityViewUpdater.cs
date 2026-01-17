@@ -1,7 +1,6 @@
 namespace Quantum {
   using System;
   using System.Collections.Generic;
-  using Profiling;
   using UnityEngine;
   using static QuantumUnityExtensions;
 
@@ -206,6 +205,30 @@ namespace Quantum {
           _viewContexts.Add(c.GetType(), c);
         }
       }
+    }
+
+    /// <summary>
+    /// Add a view context.
+    /// </summary>
+    /// <typeparam name="T">Context type</typeparam>
+    /// <param name="context">Context instance</param>
+    public void AddViewContext<T>(IQuantumViewContext context) {
+      Assert.Always(context != null, "Context cannot be null");
+
+      LoadViewContexts();
+
+      if (_viewContexts.TryAdd(typeof(T), context) == false) {
+        Log.Error($"The view context type {typeof(T)} already exists. Multiple contexts of the same type are not supported.");
+      }
+    }
+
+    /// <summary>
+    /// Remove a view context.
+    /// It's possible that the removed context still is used inside <see cref="QuantumViewComponent{T}"/> instances.
+    /// </summary>
+    /// <typeparam name="T">Context type to remove</typeparam>
+    public void RemoveViewContext<T>() where T : IQuantumViewContext {
+      _viewContexts?.Remove(typeof(T));
     }
 
     /// <summary>
@@ -578,7 +601,11 @@ namespace Quantum {
       // add to lookup
       _activeViews.Add(handle, instance);
 
-      instance.Activate(game, frame, Context, this);
+      instance.EntityViewUpdater = this;
+      instance.SnapshotInterpolationTimer = SnapshotInterpolation;
+
+      instance.Activate(game, frame, Context);
+
       instance.OnEntityInstantiated.Invoke(game);
     }
 

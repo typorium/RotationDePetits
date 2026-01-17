@@ -81,7 +81,7 @@ namespace Quantum {
     /// </summary>
     public Boolean ShowCompactStats = true;
     /// <summary>
-    /// The text field set when <see cref="ShowCompactStats"/> is <see langword="true"/>."/>
+    /// The text field set when <see cref="ShowCompactStats"/> is <see langword="true"/>.
     /// </summary>
     public Text CompactStatsText;
 

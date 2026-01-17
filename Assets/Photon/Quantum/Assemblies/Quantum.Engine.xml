@@ -3017,14 +3017,16 @@
         </member>
         <member name="M:Quantum.DynamicAssetDB.AddAsset(Quantum.AssetObject)">
             <summary>
-            Adds an asset to the DynamicAssetDB and assigns it a new AssetGuid.
+            Adds an asset to the DynamicAssetDB. If <paramref name="asset"/> has no guid, a new <see cref="F:Quantum.AssetGuidType.DynamicSequential"/> guid will be assigned.
+            If <paramref name="asset"/> already has a guid, it needs to be of <see cref="F:Quantum.AssetGuidType.DynamicExplicit"/> type.
             </summary>
             <param name="asset">The asset to add.</param>
             <returns>The AssetGuid assigned to the added asset.</returns>
         </member>
         <member name="M:Quantum.DynamicAssetDB.AddAsset(Quantum.AssetObject,Quantum.AssetGuid)">
             <summary>
-            Adds an asset to the DynamicAssetDB and assigns it a passed AssetGuid.
+            Adds an asset to the DynamicAssetDB. <paramref name="guid"/> needs to be of <see cref="F:Quantum.AssetGuidType.DynamicExplicit"/> type. If <paramref name="asset"/> already
+            has a guid assigned, it needs to match <paramref name="guid"/>
             </summary>
             <param name="asset">The asset to add.</param>
             <param name="guid">The AssetGuid to be assigned to the added asset. Needs to be of <see cref="F:Quantum.AssetGuidType.DynamicExplicit"/> type.</param>
@@ -14189,7 +14191,7 @@
         </member>
         <member name="M:Quantum.INavigationCallbacks.OnMoveAgent(Quantum.EntityRef,Photon.Deterministic.FPVector2)">
             <summary>
-            This callback is only called when <see cref="F:Quantum.NavMeshAgentConfig.MovementType"/> is set to <see cref="F:Quantum.Navigation.MovementType.Callback"/>."/>
+            This callback is only called when <see cref="F:Quantum.NavMeshAgentConfig.MovementType"/> is set to <see cref="F:Quantum.Navigation.MovementType.Callback"/>
             It can be used to implement a custom steering behavior for the agent using the desiredDirection which is an outcome of the pathfinding and avoidance systems.
             </summary>
             <param name="entity">Agent entity</param>
@@ -24462,6 +24464,17 @@
             A replacement for UnityEngine.PropertyAttribute.
             </summary>
         </member>
+        <member name="P:Quantum.PropertyAttribute.applyToCollection">
+            <summary/>
+        </member>
+        <member name="M:Quantum.PropertyAttribute.#ctor(System.Boolean)">
+            <summary/>
+        </member>
+        <member name="T:Quantum.UnityNavMeshAreaAttribute">
+            <summary>
+            Specifies that the string field represents a path to a Unity resource.
+            </summary>
+        </member>
         <member name="T:Quantum.UnityResourcePathAttribute">
             <summary>
             Specifies that the string field represents a path to a Unity resource.
@@ -28485,6 +28498,66 @@
             </summary>
             <param name="ptr">The pointer to the <see cref="T:Quantum.PlayerRef"/>.</param>
             <param name="serializer">The <see cref="T:Photon.Deterministic.IDeterministicFrameSerializer"/> instance into which the struct will be serialized.</param>
+        </member>
+        <member name="T:Unity.IL2CPP.CompilerServices.Option">
+            <summary>
+            The code generation options available for IL to C++ conversion.
+            Enable or disabled these with caution.
+            </summary>
+        </member>
+        <member name="F:Unity.IL2CPP.CompilerServices.Option.NullChecks">
+             <summary>
+             Enable or disable code generation for null checks.
+            
+             Global null check support is enabled by default when il2cpp.exe
+             is launched from the Unity editor.
+            
+             Disabling this will prevent NullReferenceException exceptions from
+             being thrown in generated code. In *most* cases, code that dereferences
+             a null pointer will crash then. Sometimes the point where the crash
+             happens is later than the location where the null reference check would
+             have been emitted though.
+             </summary>
+        </member>
+        <member name="F:Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks">
+             <summary>
+             Enable or disable code generation for array bounds checks.
+            
+             Global array bounds check support is enabled by default when il2cpp.exe
+             is launched from the Unity editor.
+            
+             Disabling this will prevent IndexOutOfRangeException exceptions from
+             being thrown in generated code. This will allow reading and writing to
+             memory outside of the bounds of an array without any runtime checks.
+             Disable this check with extreme caution.
+             </summary>
+        </member>
+        <member name="F:Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks">
+             <summary>
+             Enable or disable code generation for divide by zero checks.
+            
+             Global divide by zero check support is disabled by default when il2cpp.exe
+             is launched from the Unity editor.
+            
+             Enabling this will cause DivideByZeroException exceptions to be
+             thrown in generated code. Most code doesn't need to handle this
+             exception, so it is probably safe to leave it disabled.
+             </summary>
+        </member>
+        <member name="T:Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute">
+             <summary>
+             Use this attribute on an assembly, struct, class, method, or property to inform the IL2CPP code conversion utility to override the
+             global setting for one of a few different runtime checks.
+            
+             Example:
+            
+                 [Il2CppSetOption(Option.NullChecks, false)]
+                 public static string MethodWithNullChecksDisabled()
+                 {
+                     var tmp = new Object();
+                     return tmp.ToString();
+                 }
+             </summary>
         </member>
         <member name="T:Photon.Deterministic.FP">
             <summary>

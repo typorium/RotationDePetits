@@ -615,7 +615,7 @@ namespace Quantum.Profiling {
 
     /// <summary>
     /// Add multiple values to the series.
-    /// Requires ValueDimensions to be set accordingly."/>
+    /// Requires ValueDimensions to be set accordingly.
     /// </summary>
     /// <param name="value1">Default value</param>
     /// <param name="value2">Extra value</param>

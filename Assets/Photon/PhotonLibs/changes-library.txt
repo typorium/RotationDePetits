@@ -3,7 +3,7 @@ Photon C# Client Library - Changelog
 www.photonengine.com  -  Join our Discord Server: https://dashboard.photonengine.com/account/profile
 
 
-Version 5.1.9 (10. November 2025 - rev8152)
+Version 5.1.9 (10. November 2025 - rev8156)
     Changed:  Unity defaults to using the PhotonClient.dll release builds. Add PHOTON_LIBS_DEBUG to your project to use the debug builds. PHOTON_LIBS_RELEASE is no longer used.
     Added: PhotonPeer.SimulateTimeoutDisconnect() to immediately trigger a local timeout-disconnect (without informing the server) for debug purposes. This is only implemented in the debug builds of the PhotonClient dll.
     Added: TrafficStats.UdpUnreliableCommandsSent to provide a count of unreliable commands, too.
