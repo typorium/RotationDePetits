@@ -1,5 +1,6 @@
 using NSMB.Utilities.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -49,6 +50,9 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
         }
 
         public async void OnClicked() {
+            if (parent.loadingGraphic.activeSelf) {
+                return;
+            }
             switch (scannedPath.Type) {
             case AddonsSubmenu.ScannedPath.AddonType.Folder:
                 if (scannedPath.Name == "..") {
@@ -59,12 +63,16 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
                 _ = parent.OpenFolder(scannedPath.Name);
                 break;
             case AddonsSubmenu.ScannedPath.AddonType.AddonFile:
+                parent.loadingGraphic.SetActive(true);
                 var addonManager = GlobalController.Instance.addonManager;
-                if (addonManager.IsAddonLoaded(scannedPath.Addon)) {
-                    await addonManager.UnloadAddon(scannedPath.Addon.Definition.Guid);
+                if (addonManager.IsAddonLoaded(scannedPath.Addon.ReleaseGuid)) {
+                    await addonManager.UnloadAddon(scannedPath.Addon.ReleaseGuid);
+                    parent.loadingGraphic.SetActive(false);
                     GlobalController.Instance.PlaySound(SoundEffect.Player_Sound_Powerdown);
                 } else {
-                    var loadedAddon = await addonManager.LoadAddon(scannedPath.Addon);
+                    using FileStream fs = new(scannedPath.FullPath, FileMode.Open);
+                    var loadedAddon = await addonManager.LoadAddonStream(fs);
+                    parent.loadingGraphic.SetActive(false);
                     if (loadedAddon != null) {
                         GlobalController.Instance.PlaySound(SoundEffect.Player_Sound_PowerupCollect);
                     } else {
@@ -80,7 +88,10 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
         }
 
         public void UpdateEnabledState() {
-            enabledText.SetActive(scannedPath.Addon != null && GlobalController.Instance.addonManager.IsAddonLoaded(scannedPath.Addon));
+            if (!this) {
+                return;
+            }
+            enabledText.SetActive(scannedPath.Addon != null && GlobalController.Instance.addonManager.IsAddonLoaded(scannedPath.Addon.ReleaseGuid));
         }
 
         public void OnSelect(BaseEventData eventData) {

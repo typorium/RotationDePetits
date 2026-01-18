@@ -3,6 +3,7 @@ using NSMB.UI.Translation;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +18,7 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
         };
 
         //---Serialized Variables
-        [SerializeField] private GameObject loadingGraphic;
+        [SerializeField] public GameObject loadingGraphic;
         [SerializeField] public ScrollRect scrollRect;
         [SerializeField] private AddonFileSystemEntry template;
         [SerializeField] private TMP_Text folderLabel, loadedAddonsText;
@@ -25,6 +26,7 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
         //---Private Variables
         private List<AddonFileSystemEntry> entries = new();
         private string currentPath = "", currentRelativePath = "";
+        private FileSystemWatcher watcher;
 
         public override void Initialize() {
             base.Initialize();
@@ -40,6 +42,12 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
                 AddonManager.OnAddonLoaded += OnAddonLoaded;
                 AddonManager.OnAddonUnloaded += OnAddonUnloaded;
 
+                watcher = new();
+                watcher.EnableRaisingEvents = true;
+                watcher.Changed += (_, _) => _ = OpenFolder(currentPath);
+                watcher.Created += (_, _) => _ = OpenFolder(currentPath);
+                watcher.Deleted += (_, _) => _ = OpenFolder(currentPath);
+
                 _ = OpenFolder(".");
             }
         }
@@ -51,6 +59,8 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
                     Destroy(entry.gameObject);
                 }
                 entries.Clear();
+                watcher?.Dispose();
+                watcher = null;
 
                 TranslationManager.OnLanguageChanged -= OnLanguageChanged;
                 AddonManager.OnAddonLoaded -= OnAddonLoaded;
@@ -92,11 +102,16 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
                     Name = subdirectoryName,
                 });
             }
-            var addonManager = GlobalController.Instance.addonManager;
-            foreach (string filePath in Directory.EnumerateFiles(fullNewPath)) {
-                var addon = addonManager.FindAddon(filePath);
-                string fileName = Path.GetFileName(filePath);
 
+            foreach (string filePath in Directory.EnumerateFiles(fullNewPath)) {
+                AddonDefinition addon = null;
+                try {
+                    using FileStream fs = new(filePath, FileMode.Open);
+                    using ZipArchive zipArchive = new(fs);
+                    addon = await AddonManager.GetAddonDefinition(zipArchive);
+                } catch { }
+
+                string fileName = Path.GetFileName(filePath);
                 if (addon != null) {
                     // This is an addon.
                     results.Add(new ScannedPath {
@@ -173,9 +188,17 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
             loadingGraphic.SetActive(false);
         }
 
+        public override bool TryGoBack(out bool playSound) {
+            if (loadingGraphic.activeSelf) {
+                playSound = false;
+                return false;
+            }
+            return base.TryGoBack(out playSound);
+        }
+
         public class ScannedPath : IComparable<ScannedPath> {
             public AddonType Type;
-            public Addon Addon;
+            public AddonDefinition Addon;
             public string FullPath;
             public string Name;
             public bool IsFolder => Type == AddonType.Folder;

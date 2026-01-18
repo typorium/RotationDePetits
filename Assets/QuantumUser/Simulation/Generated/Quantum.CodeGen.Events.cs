@@ -344,6 +344,7 @@ namespace Quantum {
         return ev;
       }
       public EventStartingCountdownChanged StartingCountdownChanged(QBoolean IsGameStarting) {
+        if (_f.IsPredicted) return null;
         var ev = _f.Context.AcquireEvent<EventStartingCountdownChanged>(EventStartingCountdownChanged.ID);
         ev.IsGameStarting = IsGameStarting;
         _f.AddEvent(ev);
@@ -1480,7 +1481,7 @@ namespace Quantum {
         base(id, flags) {
     }
     public EventStartingCountdownChanged() : 
-        base(28, EventFlags.Server|EventFlags.Client) {
+        base(28, EventFlags.Server|EventFlags.Client|EventFlags.Synced) {
     }
     public new QuantumGame Game {
       get {

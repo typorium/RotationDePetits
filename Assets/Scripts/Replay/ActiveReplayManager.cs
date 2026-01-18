@@ -169,7 +169,7 @@ namespace NSMB.Replay {
                     PlayerInformation = playerInformation,
                     WinningTeam = winner,
                     AddonGuids = GlobalController.Instance.addonManager.LoadedAddons
-                        .Select(la => la.Definition.Guid)
+                        .Select(la => la.Definition.ReleaseGuid)
                         .ToList()
                 };
 

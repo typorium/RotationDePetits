@@ -5,10 +5,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Build.DataBuilders;
-using UnityEditor.AddressableAssets.Settings;
-using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
 namespace NSMB.Addons {
@@ -25,6 +21,176 @@ namespace NSMB.Addons {
             //BuildTarget.WebGL
         };
 
+        public class BuildableAddon {
+            public string FolderPath;
+            public AddonDefinition AddonDef;
+
+            public string FolderName => new DirectoryInfo(FolderPath).Name;
+        }
+
+        private List<BuildableAddon> availableAddonFolders;
+        private int? selectedAddonFolder;
+
+        private Vector2 addonFolderSelectScroll;
+
+
+        [MenuItem("Tools/MvLO/Addons/Build")]
+        public static void BuildAddons() {
+            GetWindow<AddonBuildWindow>();
+        }
+
+        public void OnEnable() {
+            availableAddonFolders = new();
+            foreach (var folderPath in Directory.GetDirectories("Assets/Addons")) {
+                if (new DirectoryInfo(folderPath).Name.StartsWith('.')) {
+                    continue;
+                }
+
+                BuildableAddon buildableAddon = new() {
+                    FolderPath = folderPath
+                };
+                string addonDefPath = folderPath + "/addon.json";
+                try {
+                    string addonDefJson = File.ReadAllText(addonDefPath);
+                    buildableAddon.AddonDef = JsonConvert.DeserializeObject<AddonDefinition>(addonDefJson);
+                } catch (Exception e) {
+                    Debug.LogWarning($"Failed to find/parse addon definition of addon folder {folderPath} (path: {addonDefPath})");
+                    Debug.LogError(e);
+                }
+                availableAddonFolders.Add(buildableAddon);
+            }
+        }
+
+        public void OnGUI() {
+            if (availableAddonFolders.Count <= 0) {
+                EditorGUILayout.LabelField("No addon folders exist!", EditorStyles.boldLabel);
+                return;
+            }
+
+            EditorGUILayout.LabelField("Select a folder to build into an addon", EditorStyles.boldLabel);
+            addonFolderSelectScroll = EditorGUILayout.BeginScrollView(addonFolderSelectScroll);
+            int? prev = selectedAddonFolder;
+            selectedAddonFolder = GUILayout.SelectionGrid(selectedAddonFolder ??= 0, availableAddonFolders.Select(ba => " " + ba.FolderName).ToArray(), 1, EditorStyles.radioButton);
+            EditorGUILayout.EndScrollView();
+
+            // Separator line
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+            BuildableAddon selectedAddon = availableAddonFolders[selectedAddonFolder.Value];
+            selectedAddon.AddonDef.DisplayName = EditorGUILayout.TextField("Name", selectedAddon.AddonDef.DisplayName);
+            selectedAddon.AddonDef.Author = EditorGUILayout.TextField("Author", selectedAddon.AddonDef.Author);
+            selectedAddon.AddonDef.Version = EditorGUILayout.TextField("Version", selectedAddon.AddonDef.Version);
+            selectedAddon.AddonDef.Description = EditorGUILayout.TextField("Description", selectedAddon.AddonDef.Description);
+
+            if (GUILayout.Button("Build")) {
+                // Ask if we want to overwrite.
+                string finalZipPath = $"ExportedAddons/{selectedAddon.FolderName}-{selectedAddon.AddonDef.Version}{AddonManager.AddonExtension}";
+                if (File.Exists(finalZipPath)) {
+                    if (!EditorUtility.DisplayDialog("Addon exists", $"An Addon with the name \"{selectedAddon.FolderName}-{selectedAddon.AddonDef.Version}{AddonManager.AddonExtension}\" already exists.\nCreating an addon with the same name + version as another might be confusing.\n\nWould you like to overwrite the existing file and continue the build anyway?", "Yes", "No")) {
+                        return;
+                    }
+                }
+
+                // Clean old addon folder
+                string exportPath = "ExportedAddons/temp";
+                try {
+                    Directory.Delete(exportPath, true);
+                } catch { }
+                Directory.CreateDirectory(exportPath);
+
+                // Update the addon.json
+                selectedAddon.AddonDef.ReleaseGuid = Guid.NewGuid();
+
+                // Write it to the Unity asset
+                File.WriteAllText(
+                    selectedAddon.FolderPath + "/addon.json",
+                    JsonConvert.SerializeObject(selectedAddon.AddonDef, Formatting.Indented)
+                );
+
+                // Copy it to the export folder
+                File.Copy(selectedAddon.FolderPath + "/addon.json", exportPath + "/addon.json");
+
+                // Generate list of asset bundles.
+                List<AssetBundleBuild> buildMap = new();
+                string[] sceneAssets =
+                    AssetDatabase.FindAssets("t:Scene", new[] { selectedAddon.FolderPath })
+                    .Select(AssetDatabase.GUIDToAssetPath)
+                    .ToArray();
+                if (sceneAssets.Length > 0) {
+                    buildMap.Add(new() {
+                        assetBundleName = selectedAddon.AddonDef.ReleaseGuid + "-scenes",
+                        assetNames = sceneAssets,
+                    });
+                }
+
+                string[] nonSceneAssets = 
+                    AssetDatabase.FindAssets("", new[] { selectedAddon.FolderPath })
+                    .Select(AssetDatabase.GUIDToAssetPath)
+                    .Except(sceneAssets)
+                    .ToArray();
+                if (nonSceneAssets.Length > 0) {
+                    buildMap.Add(new() {
+                        assetBundleName = selectedAddon.AddonDef.ReleaseGuid + "-assets",
+                        assetNames = nonSceneAssets,
+                    });
+                }
+
+                Debug.Log($"scene assets: {string.Join("\n", sceneAssets)}");
+                Debug.Log($"non-scene assets: {string.Join("\n", nonSceneAssets)}");
+
+                // Build asset bundles
+                int steps = BuildTargets.Length + 1;
+                int counter = 0;
+
+                var oldBuildTarget = EditorUserBuildSettings.activeBuildTarget;
+                var oldBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+                var buildMapArray = buildMap.ToArray();
+                List<BuildTarget> failedBuilds = new();
+                foreach (var buildTarget in BuildTargets) {
+                    try {
+                        EditorUtility.DisplayProgressBar("Building addon", $"Building for {buildTarget} build target...", (float) ++counter / steps);
+                        string buildPath = exportPath + "/" + buildTarget;
+                        Directory.CreateDirectory(buildPath);
+                        BuildPipeline.BuildAssetBundles(buildPath, buildMapArray, BuildAssetBundleOptions.AppendHashToAssetBundleName | BuildAssetBundleOptions.AssetBundleStripUnityVersion, buildTarget);
+                        Debug.Log($"Successfully built addon for platform {buildTarget}");
+                    } catch (Exception e) {
+                        Debug.LogError($"Failed to export addon for platform {buildTarget}");
+                        Debug.LogError(e);
+                        failedBuilds.Add(buildTarget);
+                    }
+                }
+                EditorUserBuildSettings.SwitchActiveBuildTarget(oldBuildTargetGroup, oldBuildTarget);
+
+                // Delete manifests
+                foreach (var manifest in Directory.EnumerateFiles(exportPath, "*.manifest", new EnumerationOptions { RecurseSubdirectories = true })) {
+                    File.Delete(manifest);
+                }
+
+                // Zip folder + clean
+                EditorUtility.DisplayProgressBar("Building addon", "Compressing into .mvladdon...", (float) ++counter / steps);
+                try {
+                    File.Delete(finalZipPath);
+                } catch { }
+                ZipFile.CreateFromDirectory(exportPath, finalZipPath);
+                try {
+                    Directory.Delete(exportPath, true);
+                } catch { }
+                EditorUtility.ClearProgressBar();
+
+                if (failedBuilds.Count > 0) {
+                    Debug.LogError($"Addon build error: The following builds failed:\n* {string.Join("\n* ", failedBuilds)}\n\nThe addon was saved to {finalZipPath}");
+                    EditorUtility.DisplayDialog("Build(s) Failed", $"The following builds failed:\n* {string.Join("\n* ", failedBuilds)}\n\nThe addon was saved to {finalZipPath}", "OK");
+                } else {
+                    Debug.Log($"Addon build successful: The addon was saved to {finalZipPath}");
+                    EditorUtility.DisplayDialog("Build Successful", $"The addon was saved to {finalZipPath}", "OK");
+                }
+
+                Close();
+            }
+        }
+
+
+        /*
         private string addonName = "New Addon", author = "Unknown", version = "v1.0", description = "A brand-new MvLO addon.";
 
         private Vector2 scroll;
@@ -230,5 +396,7 @@ namespace NSMB.Addons {
                 Close();
             }
         }
+
+        */
     }
 }

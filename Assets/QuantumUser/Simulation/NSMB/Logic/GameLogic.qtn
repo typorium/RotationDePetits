@@ -71,7 +71,7 @@ event PlayerDataChanged {
 	PlayerRef Player;
 }
 
-event StartingCountdownChanged {
+synced event StartingCountdownChanged {
 	bool IsGameStarting;
 }
 

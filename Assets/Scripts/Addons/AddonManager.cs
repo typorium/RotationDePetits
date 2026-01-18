@@ -6,16 +6,12 @@ using Photon.Realtime;
 using Quantum;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.Networking;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace NSMB.Addons {
     public class AddonManager : MonoBehaviour, IOnEventCallback, IMatchmakingCallbacks {
@@ -28,43 +24,74 @@ namespace NSMB.Addons {
         public static readonly DisconnectCause DisconnectCauseMissingAddon = (DisconnectCause) 101;
 
         private static readonly string RemoteRepoUrl = "https://raw.githubusercontent.com/ipodtouch0218/NSMB-MarioVsLuigi-AddonRepository/main/";
-        private static readonly string RemoteAddonsFile = RemoteRepoUrl + "addons.json";
-        public static string LocalFolderPath = Path.Combine(Application.dataPath, "addons");
-        private static readonly string LocalFolderDownloadedPath = Path.Combine(LocalFolderPath, "download");
         public static readonly string AddonExtension = ".mvladdon";
 
-        private static string PlatformFolder;
+        public static string LocalFolderPath;
         private static string AddonCachePath;
+        private static string PlatformFolder;
 
         //---Properties
         public List<LoadedAddon> LoadedAddons { get; private set; } = new();
-        public ReadOnlyCollection<Addon> AvailableAddons => _availableAddons.AsReadOnly();
 
         //---Private Variables
-        private List<Addon> _availableAddons = new();
+        private List<AddonFile> availableAddons = new();
         private bool waitingForAddons;
+#if UNITY_STANDALONE
+        private FileSystemWatcher watcher;
+#endif
 
         public void Start() {
+            LocalFolderPath = Path.Combine(Application.dataPath, "addons");
             AddonCachePath = Path.Combine(Application.persistentDataPath, "addoncache");
             PlatformFolder = GetFolderForPlatform();
             _ = FindAvailableAddons();
 
+#if UNITY_STANDALONE
+            watcher = new(LocalFolderPath);
+            watcher.Filter = "*.mvladdon";
+            watcher.NotifyFilter = NotifyFilters.LastWrite;
+            watcher.EnableRaisingEvents = true;
+
+            watcher.Changed += (x, y) => {
+                Debug.Log("Changed: " + y.FullPath);
+            };
+            watcher.Deleted += (x, y) => {
+                Debug.Log("Deleted: " + y.FullPath);
+            };
+            watcher.Created += (x, y) => {
+                Debug.Log("Created: " + y.FullPath);
+            };
+#endif
+
             NetworkHandler.Client.AddCallbackTarget(this);
+        }
+
+        public void OnDestroy() {
+#if UNITY_STANDALONE
+            watcher.Dispose();
+#endif
         }
 
         public async Awaitable FindAvailableAddons() {
             // Background thread this sh*t
             await Awaitable.BackgroundThreadAsync();
-            List<Addon> results = new();
+            List<AddonFile> results = new();
 
-            foreach (var filepath in Directory.EnumerateFiles(LocalFolderPath, "*" + AddonExtension, new EnumerationOptions { RecurseSubdirectories = true })) {
-                // Find all `.mvladdon` files.
+            string filter = "*" + AddonExtension;
+            foreach (var filepath in Directory.EnumerateFiles(LocalFolderPath, filter, new EnumerationOptions { RecurseSubdirectories = true })) {
                 _ = await RegisterAddon(filepath, results);
             }
 
+#if UNITY_STANDALONE
+            foreach (var filepath in Directory.EnumerateFiles(AddonCachePath, filter)) {
+                // Find all `.mvladdon` files.
+                _ = await RegisterAddon(filepath, results);
+            }
+#endif
+
             // Main thread the events
             await Awaitable.MainThreadAsync();
-            _availableAddons = results;
+            availableAddons = results;
             OnAvailableAddonListLoaded?.Invoke();
         }
 
@@ -96,12 +123,20 @@ namespace NSMB.Addons {
                         failedDownloads.Add(guid);
                         continue;
                     }
-                    var loadedAddon = await LoadAddon(downloadedAddon);
-                    if (loadedAddon == null) {
-                        // Failed.
-                        failedDownloads.Add(guid);
-                        continue;
+
+                    using (MemoryStream ms = new(downloadedAddon)) {
+                        var loadedAddon = await LoadAddonStream(ms);
+                        if (loadedAddon == null) {
+                            // Failed.
+                            failedDownloads.Add(guid);
+                            continue;
+                        }
                     }
+
+#if UNITY_STANDALONE
+                    // Cache
+                    await SaveAddonToCache(guid, downloadedAddon);
+#endif
                 }
                 if (failedDownloads.Count > 0) {
                     return LoadAllAddonsResult.Failure;
@@ -112,118 +147,117 @@ namespace NSMB.Addons {
             return LoadAllAddonsResult.Success;
         }
 
-        public enum LoadAllAddonsResult {
-            Success,
-            Failure,
-            FailureDownloadsDisabled,
+        public async Awaitable<LoadedAddon> LoadAddon(Guid addonGuid) {
+            var availableAddon = availableAddons.FirstOrDefault(addon => addon.Definition.ReleaseGuid == addonGuid);
+            if (availableAddon == null) {
+                return null;
+            }
+
+            try {
+                using FileStream fs = new(availableAddon.FilePath, FileMode.Open);
+                return await LoadAddonStream(fs);
+            } catch (Exception e) {
+                Debug.Log($"[Addon] Failed to load addon {availableAddon.Definition.FullName} ({addonGuid}) from file \"{availableAddon.FilePath}\": {e.Message}");
+                return null;
+            }
         }
 
-        public async Task<LoadedAddon> LoadAddon(Guid addonGuid) {
-            var availableAddon = _availableAddons.FirstOrDefault(addon => addon.Definition.Guid == addonGuid);
-            if (availableAddon != null) {
-                // Great! We already have this one.
-                try {
-                    return await LoadAddon(availableAddon);
-                } catch (Exception e) {
-                    Debug.Log($"[Addon] Failed to load addon {availableAddon.Definition.FullName} ({addonGuid}) from file \"{availableAddon.Filepath}\": {e.Message}");
-                }
-            }
-/*
-            if (downloadIfUnavailable) {
-                // Fallback: check the remote repository.
-                Addon downloadedAddon = await DownloadAddon(addonGuid);
-                if (downloadedAddon != null) {
-                    // Success!
-                    return await LoadAddon(downloadedAddon);
-                }
-            }
-*/
-            // Failed.
-            return null;
-        }
-
-        public async Awaitable<LoadedAddon> LoadAddon(Addon addon) {
-            var addonDef = addon.Definition;
-            Debug.Log($"[Addon] Loading addon {addonDef.FullName} ({addonDef.Guid}) from file \"{addon.Filepath}\"");
-
+        public async Awaitable<LoadedAddon> LoadAddonStream(Stream stream) {
             await Awaitable.BackgroundThreadAsync();
+            using ZipArchive zipFile = new(stream, ZipArchiveMode.Read);
+            var addonDef = await GetAddonDefinition(zipFile);
 
-            // Extract to temp folder
-            string pathToFolder = Path.Combine(AddonCachePath, addonDef.Guid.ToString());
+            Debug.Log($"[Addon] Loading addon {addonDef.FullName} ({addonDef.ReleaseGuid})");
+
+            List<AssetBundle> loadedBundles = new();
+            List<(string,MemoryStream)> decompressedBundles = new();
+            List<UnityEngine.Object> registeredAssets = new();
             try {
-                if (!Directory.Exists(pathToFolder)) {
-                    using ZipArchive zipped = ZipFile.OpenRead(addon.Filepath);
-                    zipped.ExtractToDirectory(pathToFolder);
+                // Load bundles
+                var zippedBundles = zipFile.Entries.Where(zae => zae.FullName.StartsWith(PlatformFolder));
+                foreach (var zippedBundle in zippedBundles) {
+                    using Stream bundleStream = zippedBundle.Open();
+                    MemoryStream memoryStream = new((int) zippedBundle.Length);
+                    bundleStream.CopyTo(memoryStream);
+                    decompressedBundles.Add((zippedBundle.Name, memoryStream));
                 }
-            } catch (Exception e) {
-                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), failed to extract to temp directory: \"{pathToFolder}\" ({e.Message})");
-                return null;
-            }
 
-            // Catalog
-            string platformFolderPath = Path.Combine(pathToFolder, PlatformFolder);
-            if (!Directory.Exists(platformFolderPath)) {
-                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), it does not seem to support our platform ({PlatformFolder})!");
-                return null;
-            }
-            string catalogPath = Directory.GetFiles(platformFolderPath, "*.json").FirstOrDefault();
-            if (catalogPath == null) {
-                // No catalog? No bitches?
-                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), it does not seem to support our platform ({PlatformFolder})!");
-                return null;
-            }
+                // Load into asset database
+                await Awaitable.MainThreadAsync();
 
-            // Resolve paths + create a copy of the catalog.
-            try {
-                string catalogAsString = await File.ReadAllTextAsync(catalogPath);
-                catalogAsString = catalogAsString.Replace("{MOD_PATH}", platformFolderPath.Replace(@"\", @"\\")); // JSON expects double escaped backslashes
-                await File.WriteAllTextAsync(catalogPath, catalogAsString);
-            } catch (Exception e) {
-                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}), couldn't create new catalog! ({e.Message})");
-                return null;
-            }
-
-            // Read temp catalog
-            await Awaitable.MainThreadAsync();
-            var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
-            var resourceLocator = await catalogHandle.Task;
-            if (catalogHandle.Status != AsyncOperationStatus.Succeeded) {
-                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}): {catalogHandle.Status} - {catalogHandle.OperationException.Message}");
-                return null;
-            }
-
-            var loadScriptableObjectsHandle = Addressables.LoadAssetsAsync<ScriptableObject>(resourceLocator.Keys, _ => { }, Addressables.MergeMode.Union);
-            var scriptableObjects = await loadScriptableObjectsHandle.Task;
-            if (catalogHandle.Status != AsyncOperationStatus.Succeeded) {
-                Debug.LogError($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.Guid}): {catalogHandle.Status} - {loadScriptableObjectsHandle.OperationException.Message}");
-                return null;
-            }
-
-            foreach (var so in scriptableObjects) {
-                if (so is AssetObject assetObject) {
-                    try {
-                        QuantumUnityDB.Global.AddAsset(assetObject);
-                        Debug.Log($"[Addon] Successfully registered asset {assetObject.name} ({assetObject.Guid})");
-                    } catch {
-                        // Already added? Doesn't matter... ignore.
-                        Debug.Log($"[Addon] Failed to register asset {assetObject.name} ({assetObject.Guid})");
+                foreach (var bundle in decompressedBundles) {
+                    var loadTask = AssetBundle.LoadFromStreamAsync(bundle.Item2);
+                    await loadTask;
+                    if (!loadTask.assetBundle) {
+                        // failure?
+                        Debug.Log($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.ReleaseGuid}): loading AssetBundle \"{bundle.Item1}\" failed");
+                        throw new Exception("Bundle failed to load");
                     }
-                } else if (so is GlobalSoundEffectOverrides sfxOverride) {
-                    SoundEffectResolver.Instance.GlobalProviders.Add(sfxOverride);
+                    loadedBundles.Add(loadTask.assetBundle);
+                }
+
+                if (loadedBundles.Count == 0) {
+                    Debug.Log($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.ReleaseGuid}): it does not support our platform ({PlatformFolder})");
+                    return null;
+                }
+
+                // Register to Quantum DB
+                foreach (var assetBundle in loadedBundles) {
+                    if (assetBundle.isStreamedSceneAssetBundle) {
+                        Debug.Log(string.Join(",", assetBundle.GetAllScenePaths()));
+                        continue;
+                    }
+
+                    var loadTask = assetBundle.LoadAllAssetsAsync<ScriptableObject>();
+                    await loadTask;
+
+                    foreach (ScriptableObject so in loadTask.allAssets.Cast<ScriptableObject>()) {
+                        if (so is AssetObject assetObject) {
+                            try {
+                                QuantumUnityDB.Global.AddAsset(assetObject);
+                                registeredAssets.Add(assetObject);
+                            } catch {
+                                // Already added? Doesn't matter... ignore.
+                                Debug.Log($"[Addon] Failed to register asset {assetObject.name} ({assetObject.Guid})");
+                            }
+                        } else if (so is GlobalSoundEffectOverrides sfxOverride) {
+                            SoundEffectResolver.Instance.GlobalProviders.Add(sfxOverride);
+                            registeredAssets.Add(sfxOverride);
+                        }
+                    }
+                }
+                if (registeredAssets.Count > 0) {
+                    Debug.Log($"[Addon] Registered {registeredAssets.Count} assets");
+                }
+
+                var newAddon = new LoadedAddon {
+                    Definition = addonDef,
+                    LoadedAssetBundles = loadedBundles,
+                    RegisteredAssets = registeredAssets,
+                };
+                LoadedAddons.Add(newAddon);
+                OnAddonLoaded?.Invoke(newAddon);
+
+                return newAddon;
+            } catch (Exception e) {
+                foreach (var bundle in loadedBundles) {
+                    bundle.Unload(true);
+                }
+                foreach (var asset in registeredAssets) {
+                    UnloadAsset(asset);
+                }
+                
+                Debug.Log($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.ReleaseGuid}): An exception was thrown {e.Message}");
+                Debug.LogError(e);
+                return null;
+            } finally {
+                foreach (var bundleStream in decompressedBundles) {
+                    bundleStream.Item2?.Dispose();
                 }
             }
-
-            var newAddon = new LoadedAddon {
-                Definition = addonDef,
-                CatalogHandle = catalogHandle,
-                AllScriptableObjectsHandle = loadScriptableObjectsHandle,
-            };
-            LoadedAddons.Add(newAddon);
-            OnAddonLoaded?.Invoke(newAddon);
-            return newAddon;
         }
 
-        public async Awaitable<Addon> DownloadAddon(Guid addonGuid) {
+        public async Awaitable<byte[]> DownloadAddon(Guid addonGuid) {
             await Awaitable.MainThreadAsync();
 
             if (!Settings.Instance.generalAddonDownloads) {
@@ -234,69 +268,20 @@ namespace NSMB.Addons {
             string targetFileUrl = CombineUrl(RemoteRepoUrl, addonGuid + AddonExtension);
             Debug.Log($"[Addon] Attempting to download addon {addonGuid} from remote source ({targetFileUrl})");
 
-            byte[] downloadedFile;
-            using (UnityWebRequest zippedAddonRequest = UnityWebRequest.Get(targetFileUrl)) {
-                zippedAddonRequest.SetRequestHeader("Accept", "*/*");
-                zippedAddonRequest.SetRequestHeader("UserAgent", "ipodtouch0218/NSMB-MarioVsLuigi");
-                await zippedAddonRequest.SendWebRequest();
-                if (zippedAddonRequest.result != UnityWebRequest.Result.Success) {
-                    Debug.Log($"[Addon] Download failed: {zippedAddonRequest.error} ({zippedAddonRequest.responseCode})");
-                    return null;
-                }
-                downloadedFile = zippedAddonRequest.downloadHandler.data;
+            using UnityWebRequest zippedAddonRequest = UnityWebRequest.Get(targetFileUrl);
+            zippedAddonRequest.SetRequestHeader("Accept", "*/*");
+            zippedAddonRequest.SetRequestHeader("UserAgent", "ipodtouch0218/NSMB-MarioVsLuigi");
+            await zippedAddonRequest.SendWebRequest();
+            if (zippedAddonRequest.result != UnityWebRequest.Result.Success) {
+                Debug.Log($"[Addon] Download failed: {zippedAddonRequest.error} ({zippedAddonRequest.responseCode})");
+                return null;
             }
+            return zippedAddonRequest.downloadHandler.data;
 
-            await Awaitable.BackgroundThreadAsync();
-            string finalPath;
-            AddonDefinition addonDef;
-            using (MemoryStream memoryStream = new(downloadedFile)) {
-                using ZipArchive zipFile = new(memoryStream);
-                var addonDefEntry = zipFile.GetEntry("addon.json");
-                if (addonDefEntry == null) {
-                    Debug.Log($"[Addon] Download failed: the downloaded file doesn't appear to be an addon?");
-                    return null;
-                }
-
-                using (var addonDefStream = addonDefEntry.Open()) {
-                    using var addonDefStreamReader = new StreamReader(addonDefStream);
-                    try {
-                        addonDef = JsonConvert.DeserializeObject<AddonDefinition>(await addonDefStreamReader.ReadToEndAsync());
-                    } catch (Exception e) {
-                        Debug.Log($"[Addon] Download failed: the addon.json failed to deserialize {e.Message}");
-                        return null;
-                    }
-                }
-
-                if (zipFile.GetEntry(PlatformFolder + "/catalog.json") == null) {
-                    Debug.Log($"[Addon] Download failed: the addon {addonDef.FullName} ({addonGuid}) doesn't appear to support our platform! ({PlatformFolder})");
-                    return null;
-                }
-
-                // Disposing the zip file will close the memorystream... keep it open.
-                finalPath = Path.Combine(LocalFolderDownloadedPath, addonDef.FullName + AddonExtension);
-                var parent = Directory.GetParent(finalPath);
-                if (!parent.Exists) {
-                    parent.Create();
-                }
-                using (var fileStream = new FileStream(finalPath, FileMode.OpenOrCreate)) {
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    memoryStream.CopyTo(fileStream);
-                }
-            }
-            Debug.Log($"[Addon] Successfully downloaded addon {addonDef.FullName} ({addonGuid}) to \"{finalPath}\"");
-
-            var result = new Addon {
-                Definition = addonDef,
-                Filepath = finalPath,
-            };
-
-            await Awaitable.MainThreadAsync();
-            _availableAddons.Add(result);
-            return result;
         }
 
         public async Task UnloadAddon(Guid addonGuid) {
-            await UnloadAddon(LoadedAddons.FirstOrDefault(la => la.Definition.Guid == addonGuid));
+            await UnloadAddon(LoadedAddons.FirstOrDefault(la => la.Definition.ReleaseGuid == addonGuid));
         }
 
         public async Task UnloadAddon(LoadedAddon addon) {
@@ -304,77 +289,84 @@ namespace NSMB.Addons {
                 throw new ArgumentNullException("Tried to unload a null addon!");
             }
 
-            /*
-            if (!addon.AllAssetObjectsHandle.IsDone) {
-                await addon.AllAssetObjectsHandle.Task;
+            foreach (var asset in addon.RegisteredAssets) {
+                UnloadAsset(asset);
             }
-            if (!addon.AllGlobalOverridesHandle.IsDone) {
-                await addon.AllAssetObjectsHandle.Task;
+            if (addon.RegisteredAssets.Count > 0) {
+                Debug.Log($"[Addon] Unloaded {addon.RegisteredAssets.Count} assets");
             }
-            */
 
-            foreach (var so in addon.AllScriptableObjectsHandle.Result) {
-                if (so is AssetObject assetObject) {
-                    QuantumUnityDB.Global.DisposeAsset(assetObject.Guid, true);
-                    QuantumUnityDB.Global.RemoveSource(assetObject.Guid);
-                    Debug.Log($"[Addon] Unloaded asset {assetObject.name} ({assetObject.Guid})");
-                } else if (so is GlobalSoundEffectOverrides globalSfxOverride) {
-                    SoundEffectResolver.Instance.GlobalProviders.Remove(globalSfxOverride);
-                    Debug.Log($"[Addon] Unloaded global sound effect provider");
-                }
+            foreach (var assetBundle in addon.LoadedAssetBundles) {
+                await assetBundle.UnloadAsync(true);
             }
 
             LoadedAddons.Remove(addon);
             OnAddonUnloaded?.Invoke(addon);
-            addon.AllScriptableObjectsHandle.Release();
-            addon.CatalogHandle.Release();
         }
 
-        public bool IsAddonLoaded(Addon addon) {
-            return LoadedAddons.Any(la => la.Definition.Guid == addon.Definition.Guid);
-        }
-
-        public Addon FindAddon(string fullPath) {
-            // Check if we already know about this addon.
-            fullPath = new FileInfo(fullPath).FullName; // Clean up file paths.
-            Addon addon = _availableAddons.FirstOrDefault(aa => aa.Filepath == fullPath);
-            if (addon != null) {
-                return addon;
+        private void UnloadAsset(UnityEngine.Object obj) {
+            if (obj is AssetObject assetObject) {
+                QuantumUnityDB.Global.DisposeAsset(assetObject.Guid, true);
+                QuantumUnityDB.Global.RemoveSource(assetObject.Guid);
+            } else if (obj is GlobalSoundEffectOverrides sfxOverride) {
+                SoundEffectResolver.Instance.GlobalProviders.Remove(sfxOverride);
             }
-
-            return null;
         }
 
-        public async Awaitable<Addon> RegisterAddon(string fullPath, List<Addon> results) {
+        public bool IsAddonLoaded(Guid guid) {
+            return LoadedAddons.Any(la => la.Definition.ReleaseGuid == guid);
+        }
+
+        public async Awaitable<AddonFile> RegisterAddon(string fullPath, List<AddonFile> results) {
             // Parse file to see if we need to add this.
             await Awaitable.BackgroundThreadAsync();
             try {
                 fullPath = new FileInfo(fullPath).FullName; // Clean up file paths.
                 using var zipFile = ZipFile.OpenRead(fullPath);
-                var addonEntry = zipFile.GetEntry("addon.json");
-                if (addonEntry == null) {
+                var addonDef = await GetAddonDefinition(zipFile);
+                if (addonDef == null) {
+                    return null;
+                }
+                
+                if (availableAddons.Any(af => af.Definition.ReleaseGuid == addonDef.ReleaseGuid)
+                    || results.Any(af => af.Definition.ReleaseGuid == addonDef.ReleaseGuid)) {
+                    Debug.Log($"[Addon] Duplicate addon found \"{addonDef.FullName}\" ({addonDef.ReleaseGuid}) at \"{fullPath}\"");
                     return null;
                 }
 
-                AddonDefinition addonDef;
-                using (var addonStream = addonEntry.Open()) {
-                    using var addonStreamReader = new StreamReader(addonStream);
-                    addonDef = JsonConvert.DeserializeObject<AddonDefinition>(await addonStreamReader.ReadToEndAsync());
-                }
-
-                Addon addon = new() {
+                AddonFile addon = new() {
                     Definition = addonDef,
-                    Filepath = fullPath
+                    FilePath = fullPath
                 };
 
                 await Awaitable.MainThreadAsync();
                 results.Add(addon);
-                Debug.Log($"[Addon] Registered addon {addonDef.FullName} ({addonDef.Guid}) at \"{fullPath}\"");
+                Debug.Log($"[Addon] Registered addon \"{addonDef.FullName}\" ({addonDef.ReleaseGuid}) at \"{fullPath}\"");
                 return addon;
             } catch (Exception e) {
                 Debug.LogWarning($"[Addon] Failed to read addon file {fullPath}: {e.Message}");
             }
             return null;
+        }
+
+        public static async Awaitable SaveAddonToCache(Guid guid, byte[] data) {
+            await Awaitable.BackgroundThreadAsync();
+            await File.WriteAllBytesAsync($"{AddonCachePath}/{guid}{AddonExtension}", data);
+        }
+
+        public static async Awaitable<AddonDefinition> GetAddonDefinition(ZipArchive zipFile) {
+            await Awaitable.BackgroundThreadAsync();
+            try {
+                var entry = zipFile.GetEntry("addon.json");
+                if (entry == null) {
+                    return null;
+                }
+                using StreamReader reader = new(entry.Open());
+                var addonDefJson = await reader.ReadToEndAsync();
+                return JsonConvert.DeserializeObject<AddonDefinition>(addonDefJson);
+            } catch {
+                return null;
+            }
         }
 
         public static string GetFolderForPlatform() {
@@ -445,7 +437,7 @@ namespace NSMB.Addons {
         public void OnCreatedRoom() {
             // Send addon list
             NetworkHandler.Client.OpRaiseEvent(EventBroadcastAddonList,
-                GlobalController.Instance.addonManager.LoadedAddons.Select(la => la.Definition.Guid.ToString()).ToArray(),
+                GlobalController.Instance.addonManager.LoadedAddons.Select(la => la.Definition.ReleaseGuid.ToString()).ToArray(),
                 new RaiseEventArgs {
                     CachingOption = EventCaching.AddToRoomCacheGlobal
                 }, SendOptions.SendReliable);
@@ -468,13 +460,13 @@ namespace NSMB.Addons {
 
     public class LoadedAddon {
         public AddonDefinition Definition;
-        public AsyncOperationHandle<IResourceLocator> CatalogHandle;
-        public AsyncOperationHandle<IList<ScriptableObject>> AllScriptableObjectsHandle;
+        public List<AssetBundle> LoadedAssetBundles;
+        public List<UnityEngine.Object> RegisteredAssets;
     }
 
-    public class Addon {
+    public class AddonFile {
         public AddonDefinition Definition;
-        public string Filepath;
+        public string FilePath;
     }
 
     public enum AddonLoadResult {
@@ -482,4 +474,11 @@ namespace NSMB.Addons {
         AlreadyLoaded,
         Success
     }
+
+    public enum LoadAllAddonsResult {
+        Failure,
+        FailureDownloadsDisabled,
+        Success,
+    }
+
 }

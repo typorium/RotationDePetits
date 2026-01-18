@@ -4,17 +4,17 @@ using System;
 namespace NSMB.Addons {
     [Serializable]
     public class AddonDefinition : IEquatable<AddonDefinition> {
-        public Guid Guid { get; set; }
-        public string Name { get; set; }
+        public Guid ReleaseGuid { get; set; }
+        public string DisplayName { get; set; }
         public string Author { get; set; }
         public string Version { get; set; }
         public string Description { get; set; }
 
         [JsonIgnore]
-        public string FullName => Name + "-" + Version;
+        public string FullName => $"{DisplayName} ({Version})";
 
         public bool Equals(AddonDefinition other) {
-            return Guid == other.Guid;
+            return ReleaseGuid == other.ReleaseGuid;
         }
     }
 }

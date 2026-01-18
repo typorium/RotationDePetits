@@ -1,9 +1,6 @@
 using Quantum;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 
 namespace NSMB.Quantum {
@@ -18,7 +15,7 @@ namespace NSMB.Quantum {
         //---Private Variables
         private Coroutine loadingCoroutine;
         private Map currentMap;
-        private SceneInstance? currentAddressablesScene;
+        private Scene currentScene;
 
         public void Start() {
             Instance = this;
@@ -52,8 +49,6 @@ namespace NSMB.Quantum {
                 yield break;
             }
 
-            SceneInstance? previousAddressablesScene = currentAddressablesScene;
-
             // Load new map
             string newSceneName = newMap ? newMap.Scene : null;
             QuantumCallback.Dispatcher.Publish(new CallbackUnitySceneLoadBegin(game) { SceneName = newSceneName });
@@ -62,10 +57,10 @@ namespace NSMB.Quantum {
             currentMap = newMap;
 
             // Unload previous map (if available)
-            if (previousAddressablesScene != null) {
+            if (currentScene.IsValid()) {
                 string oldSceneName = oldMap ? oldMap.Scene : null;
                 QuantumCallback.Dispatcher.Publish(new CallbackUnitySceneUnloadBegin(game) { SceneName = oldSceneName });
-                yield return UnloadAddressablesScene(previousAddressablesScene.Value);
+                yield return SceneManager.UnloadSceneAsync(currentScene);
                 QuantumCallback.Dispatcher.Publish(new CallbackUnitySceneUnloadDone(game) { SceneName = oldSceneName });
             }
 
@@ -85,36 +80,26 @@ namespace NSMB.Quantum {
                         yield return null;
                     }
                 }
-                currentAddressablesScene = null;
+                currentScene = default;
                 yield break;
             }
             
             // Check if the scene already is loaded
-            Scene loadedScene = SceneManager.GetSceneByName(map.Scene);
-            if (loadedScene.IsValid()) {
-                yield break;
-            }
+            Scene loadedScene = SceneManager.GetSceneByPath(map.ScenePath);
+            if (!loadedScene.IsValid()) {
+                // For some UNGODLY reason, LoadSceneAsync doesn't work with AssetBundle scenes..............
 
-            // Load via addressables.
-            AsyncOperationHandle<SceneInstance> addressablesOp = default;
-            try {
-                addressablesOp = Addressables.LoadSceneAsync(map.ScenePath, LoadSceneMode.Additive);
-            } catch { }
-            if (addressablesOp.IsValid()) {
-                while (!addressablesOp.IsDone) {
-                    yield return null;
-                }
-                SceneManager.SetActiveScene(addressablesOp.Result.Scene);
-                currentAddressablesScene = addressablesOp.Result;
-                yield break;
-            }
-        }
-
-        private IEnumerator UnloadAddressablesScene(SceneInstance sceneInstance) {
-            var op = Addressables.UnloadSceneAsync(sceneInstance);
-            while (!op.IsDone) {
+                SceneManager.LoadScene(map.ScenePath, LoadSceneMode.Additive);
                 yield return null;
+
+                var loadOp = SceneManager.LoadSceneAsync(map.ScenePath, LoadSceneMode.Additive);
+                loadOp.allowSceneActivation = true;
+                yield return loadOp;
+                loadedScene = SceneManager.GetSceneByPath(map.ScenePath);
             }
+
+            currentScene = loadedScene;
+            SceneManager.SetActiveScene(currentScene);
         }
     }
 }
