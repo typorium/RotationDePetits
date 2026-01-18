@@ -49,6 +49,8 @@ namespace NSMB.Quantum {
                 yield break;
             }
 
+            Scene oldScene = currentScene;
+
             // Load new map
             string newSceneName = newMap ? newMap.Scene : null;
             QuantumCallback.Dispatcher.Publish(new CallbackUnitySceneLoadBegin(game) { SceneName = newSceneName });
@@ -57,10 +59,10 @@ namespace NSMB.Quantum {
             currentMap = newMap;
 
             // Unload previous map (if available)
-            if (currentScene.IsValid()) {
+            if (oldScene.IsValid()) {
                 string oldSceneName = oldMap ? oldMap.Scene : null;
                 QuantumCallback.Dispatcher.Publish(new CallbackUnitySceneUnloadBegin(game) { SceneName = oldSceneName });
-                yield return SceneManager.UnloadSceneAsync(currentScene);
+                yield return SceneManager.UnloadSceneAsync(oldScene);
                 QuantumCallback.Dispatcher.Publish(new CallbackUnitySceneUnloadDone(game) { SceneName = oldSceneName });
             }
 
@@ -87,11 +89,6 @@ namespace NSMB.Quantum {
             // Check if the scene already is loaded
             Scene loadedScene = SceneManager.GetSceneByPath(map.ScenePath);
             if (!loadedScene.IsValid()) {
-                // For some UNGODLY reason, LoadSceneAsync doesn't work with AssetBundle scenes..............
-
-                SceneManager.LoadScene(map.ScenePath, LoadSceneMode.Additive);
-                yield return null;
-
                 var loadOp = SceneManager.LoadSceneAsync(map.ScenePath, LoadSceneMode.Additive);
                 loadOp.allowSceneActivation = true;
                 yield return loadOp;
