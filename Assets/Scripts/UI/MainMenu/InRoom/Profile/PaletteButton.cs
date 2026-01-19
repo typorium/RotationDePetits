@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using Quantum;
+using Button = UnityEngine.UI.Button;
 
 namespace NSMB.UI.MainMenu.Submenus.InRoom {
     public class PaletteButton : MonoBehaviour, ISelectHandler {
@@ -14,7 +16,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         [SerializeField] private TMP_Text colorNameString;
         [SerializeField] private Image shirt, overalls;
 
-        public void Instantiate(CharacterAsset player) {
+        public void Instantiate(AssetRef<CharacterAsset> player) {
             if (palette == null) {
                 if (shirt && overalls) {
                     Destroy(shirt.gameObject);

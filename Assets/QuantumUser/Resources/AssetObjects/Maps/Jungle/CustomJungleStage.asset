@@ -1950,7 +1950,7 @@ MonoBehaviour:
       type: {class: LiquidPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
         LiquidType:
-          Value: 0
+          Value: 2
         WidthTiles: 128
         HeightTiles:
           RawValue: 196608

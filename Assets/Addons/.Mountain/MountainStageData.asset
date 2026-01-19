@@ -22,6 +22,7 @@ MonoBehaviour:
   TranslationKey: levels.custom.mountain
   GroupingTranslationKey: 
   DiscordStageImage: 
+  SortOrder: 0
   Icon: {fileID: 1797115516003371073, guid: 84406200d32f9b54394a2d0e5ab286ad, type: 3}
   MainMenuPreviewPrefab: {fileID: 0}
   OverrideAutomaticTilemapSettings: 0
@@ -67,6 +68,7 @@ MonoBehaviour:
   HidePlayersOnMinimap: 0
   SpawnBigPowerups: 1
   SpawnVerticalPowerups: 1
+  SfxOverrides: []
   MainMusic:
   - Id:
       Value: 369157696319829885
@@ -151,7 +153,7 @@ MonoBehaviour:
     Flags: 0
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -226,7 +228,7 @@ MonoBehaviour:
     Flags: 0
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -311,7 +313,7 @@ MonoBehaviour:
     Flags: 0
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -386,7 +388,7 @@ MonoBehaviour:
     Flags: 0
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -471,7 +473,7 @@ MonoBehaviour:
     Flags: 0
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -546,7 +548,7 @@ MonoBehaviour:
     Flags: 0
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -8481,7 +8483,7 @@ MonoBehaviour:
     Flags: 0
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -8536,7 +8538,7 @@ MonoBehaviour:
     Flags: 0
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -8641,7 +8643,7 @@ MonoBehaviour:
     Flags: 1
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:
@@ -8696,7 +8698,7 @@ MonoBehaviour:
     Flags: 1
   - Tile:
       Id:
-        Value: 327539371058353112
+        Value: 4359205090147176688
     Rotation: 0
     Flags: 0
   - Tile:

@@ -43,7 +43,7 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
             if (addonsEnabled) {
                 int addons = GlobalController.Instance.addonManager.LoadedAddons.Count;
                 addonsText.text = GlobalController.Instance.translationManager.GetTranslationWithReplacements(
-                    addons == 0 ? "ui.rooms.create.addons.notenabled" : "ui.rooms.create.addons.enabled",
+                    addons == 0 ? "ui.addons.manage.notenabled" : "ui.addons.manage.enabled",
                     "addons", addons.ToString());
             }
             addonsOption.SetActive(addonsEnabled);

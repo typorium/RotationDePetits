@@ -1,4 +1,6 @@
+using NSMB.Addons;
 using NSMB.Utilities.Extensions;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
@@ -15,6 +17,14 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
             { AddonsSubmenu.ScannedPath.AddonType.AddonFile,    "<sprite name=addon>" },
             { AddonsSubmenu.ScannedPath.AddonType.NonAddonFile, "<sprite name=unknown_file>" },
         };
+        private static readonly Dictionary<AddonLoadResultEnum, string> LoadResultTranslationKeys = new() {
+            { AddonLoadResultEnum.Success, "ui.addons.manage.status.enabled" },
+            { AddonLoadResultEnum.AlreadyLoaded, "ui.addons.manage.status.enabled" },
+            { AddonLoadResultEnum.ReadFailure, "ui.addons.manage.status.readerror" },
+            { AddonLoadResultEnum.IncompatibleGameVersion, "ui.addons.manage.status.incompatible.game" },
+            { AddonLoadResultEnum.IncompatibleWithOtherAddon, "ui.addons.manage.status.incompatible.otheraddon" },
+            { AddonLoadResultEnum.IncompatbilePlatform, "ui.addons.manage.status.incompatible.platform" },
+        };
 
         //---Properties
         public AddonsSubmenu.ScannedPath Path => scannedPath;
@@ -23,13 +33,14 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
         public Button button;
 
         //---Serialized Variables
-        [SerializeField] private TMP_Text text;
-        [SerializeField] private GameObject enabledText;
+        [SerializeField] private TMP_Text text, stateText;
+        //[SerializeField] private GameObject enabledText;
         [SerializeField] private SelectablePromptLabel promptLabel;
 
         //---Private Variables
         private AddonsSubmenu parent;
         private AddonsSubmenu.ScannedPath scannedPath;
+        private Coroutine blankStateTextCoroutine;
 
         public void Initialize(AddonsSubmenu parent, AddonsSubmenu.ScannedPath scannedPath) {
             this.parent = parent;
@@ -47,6 +58,10 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
             promptLabel.translationKey = text.text;
             UpdateEnabledState();
             gameObject.SetActive(true);
+        }
+
+        public void OnDisable() {
+            UpdateEnabledState();
         }
 
         public async void OnClicked() {
@@ -67,19 +82,35 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
                 var addonManager = GlobalController.Instance.addonManager;
                 if (addonManager.IsAddonLoaded(scannedPath.Addon.ReleaseGuid)) {
                     await addonManager.UnloadAddon(scannedPath.Addon.ReleaseGuid);
+                    await Awaitable.MainThreadAsync();
                     parent.loadingGraphic.SetActive(false);
                     GlobalController.Instance.PlaySound(SoundEffect.Player_Sound_Powerdown);
+                    UpdateEnabledState();
                 } else {
                     using FileStream fs = new(scannedPath.FullPath, FileMode.Open);
-                    var loadedAddon = await addonManager.LoadAddonStream(fs);
-                    parent.loadingGraphic.SetActive(false);
-                    if (loadedAddon != null) {
+                    var loadAddonResult = await addonManager.LoadAddonStream(fs);
+                    await Awaitable.MainThreadAsync();
+                    if (loadAddonResult.Success) {
                         GlobalController.Instance.PlaySound(SoundEffect.Player_Sound_PowerupCollect);
+                        UpdateEnabledState();
                     } else {
+                        // Show error message
                         GlobalController.Instance.PlaySound(SoundEffect.UI_Error);
+                        if (LoadResultTranslationKeys.TryGetValue(loadAddonResult.Result, out var translationKey)) {
+                            var text = GlobalController.Instance.translationManager.GetTranslationWithReplacements(translationKey,
+                                "version", GameVersion.Parse(Application.version).ToStringIgnoreHotfix() + ".X",
+                                "addon", loadAddonResult.IncompatibleWith?.Definition?.FullName);
+                            stateText.text = text;
+                            if (blankStateTextCoroutine != null) {
+                                StopCoroutine(blankStateTextCoroutine);
+                            }
+                            blankStateTextCoroutine = StartCoroutine(BlankStateText());
+                        } else {
+                            UpdateEnabledState();
+                        }
                     }
+                    parent.loadingGraphic.SetActive(false);
                 }
-                UpdateEnabledState();
                 break;
             case AddonsSubmenu.ScannedPath.AddonType.NonAddonFile:
                 GlobalController.Instance.PlaySound(SoundEffect.UI_Error);
@@ -87,15 +118,29 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts.Addons {
             }
         }
 
+        private IEnumerator BlankStateText() {
+            yield return new WaitForSecondsRealtime(3f);
+            stateText.text = "";
+            blankStateTextCoroutine = null;
+        }
+
         public void UpdateEnabledState() {
             if (!this) {
                 return;
             }
-            enabledText.SetActive(scannedPath.Addon != null && GlobalController.Instance.addonManager.IsAddonLoaded(scannedPath.Addon.ReleaseGuid));
+            if (scannedPath.Addon != null && GlobalController.Instance.addonManager.IsAddonLoaded(scannedPath.Addon.ReleaseGuid)) {
+                stateText.text = GlobalController.Instance.translationManager.GetTranslation("ui.addons.manage.status.enabled");
+            } else {
+                stateText.text = "";
+            }
+            if (blankStateTextCoroutine != null) {
+                StopCoroutine(blankStateTextCoroutine);
+            }
         }
 
         public void OnSelect(BaseEventData eventData) {
             parent.scrollRect.verticalNormalizedPosition = parent.scrollRect.ScrollToCenter((RectTransform) transform, false);
+            parent.UpdateSelectedAddonText(this);
         }
     }
 }

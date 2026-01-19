@@ -3,7 +3,6 @@ using NSMB.Networking;
 using NSMB.UI.Translation;
 using NSMB.Utilities;
 using NSMB.Utilities.Extensions;
-using Photon.Deterministic;
 using Quantum;
 using System.Collections;
 using System.Collections.Generic;

@@ -1,3 +1,4 @@
+using JimmysUnityUtilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -53,11 +54,21 @@ namespace NSMB.Addons {
                 try {
                     string addonDefJson = File.ReadAllText(addonDefPath);
                     buildableAddon.AddonDef = JsonConvert.DeserializeObject<AddonDefinition>(addonDefJson);
+                    try {
+                        buildableAddon.AddonDef.IconTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(buildableAddon.AddonDef.IconAssetPath);
+                    } catch { }
                 } catch (Exception e) {
                     Debug.LogWarning($"Failed to find/parse addon definition of addon folder {folderPath} (path: {addonDefPath})");
                     Debug.LogError(e);
                 }
                 availableAddonFolders.Add(buildableAddon);
+            }
+        }
+
+        public void OnDisable() {
+            foreach (var addon in availableAddonFolders) {
+                string addonDefPath = addon.FolderPath + "/addon.json";
+                File.WriteAllText(addonDefPath, JsonConvert.SerializeObject(addon.AddonDef));
             }
         }
 
@@ -81,6 +92,10 @@ namespace NSMB.Addons {
             selectedAddon.AddonDef.Author = EditorGUILayout.TextField("Author", selectedAddon.AddonDef.Author);
             selectedAddon.AddonDef.Version = EditorGUILayout.TextField("Version", selectedAddon.AddonDef.Version);
             selectedAddon.AddonDef.Description = EditorGUILayout.TextField("Description", selectedAddon.AddonDef.Description);
+            selectedAddon.AddonDef.IconTexture = (Texture2D) EditorGUILayout.ObjectField("Icon", selectedAddon.AddonDef.IconTexture, typeof(Texture2D), false);
+            if (selectedAddon.AddonDef.IconTexture) {
+                selectedAddon.AddonDef.IconAssetPath = AssetDatabase.GetAssetPath(selectedAddon.AddonDef.IconTexture);
+            }
 
             if (GUILayout.Button("Build")) {
                 // Ask if we want to overwrite.
@@ -135,9 +150,6 @@ namespace NSMB.Addons {
                     });
                 }
 
-                Debug.Log($"scene assets: {string.Join("\n", sceneAssets)}");
-                Debug.Log($"non-scene assets: {string.Join("\n", nonSceneAssets)}");
-
                 // Build asset bundles
                 int steps = BuildTargets.Length + 1;
                 int counter = 0;
@@ -153,6 +165,9 @@ namespace NSMB.Addons {
                         Directory.CreateDirectory(buildPath);
                         BuildPipeline.BuildAssetBundles(buildPath, buildMapArray, BuildAssetBundleOptions.AppendHashToAssetBundleName | BuildAssetBundleOptions.AssetBundleStripUnityVersion, buildTarget);
                         Debug.Log($"Successfully built addon for platform {buildTarget}");
+
+                        // Delete {buildTarget} bundle- it only contains a manifest and causes name collisions.
+                        File.Delete(buildPath + "/" + buildTarget);
                     } catch (Exception e) {
                         Debug.LogError($"Failed to export addon for platform {buildTarget}");
                         Debug.LogError(e);
@@ -166,6 +181,16 @@ namespace NSMB.Addons {
                     File.Delete(manifest);
                 }
 
+                // Add icon
+                if (selectedAddon.AddonDef.IconTexture) {
+                    RenderTexture outputTexture = RenderTexture.GetTemporary(selectedAddon.AddonDef.IconTexture.width, selectedAddon.AddonDef.IconTexture.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default);
+                    Graphics.Blit(selectedAddon.AddonDef.IconTexture, outputTexture);
+                    Texture2D writeableIcon = outputTexture.ToTexture2D();
+                    File.WriteAllBytes(exportPath + "/icon.png", writeableIcon.EncodeToPNG());
+                    RenderTexture.ReleaseTemporary(outputTexture);
+                    DestroyImmediate(writeableIcon);
+                }
+                    
                 // Zip folder + clean
                 EditorUtility.DisplayProgressBar("Building addon", "Compressing into .mvladdon...", (float) ++counter / steps);
                 try {

@@ -26,7 +26,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         private readonly List<PaletteButton> paletteButtons = new();
         private readonly List<Navigation> navigations = new();
         private GameObject blocker;
-        private CharacterAsset character;
+        private AssetRef<CharacterAsset> character;
         private AssetRef<PaletteSet> selectedPalette;
 
         public void OnDisable() {
@@ -86,11 +86,11 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
 
             foreach (PaletteButton b in paletteButtons) {
-                b.Instantiate(defaultCharacter);
+                b.Instantiate(character);
             }
         }
 
-        public void ChangeCharacter(CharacterAsset data) {
+        public void ChangeCharacter(AssetRef<CharacterAsset> data) {
             foreach (PaletteButton b in paletteButtons) {
                 b.Instantiate(data);
             }

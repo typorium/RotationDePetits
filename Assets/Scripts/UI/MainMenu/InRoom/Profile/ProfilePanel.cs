@@ -45,12 +45,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         public void OnCharacterClicked(AssetRef<CharacterAsset> character) {
             var game = NetworkHandler.Runner.Game;
-            foreach (int slot in game.GetLocalPlayerSlots()) {
-                game.AddCommand(slot, new CommandChangePlayerData {
-                    EnabledChanges = CommandChangePlayerData.Changes.Character,
-                    Character = character,
-                });
-            }
             SetCharacterButtonState(game.Frames.Predicted, character, true);
         }
 
@@ -67,17 +61,18 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         private void SetCharacterButtonState(Frame f, AssetRef<CharacterAsset> characterRef, bool sound) {
             bool changed = currentCharacter != characterRef;
-            currentCharacter = characterRef;
 
+            currentCharacter = characterRef;
             characterChooser.ChangeCharacterButton(characterRef);
+            paletteChooser.ChangeCharacter(characterRef);
 
             if (changed) {
                 Settings.Instance.generalCharacter = characterRef;
                 Settings.Instance.SaveSettings();
-            }
 
-            if (sound && changed && f.TryFindAsset(characterRef, out var character)) {
-                menu.Canvas.PlaySound(SoundEffect.Player_Voice_Selected, new[] { character });
+                if (sound && f.TryFindAsset(characterRef, out var character)) {
+                    menu.Canvas.PlaySound(SoundEffect.Player_Voice_Selected, new[] { character });
+                }
             }
         }
 

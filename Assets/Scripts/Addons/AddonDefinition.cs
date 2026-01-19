@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System;
+using UnityEngine;
 
 namespace NSMB.Addons {
     [Serializable]
@@ -9,9 +10,21 @@ namespace NSMB.Addons {
         public string Author { get; set; }
         public string Version { get; set; }
         public string Description { get; set; }
+#if UNITY_EDITOR
+        public string IconAssetPath { get; set; }
+#endif
+
+        [JsonIgnore]
+        public Texture2D IconTexture { get; set; }
 
         [JsonIgnore]
         public string FullName => $"{DisplayName} ({Version})";
+
+        ~AddonDefinition() {
+            if (IconTexture) {
+                UnityEngine.Object.Destroy(IconTexture);
+            }
+        }
 
         public bool Equals(AddonDefinition other) {
             return ReleaseGuid == other.ReleaseGuid;
