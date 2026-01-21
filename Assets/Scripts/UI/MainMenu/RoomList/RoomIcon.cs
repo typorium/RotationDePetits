@@ -16,8 +16,13 @@ namespace NSMB.UI.MainMenu.Submenus.RoomList {
         public bool HasGameStarted {
             get {
                 GetCustomProperty(room.CustomProperties, Enums.NetRoomProperties.BoolProperties, out int boolPropertiesPacked);
-                BooleanProperties boolProperties = boolPropertiesPacked;
-                return boolProperties.GameStarted;
+                return ((BooleanProperties) boolPropertiesPacked).GameStarted;
+            }
+        }
+        public bool HasAddons {
+            get {
+                GetCustomProperty(room.CustomProperties, Enums.NetRoomProperties.BoolProperties, out int boolPropertiesPacked);
+                return ((BooleanProperties) boolPropertiesPacked).AddonsEnabled;
             }
         }
 

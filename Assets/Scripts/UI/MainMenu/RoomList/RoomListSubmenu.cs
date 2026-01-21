@@ -22,7 +22,7 @@ namespace NSMB.UI.MainMenu.Submenus.RoomList {
         [SerializeField] private RoomListManager roomManager;
         [SerializeField] private GameObject reconnectBtn, createRoomBtn, joinPrivateRoomBtn;
         [SerializeField] private TMP_InputField usernameField;
-        [SerializeField] private SpriteChangingToggle filterInProgressRooms, filterFullRooms;
+        [SerializeField] private SpriteChangingToggle filterInProgressRooms, filterFullRooms, filterAddons;
         [SerializeField] private MainMenuSubmenu inRoomSubmenu;
         [SerializeField] private ErrorPromptSubmenu errorSubmenu;
         [SerializeField] private RectTransform sideMenu;
@@ -63,8 +63,13 @@ namespace NSMB.UI.MainMenu.Submenus.RoomList {
             
             filterInProgressRooms.SetIsOnWithoutNotify(Settings.Instance.miscFilterInProgressRooms);
             roomManager.FilterInProgressRooms = Settings.Instance.miscFilterInProgressRooms;
+            
             filterFullRooms.SetIsOnWithoutNotify(Settings.Instance.miscFilterFullRooms);
             roomManager.FilterFullRooms = Settings.Instance.miscFilterFullRooms;
+
+            filterAddons.SetIsOnWithoutNotify(Settings.Instance.miscFilterAddons);
+            roomManager.FilterAddons = Settings.Instance.miscFilterAddons;
+
             if (string.IsNullOrWhiteSpace(Settings.Instance.generalNickname)) {
                 UnityEngine.Random.InitState((int) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
                 Settings.Instance.generalNickname = "Player" + UnityEngine.Random.Range(1000, 10000);
@@ -129,6 +134,13 @@ namespace NSMB.UI.MainMenu.Submenus.RoomList {
             Settings.Instance.SaveSettings();
 
             roomManager.FilterFullRooms = filterFullRooms.isOn;
+        }
+
+        public void ChangeFilterAddons() {
+            Settings.Instance.miscFilterAddons = filterAddons.isOn;
+            Settings.Instance.SaveSettings();
+
+            roomManager.FilterAddons = filterAddons.isOn;
         }
 
         public void OpenMenuIfUsernameIsValid(MainMenuSubmenu submenu) {

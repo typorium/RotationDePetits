@@ -113,6 +113,8 @@ namespace NSMB.Addons {
 
             // Load addons
             List<AddonCatalogEntry> tryDownloading = new();
+            List<Guid> notDownloadable = new();
+
             foreach (var addonGuid in requestedAddons) {
                 var loadAddonResult = await LoadAddon(addonGuid);
                 if (!loadAddonResult.Success) {
@@ -145,12 +147,23 @@ namespace NSMB.Addons {
                     if (remoteCatalog.TryGetValue(addonGuid.ToString(), out var catalogEntry)) {
                         catalogEntry.ReleaseGuid = addonGuid;
                         tryDownloading.Add(catalogEntry);
+                    } else {
+                        notDownloadable.Add(addonGuid);
                     }
                 }
             }
 
+            // We can't download something
+            if (notDownloadable.Count > 0) {
+                Debug.Log($"[Addon] Unable to load all requested addons. Missing {notDownloadable.Count + tryDownloading.Count} addon(s).\nDownloadable: {tryDownloading.Count} [{string.Join(", ", tryDownloading.Select(x => x.ReleaseGuid))}]\nNot downloadable: {notDownloadable.Count} [{string.Join(", ", notDownloadable)}]");
+                return new AllAddonsLoadResult {
+                    Result = LoadAllAddonsResult.Failure
+                };
+            }
+
             // We can download everything that remains
             if (tryDownloading.Count > 0) {
+                Debug.Log($"[Addon] Missing {tryDownloading.Count} downloadable addons [{string.Join(", ", tryDownloading.Select(x => x.ReleaseGuid))}], asking user...");
                 return new AllAddonsLoadResult {
                     Result = LoadAllAddonsResult.DownloadRequired,
                     RequiredDownloads = tryDownloading,
@@ -212,7 +225,7 @@ namespace NSMB.Addons {
 
             try {
                 // Load bundles
-                var zippedBundles = zipFile.Entries.Where(zae => zae.FullName.StartsWith(PlatformFolder));
+                var zippedBundles = zipFile.Entries.Where(zae => zae.FullName.StartsWith(PlatformFolder + "/"));
                 foreach (var zippedBundle in zippedBundles) {
                     using Stream bundleStream = zippedBundle.Open();
                     MemoryStream memoryStream = new((int) zippedBundle.Length);
@@ -223,7 +236,9 @@ namespace NSMB.Addons {
                 // Load into asset database
                 await Awaitable.MainThreadAsync();
 
+                //Debug.Log(string.Join(",", decompressedBundles.Select(x => x.Item1)));
                 foreach (var bundle in decompressedBundles) {
+                    //Debug.Log(string.Join(", ", AssetBundle.GetAllLoadedAssetBundles().Select(x => x.name)));
                     var loadTask = AssetBundle.LoadFromStreamAsync(bundle.Item2);
                     await loadTask;
                     if (!loadTask.assetBundle) {
@@ -266,8 +281,9 @@ namespace NSMB.Addons {
                                 QuantumUnityDB.Global.AddAsset(assetObject);
                                 registeredAssets.Add(assetObject);
                                 this.registeredAssets.Add(assetObject.Guid, newAddon);
-                            } catch {
+                            } catch (Exception e) {
                                 Debug.Log($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.ReleaseGuid}): registering AssetObject {so.name} ({assetObject.Guid}) failed");
+                                Debug.LogError(e);
                                 UnloadAndCleanup();
                                 if (this.registeredAssets.TryGetValue(assetObject.Guid, out var incompatibleAddon)) {
                                     return new AddonLoadResult {
@@ -299,9 +315,9 @@ namespace NSMB.Addons {
                     NewAddon = newAddon
                 };
             } catch (Exception e) {
-                UnloadAndCleanup();
                 Debug.Log($"[Addon] Failed to load addon {addonDef.FullName} ({addonDef.ReleaseGuid}): An exception was thrown {e.Message}");
                 Debug.LogError(e);
+                UnloadAndCleanup();
                 return new AddonLoadResult {
                     Result = AddonLoadResultEnum.ReadFailure
                 };

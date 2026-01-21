@@ -137,6 +137,10 @@ namespace NSMB {
             if (UnityEngine.Input.GetKeyDown(KeyCode.F7)) {
                 System.Diagnostics.Process.Start(ReplayListManager.ReplayDirectory);
             }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.F8)) {
+                System.Diagnostics.Process.Start(AddonManager.LocalFolderPath);
+            }
 #endif
 
             if (windowWidth != newWindowWidth || windowHeight != newWindowHeight) {

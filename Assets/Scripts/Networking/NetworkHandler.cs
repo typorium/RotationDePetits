@@ -62,9 +62,7 @@ namespace NSMB.Networking {
         }
 
         public void Update() {
-            if (Client != null && Client.IsConnectedAndReady) {
-                Client.Service();
-            }
+            Client?.Service();
         }
 
         public void OnDestroy() {
