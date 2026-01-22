@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a77651c98eb177748a49241e377f4457, type: 3}
+  m_Script: {fileID: 11500000, guid: 09abfd75f8de0ab47b15cc437e916a34, type: 3}
   m_Name: MiniMushroom
   m_EditorClassIdentifier: 
   Identifier:
@@ -69,3 +69,7 @@ MonoBehaviour:
     Keys: []
   StatePriority: 0
   ItemPriority: 2
+  EnterReserveIfOverridden: 1
+  SfxOverrides: []
+  GrowAnimationDuration:
+    RawValue: 98304

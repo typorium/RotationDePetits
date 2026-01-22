@@ -120,88 +120,8 @@ namespace Quantum {
 
         public static PowerupReserveResult CollectPowerup(Frame f, EntityRef marioEntity, MarioPlayer* mario, PhysicsObject* marioPhysicsObject, PowerupAsset newPowerup) {
 
-            if (newPowerup.Type == PowerupType.Starman) {
-                mario->InvincibilityFrames = 600;
-                f.Signals.OnMarioPlayerBecameInvincible(marioEntity);
-                return PowerupReserveResult.NoneButPlaySound;
-            }
+            return newPowerup.Collect(f, marioEntity);
 
-            PowerupState newState = newPowerup.State;
-            var currentPowerup = QuantumUtils.FindPowerupAsset(f, mario->CurrentPowerupState);
-            var transform = f.Unsafe.GetPointer<Transform2D>(marioEntity);
-            var collider = f.Unsafe.GetPointer<PhysicsCollider2D>(marioEntity);
-
-            // Reserve if it's the same item
-            if (mario->CurrentPowerupState == newState) {
-                mario->SetReserveItem(f, newPowerup);
-                return PowerupReserveResult.ReserveNewPowerup;
-            }
-
-            /*
-            if (mario->CurrentPowerupState == PowerupState.MiniMushroom && marioPhysicsObject->IsTouchingGround) {
-                Shape2D shape = collider->Shape;
-                shape.Box.Extents *= 2;
-                shape.Centroid.Y = shape.Box.Extents.Y / 2 + FP._0_01;
-
-                Draw.Shape(f, ref shape, transform->Position);
-
-                if (PhysicsObjectSystem.BoxInGround(f, transform->Position, shape)) {
-                    return PowerupReserveResult.ReserveNewPowerup;
-                }
-            }
-            */
-
-            sbyte currentPowerupStatePriority = currentPowerup != null ? currentPowerup.StatePriority : (sbyte) -1;
-            sbyte newPowerupItemPriority = newPowerup != null ? newPowerup.ItemPriority : (sbyte) -1;
-
-            // Reserve if we have a higher priority item
-            if (currentPowerupStatePriority > newPowerupItemPriority) {
-                mario->SetReserveItem(f, newPowerup);
-                return PowerupReserveResult.ReserveNewPowerup;
-            }
-
-            if (newState == PowerupState.MegaMushroom) {
-                mario->MegaMushroomStartFrames = 90;
-                mario->IsSliding = false;
-                mario->CurrentKnockback = KnockbackStrength.None;
-                mario->KnockbackGetupFrames = 0;
-                if (f.Unsafe.TryGetPointer(mario->HeldEntity, out Holdable* holdable)) {
-                    holdable->DropWithoutThrowing(f, mario->HeldEntity);
-                }
-                if (marioPhysicsObject->IsTouchingGround) {
-                    mario->JumpState = JumpState.None;
-                }
-                marioPhysicsObject->IsFrozen = true;
-                marioPhysicsObject->Velocity = FPVector2.Zero;
-            }
-
-            MarioPlayerSystem.Filter fakeFilter = new() {
-                Entity = marioEntity,
-                MarioPlayer = mario,
-                PhysicsObject = marioPhysicsObject,
-                Transform = transform,
-                PhysicsCollider = collider
-            };
-
-            mario->PreviousPowerupState = mario->CurrentPowerupState;
-            mario->CurrentPowerupState = newState;
-            //mario->powerupFlash = 2;
-            mario->IsPropellerFlying = false;
-            mario->UsedPropellerThisJump = false;
-            mario->IsDrilling &= mario->IsSpinnerFlying;
-            mario->PropellerLaunchFrames = 0;
-            mario->IsInShell = false;
-
-            // Don't give us an extra mushroom
-            if (mario->PreviousPowerupState == PowerupState.NoPowerup
-                || (mario->PreviousPowerupState == PowerupState.Mushroom && newState != PowerupState.Mushroom)) {
-                return PowerupReserveResult.NoneButPlaySound;
-            }
-
-            if (mario->CurrentPowerupState != PowerupState.NoPowerup) {
-                mario->SetReserveItem(f, currentPowerup);
-            }
-            return PowerupReserveResult.ReserveOldPowerup;
         }
 
         public void OnEntityBumped(Frame f, EntityRef entity, FPVector2 position, EntityRef bumpOwner, QBoolean fromBelow) {

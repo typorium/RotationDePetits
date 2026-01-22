@@ -13,7 +13,6 @@ namespace NSMB.Entities.CoinItems {
 
         //---Serialized Variables
         [SerializeField] private new Animation animation;
-        [SerializeField] private CharacterPoseData[] poseData;
         [SerializeField] private GameObject flyingModel, helmetModel, coinPrefab;
         [SerializeField] private SkinnedMeshRenderer helmetMeshRenderer;
         [SerializeField] private AudioSource sfx;
@@ -27,7 +26,6 @@ namespace NSMB.Entities.CoinItems {
 
         //---Private Variables
         private MarioPlayerAnimator marioPlayerAnimator;
-        private CharacterPoseData currentCharacterPoseData;
         private List<Renderer> glowRenderers = new();
 
         private Vector2 lostViaDamageVelocity;
@@ -92,12 +90,11 @@ namespace NSMB.Entities.CoinItems {
                 t.RotateAround(t.position + (t.rotation * lostViaDamageRotationOffset), t.right, lostViaDamageAngularVelocity * Time.deltaTime);
                 t.position += (Vector3) lostViaDamageVelocity * Time.deltaTime;
             } else if (marioPlayerAnimator) { 
-                PoseWithScale pose = marioPlayerAnimator.SmallModelActive ? currentCharacterPoseData.SmallModelPose : currentCharacterPoseData.LargeModelPose;
-                t.SetParent(marioPlayerAnimator.ActiveHeadBone);
-                t.SetLocalPositionAndRotation(pose.Position, pose.Rotation);
+                t.SetParent(marioPlayerAnimator.ActiveGoldBlockBone);
+                t.SetLocalPositionAndRotation(default, default);
 
                 float collectScaleFactor = (Time.time - collectTime) / 0.04f;
-                t.localScale = pose.Scale + (Vector3.one * Mathf.Lerp(0.4f, 0, collectScaleFactor));
+                t.localScale = Vector3.one * Mathf.Lerp(1.4f, 1, collectScaleFactor);
 
                 if (PredictedFrame.Unsafe.TryGetPointer(marioPlayerAnimator.EntityRef, out MarioPlayer* mario)) {
                     helmetMeshRenderer.enabled = !mario->IsCrouchedInShell;
@@ -133,17 +130,11 @@ namespace NSMB.Entities.CoinItems {
             if (marioPlayerAnimator) {
                 flyingModel.SetActive(false);
                 helmetModel.SetActive(true);
-                foreach (var data in poseData) {
-                    if (data.Character == marioPlayerAnimator.Character) {
-                        helmetMeshRenderer.sharedMesh = data.Mesh;
-                        currentCharacterPoseData = data;
-                    }
-                }
+                helmetMeshRenderer.sharedMesh = marioPlayerAnimator.GoldBlockMesh;
                 marioPlayerAnimator.DisableHeadwear = true;
             } else {
                 flyingModel.SetActive(true);
                 helmetModel.SetActive(false);
-                currentCharacterPoseData = null;
             }
         }
 
@@ -261,6 +252,7 @@ namespace NSMB.Entities.CoinItems {
             resyncedThisFrame = true;
         }
 
+        /*
         [System.Serializable]
         public class CharacterPoseData {
             public AssetRef<CharacterAsset> Character;
@@ -286,5 +278,6 @@ namespace NSMB.Entities.CoinItems {
                 Scale = Vector3.one
             };
         }
+        */
     }
 }

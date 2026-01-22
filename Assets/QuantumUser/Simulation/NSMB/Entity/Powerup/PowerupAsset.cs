@@ -24,6 +24,7 @@ public class PowerupAsset : CoinItemAsset, ISoundEffectOverrideProvider {
     public FPAnimationCurve AnimationCurveY;
 
     public sbyte StatePriority = -1, ItemPriority = -1;
+    public bool EnterReserveIfOverridden = true;
 
     public SoundEffectOverride[] SfxOverrides;
 
@@ -43,6 +44,46 @@ public class PowerupAsset : CoinItemAsset, ISoundEffectOverrideProvider {
         overridesDict.TryGetValue(sfx, out var result);
         return result;
     }
+
+    public virtual unsafe PowerupReserveResult Collect(Frame f, EntityRef marioEntity) {
+        var mario = f.Unsafe.GetPointer<MarioPlayer>(marioEntity);
+
+        // Reserve if it's the same item
+        if (mario->CurrentPowerupState == State) {
+            mario->SetReserveItem(f, this);
+            return PowerupReserveResult.KeepOldReserveNew;
+        }
+
+        var previousPowerup = QuantumUtils.FindPowerupAsset(f, mario->CurrentPowerupState);
+        sbyte currentPowerupStatePriority = previousPowerup != null ? previousPowerup.StatePriority : (sbyte) -1;
+
+        // Reserve if we have a higher priority item
+        if (currentPowerupStatePriority > ItemPriority) {
+            mario->SetReserveItem(f, this);
+            return PowerupReserveResult.KeepOldReserveNew;
+        }
+
+        OnCollected(f, marioEntity);
+
+        mario->PreviousPowerupState = mario->CurrentPowerupState;
+        mario->CurrentPowerupState = State;
+        mario->IsPropellerFlying = false;
+        mario->UsedPropellerThisJump = false;
+        mario->IsDrilling &= mario->IsSpinnerFlying;
+        mario->PropellerLaunchFrames = 0;
+        mario->IsInShell = false;
+
+        if (previousPowerup != null && previousPowerup.EnterReserveIfOverridden) {
+            if (mario->CurrentPowerupState != PowerupState.NoPowerup) {
+                mario->SetReserveItem(f, previousPowerup);
+            }
+            return PowerupReserveResult.CollectNewReserveOld;
+        } else {
+            return PowerupReserveResult.CollectNewIgnoreOld;
+        }
+    }
+
+    protected virtual void OnCollected(Frame f, EntityRef entity) { }
 }
 
 public enum PowerupType {

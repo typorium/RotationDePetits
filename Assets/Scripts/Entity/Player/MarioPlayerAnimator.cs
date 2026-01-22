@@ -95,19 +95,35 @@ namespace NSMB.Entities.Player {
 
         //---Serialized Variables
         [SerializeField] private CharacterAsset character;
-        [SerializeField] private PlayerElements playerElementsPrefab;
-        [SerializeField] private GameObject coinNumberParticle, coinFromBlockParticle, respawnParticle, starCollectParticle;
+
+        [Header("Animation + Rigging")]
         [SerializeField] private Animator animator;
         [SerializeField] private Avatar smallAvatar, largeAvatar;
-        [SerializeField] private Shader normalShader, rainbowShader;
-        [SerializeField] private ParticleSystem dust, sparkles, drillParticle, giantParticle, fireParticle, bubblesParticle, iceSkiddingParticle, waterRunningParticle, waterSkiddingParticle;
         [SerializeField] private GameObject smallModel, largeModel, largeShellExclude, blueShell, propellerHelmet, propeller, HammerHelm, HammerShell, HammerTuck;
-        [SerializeField] private GameObject smallHeadBone, largeHeadBone;
+
+        [Header("Prefabs")]
+        [SerializeField] private GameObject coinNumberParticle;
+        [SerializeField] private GameObject coinFromBlockParticle, respawnParticle, starCollectParticle;
+
+        [Header("Shaders")]
+        [SerializeField] private Shader normalShader;
+        [SerializeField] private Shader rainbowShader;
+
+        [Header("Sound")]
+        [SerializeField] private AudioSource sfx;
+        [SerializeField] private AudioSource coinSfx;
         [SerializeField] private AudioClip normalDrill, propellerDrill;
         [SerializeField] private LoopingSoundPlayer dustPlayer, drillPlayer;
         [SerializeField] private LoopingSoundData wallSlideData, shellSlideData, spinnerDrillData, propellerDrillData;
 
-        [SerializeField] private AudioSource sfx, coinSfx;
+        [Header("Gold Block")]
+        [SerializeField] private Transform smallGoldBlockBone;
+        [SerializeField] private Transform largeGoldBlockBone;
+        [SerializeField] private Mesh goldBlockMesh;
+
+        [Header("Particle Systems")]
+        [SerializeField] private ParticleSystem dust;
+        [SerializeField] private ParticleSystem sparkles, drillParticle, giantParticle, fireParticle, bubblesParticle, iceSkiddingParticle, waterRunningParticle, waterSkiddingParticle;
 
         //---Components
         private readonly List<Renderer> renderers = new();
@@ -116,9 +132,8 @@ namespace NSMB.Entities.Player {
         //---Properties
         public Color GlowColor { get; private set; }
         public bool DisableHeadwear { get; set; }
-        public CharacterAsset Character => character;
-        public Transform ActiveHeadBone => smallHeadBone.activeInHierarchy ? smallHeadBone.transform : largeHeadBone.transform;
-        public bool SmallModelActive => smallHeadBone.activeInHierarchy;
+        public Transform ActiveGoldBlockBone => smallGoldBlockBone.gameObject.activeInHierarchy ? smallGoldBlockBone : largeGoldBlockBone;
+        public Mesh GoldBlockMesh => goldBlockMesh;
         public GameObject PropellerBlades => propeller;
         
         //---Private Variables
@@ -1054,8 +1069,8 @@ namespace NSMB.Entities.Player {
             var powerup = e.Scriptable;
 
             switch (e.Result) {
-            case PowerupReserveResult.ReserveOldPowerup:
-            case PowerupReserveResult.NoneButPlaySound: {
+            case PowerupReserveResult.CollectNewReserveOld:
+            case PowerupReserveResult.CollectNewIgnoreOld: {
                 // Just play the collect sound
                 /*
                 if (powerup.SoundPlaysEverywhere) {
@@ -1075,7 +1090,7 @@ namespace NSMB.Entities.Player {
                 }
                 break;
             }
-            case PowerupReserveResult.ReserveNewPowerup: {
+            case PowerupReserveResult.KeepOldReserveNew: {
                 // Reserve the new powerup
                 PlaySound(SoundEffect.Player_Sound_PowerupReserveStore, new[] { powerup });
                 break;
@@ -1234,12 +1249,10 @@ namespace NSMB.Entities.Player {
                 return;
             }
 
-            if (animator.GetCurrentAnimatorStateInfo(0).shortNameHash == StateFalling || animator.GetCurrentAnimatorStateInfo(0).shortNameHash == ParamTripleJump)
-            {
+            if (animator.GetCurrentAnimatorStateInfo(0).shortNameHash == StateFalling || animator.GetCurrentAnimatorStateInfo(0).shortNameHash == ParamTripleJump) {
                 if (animator.GetCurrentAnimatorStateInfo(0).shortNameHash == StateFalling) {
                     animator.Play(StateJumplanding);
-                }
-                else if (animator.GetCurrentAnimatorStateInfo(0).shortNameHash == ParamTripleJump) {
+                } else if (animator.GetCurrentAnimatorStateInfo(0).shortNameHash == ParamTripleJump) {
                     animator.Play(StateJumplandingEdge);
                     SpawnParticle(Enums.PrefabParticle.Player_TripleJumpLandingDust.GetGameObject(), transform.position + Vector3.back * 5);
                 }

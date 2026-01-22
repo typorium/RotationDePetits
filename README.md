@@ -137,6 +137,7 @@ Windows, Linux, and Mac Builds: https://github.com/ipodtouch0218/NSMB-MarioVsLui
 * SlavaWOW *(ru-ru)*
 * SLG64 *(es-la)*
 * Snayp *(fr-fr)*
+* SwordCatMeow *(es-es)*
 * Thebababois369 *(id-id)*
 * Tombuntu *(ja-jp)*
 * Windows10V *(pt-br)*

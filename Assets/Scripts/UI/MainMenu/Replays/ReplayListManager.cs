@@ -96,7 +96,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             Instance = this;
             TranslationManager.OnLanguageChanged += OnLanguageChanged;
 
-            _ = FindReplays();
+            // _ = FindReplays();
         }
 
         public void OnDestroyCustom() {

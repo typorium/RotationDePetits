@@ -83,9 +83,9 @@ namespace Quantum {
   }
   public enum PowerupReserveResult : byte {
     None,
-    NoneButPlaySound,
-    ReserveOldPowerup,
-    ReserveNewPowerup,
+    CollectNewIgnoreOld,
+    CollectNewReserveOld,
+    KeepOldReserveNew,
   }
   public enum PowerupSpawnReason : byte {
     PowerupBlock,

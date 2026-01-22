@@ -392,6 +392,10 @@ public static unsafe class QuantumUtils {
     }
 
     public static PowerupAsset FindPowerupAsset(Frame f, PowerupState state) {
+        if (state == PowerupState.NoPowerup) {
+            return null;
+        }
+
         var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
         foreach (var coinItemAsset in gamemode.AllCoinItems) {
             if (f.TryFindAsset(coinItemAsset, out CoinItemAsset item)
@@ -411,17 +415,10 @@ public static unsafe class QuantumUtils {
         }
 
         int playerDataCount = f.ComponentCount<PlayerData>();
-        PlayerData** allPlayerDatas = stackalloc PlayerData*[playerDataCount];
         
-        int index = 0;
-        foreach ((_, var pd) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) {
-            allPlayerDatas[index++] = pd;
-        }
-
         // Check that at least one non-spectator exists
         bool nonSpectator = false;
-        for (int i = 0; i < playerDataCount; i++) {
-            PlayerData* pd = allPlayerDatas[i];
+        foreach ((_, var pd) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) {
             if (!pd->IsSpectator && !pd->ManualSpectator) {
                 nonSpectator = true;
                 break;
@@ -434,8 +431,7 @@ public static unsafe class QuantumUtils {
         // Check that at least two teams exist
         if (f.Global->Rules.TeamsEnabled && playerDataCount > 1) {
             byte? firstTeam = null;
-            for (int i = 0; i < playerDataCount; i++) {
-                PlayerData* pd = allPlayerDatas[i];
+            foreach ((_, var pd) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) {
                 if (pd->IsSpectator || pd->ManualSpectator) {
                     continue;
                 }

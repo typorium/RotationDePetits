@@ -167,17 +167,16 @@ namespace NSMB.UI.Game {
         public void StartSpectating() {
             spectating = true;
             spectationUI.SetActive(!IsReplay);
-            if (!IsReplay) {
-                if (GlobalController.Instance.loadingCanvas.isActiveAndEnabled) {
-                    GlobalController.Instance.loadingCanvas.EndLoading(QuantumRunner.DefaultGame);
-                }
+            if (!IsReplay && GlobalController.Instance.loadingCanvas.isActiveAndEnabled) {
+                GlobalController.Instance.loadingCanvas.EndLoading(QuantumRunner.DefaultGame);
             }
 
             SpectateNextPlayer(0);
         }
 
         public unsafe void SpectateNextPlayer(InputAction.CallbackContext context) {
-            if (!spectating || cameraAnimator.Mode != CameraAnimator.CameraMode.FollowPlayer || pauseMenu.IsPaused || Game.Frames.Predicted.Global->GameState >= GameState.Ended) {
+            if (!spectating || cameraAnimator.Mode != CameraAnimator.CameraMode.FollowPlayer
+                || pauseMenu.IsPaused || Game.Frames.Predicted.Global->GameState >= GameState.Ended) {
                 return;
             }
 
@@ -192,39 +191,38 @@ namespace NSMB.UI.Game {
                 return;
             }
 
-            List<EntityRef> marios = new();
+            List<(EntityRef, PlayerRef)> marios = new();
             var marioFilter = f.Filter<MarioPlayer>();
             marioFilter.UseCulling = false;
             while (marioFilter.NextUnsafe(out EntityRef entity, out MarioPlayer* mario)) {
-                marios.Add(entity);
+                marios.Add((entity, mario->PlayerRef));
             }
             marios.Sort((a, b) => {
                 int indexA = int.MaxValue;
                 int indexB = int.MaxValue;
-                var marioA = f.Unsafe.GetPointer<MarioPlayer>(a);
-                var marioB = f.Unsafe.GetPointer<MarioPlayer>(b);
 
                 for (int i = 0; i < f.Global->RealPlayers; i++) {
                     PlayerRef player = f.Global->PlayerInfo[i].PlayerRef;
-                    if (player == marioA->PlayerRef) {
+                    if (player == a.Item2) {
                         indexA = i;
-                    } else if (player == marioB->PlayerRef) {
+                    } else if (player == b.Item2) {
                         indexB = i;
                     }
                 }
                 return indexA - indexB;
             });
             
-            int currentIndex = marios.IndexOf(Entity);
+            int currentIndex = marios.IndexOf(x => x.Item1 == Entity);
             int nextIndex = (int) Mathf.Repeat(currentIndex + increment, marioCount);
             CameraAnimator.Mode = CameraAnimator.CameraMode.FollowPlayer;
-            Entity = marios[nextIndex];
+            Entity = marios[nextIndex].Item1;
 
             UpdateSpectateUI();
         }
 
         public unsafe void SpectatePreviousPlayer(InputAction.CallbackContext context) {
-            if (!spectating || cameraAnimator.Mode != CameraAnimator.CameraMode.FollowPlayer || pauseMenu.IsPaused || Game.Frames.Predicted.Global->GameState >= GameState.Ended) {
+            if (!spectating || cameraAnimator.Mode != CameraAnimator.CameraMode.FollowPlayer
+                || pauseMenu.IsPaused || Game.Frames.Predicted.Global->GameState >= GameState.Ended) {
                 return;
             }
 
@@ -232,7 +230,8 @@ namespace NSMB.UI.Game {
         }
 
         private unsafe void OnNavigate(InputAction.CallbackContext context) {
-            if (!spectating || cameraAnimator.Mode != CameraAnimator.CameraMode.FollowPlayer || pauseMenu.IsPaused || Game.Frames.Predicted.Global->GameState >= GameState.Ended) {
+            if (!spectating || cameraAnimator.Mode != CameraAnimator.CameraMode.FollowPlayer
+                || pauseMenu.IsPaused || Game.Frames.Predicted.Global->GameState >= GameState.Ended) {
                 previousNavigate = Vector2.zero;
                 return;
             }
@@ -250,7 +249,8 @@ namespace NSMB.UI.Game {
         }
 
         private unsafe void OnSubmit(InputAction.CallbackContext context) {
-            if (!spectating || pauseMenu.IsPaused || Game.Session.IsReplay || Game.Frames.Predicted.Global->GameState >= GameState.Ended) {
+            if (!spectating || pauseMenu.IsPaused || Game.Session.IsReplay
+                || Game.Frames.Predicted.Global->GameState >= GameState.Ended) {
                 return;
             }
 
@@ -267,7 +267,8 @@ namespace NSMB.UI.Game {
         }
 
         private unsafe void SpectatePlayerIndex(InputAction.CallbackContext context) {
-            if (!spectating || Game.Frames.Predicted.Global->GameState >= GameState.Ended || pauseMenu.IsPaused) {
+            if (!spectating || Game.Frames.Predicted.Global->GameState >= GameState.Ended
+                || pauseMenu.IsPaused) {
                 return;
             }
 
