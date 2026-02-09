@@ -109,13 +109,12 @@ namespace Quantum {
                     StageTileInstance tileInstance = stage.GetTileRelative(f, tilePos);
                     StageTile tile = f.FindAsset(tileInstance.Tile);
                     if (tile is IInteractableTile it) {
-                        it.Interact(f, filter.Entity, IInteractableTile.InteractionDirection.Up, tilePos, tileInstance, out _);
+                        it.Interact(f, filter.Entity, InteractionDirection.None, tilePos, tileInstance, out _);
                     }
                 }
             }
 
-            if (f.Exists(holdable->Holder)) {
-                var mario = f.Unsafe.GetPointer<MarioPlayer>(holdable->Holder);
+            if (f.Unsafe.TryGetPointer(holdable->Holder, out MarioPlayer* mario)) {
                 mario->HeldEntity = default;
                 holdable->PreviousHolder = default;
                 holdable->Holder = default;
@@ -285,7 +284,7 @@ namespace Quantum {
             );
             physicsObject->IsTouchingGround = false;
 
-            f.Events.EntityBlockBumped(f, entity);
+            f.Events.PlayComboSound(entity, 0);
         }
 
         public void OnEnemyRespawned(Frame f, EntityRef entity) {

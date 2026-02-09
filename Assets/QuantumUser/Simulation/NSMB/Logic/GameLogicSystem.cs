@@ -128,7 +128,7 @@ namespace Quantum {
                     if ((f.Global->Timer -= f.DeltaTime) <= 0) {
                         f.Global->Timer = 0;
                         CheckForGameEnd(f);
-                        f.Events.TimerExpired(f);
+                        f.Events.TimerExpired();
                     }
                 }
 

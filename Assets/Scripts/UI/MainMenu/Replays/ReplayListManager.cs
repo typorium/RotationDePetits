@@ -425,7 +425,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 noReplaysText.text = "";
             } else {
                 GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_Error);
-                UnityEngine.Debug.LogWarning($"[Replay] Failed to parse {filepath} as a replay: {parseResult}");
+                Debug.LogWarning($"[Replay] Failed to parse {filepath} as a replay: {parseResult}");
             }
             yield return null;
         }

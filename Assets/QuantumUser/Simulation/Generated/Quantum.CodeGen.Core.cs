@@ -62,6 +62,13 @@ namespace Quantum {
     Playing,
     Ended,
   }
+  public enum InteractionDirection : byte {
+    None,
+    Up,
+    Down,
+    Left,
+    Right,
+  }
   public enum JumpState : byte {
     None,
     SingleJump,
@@ -4381,6 +4388,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(IntVector2), IntVector2.SIZE);
       typeRegistry.Register(typeof(IntVector3), IntVector3.SIZE);
       typeRegistry.Register(typeof(Quantum.Interactable), Quantum.Interactable.SIZE);
+      typeRegistry.Register(typeof(Quantum.InteractionDirection), 1);
       typeRegistry.Register(typeof(Quantum.InteractionInitiator), Quantum.InteractionInitiator.SIZE);
       typeRegistry.Register(typeof(Quantum.InvisibleBlock), Quantum.InvisibleBlock.SIZE);
       typeRegistry.Register(typeof(Joint), Joint.SIZE);
@@ -4507,6 +4515,7 @@ namespace Quantum {
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.GameState>();
       FramePrinter.EnsurePrimitiveNotStripped<IceBlockBreakReason>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.InputButtons>();
+      FramePrinter.EnsurePrimitiveNotStripped<Quantum.InteractionDirection>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.JumpState>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.KillReason>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.KnockbackStrength>();

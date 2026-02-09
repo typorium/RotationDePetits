@@ -36,8 +36,6 @@ namespace NSMB.UI.Game.Results {
                 usernameText.text = info.Value.Nickname.ToString().ToValidNickname(f, player);
                 nicknameColor = NicknameColor.Parse(info.Value.NicknameColor.ToString());
                 usernameText.color = nicknameColor.Sample();
-
-                var allCharacters = QuantumViewUtils.Characters;
                 characterIcon.sprite = QuantumViewUtils.FindAssetOrFirst(info.Value.Character).ReadySprite;
 
                 if (stars < 0) {

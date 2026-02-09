@@ -5,7 +5,7 @@ public class TileInteractionRelocator : StageTile, IInteractableTile {
 
     public IntVector2 RelocateTo;
 
-    public bool Interact(Frame f, EntityRef entity, IInteractableTile.InteractionDirection direction, IntVector2 tilePosition, StageTileInstance tileInstance, out bool playBumpSound) {
+    public bool Interact(Frame f, EntityRef entity, InteractionDirection direction, IntVector2 tilePosition, StageTileInstance tileInstance, out bool playBumpSound) {
         if (RelocateTo != tilePosition) {
             // Don't redirect to the same tile.
             VersusStageData stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);

@@ -169,13 +169,22 @@ namespace NSMB.Tiles {
                 entityBreakBlockSounds[e.Entity] = sfx;
             }
 
-            if (e.BrokenByMega && e.BreakSpeed != FP._0) {
-                var bazingaParticle = particle.velocityOverLifetime;
-                bazingaParticle.x = new ParticleSystem.MinMaxCurve(e.BreakSpeed.AsFloat);
-                bazingaParticle.enabled = true;
-                var bazongaParticle = particle.rotationOverLifetime;
-                bazongaParticle.x = new ParticleSystem.MinMaxCurve(e.BreakSpeed.AsFloat * 360f);
-                bazongaParticle.enabled = true;
+            if (e.BrokenByMega) {
+                float speed = e.Direction switch {
+                    InteractionDirection.Left => -9.5f,
+                    InteractionDirection.Right => 9.5f,
+                    _ => 0
+                };
+
+                if (speed != 0) {
+                    var velocityComponent = particle.velocityOverLifetime;
+                    velocityComponent.x = new ParticleSystem.MinMaxCurve(speed);
+                    velocityComponent.enabled = true;
+
+                    var rotationComponent = particle.rotationOverLifetime;
+                    rotationComponent.x = new ParticleSystem.MinMaxCurve(speed * 360f);
+                    rotationComponent.enabled = true;
+                }
             }
 
             particle.Play();

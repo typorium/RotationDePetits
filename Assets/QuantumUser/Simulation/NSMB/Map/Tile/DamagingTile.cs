@@ -6,26 +6,26 @@ public unsafe class DamagingTile : StageTile, IInteractableTile {
     public bool DamageRight = true, DamageUp = true, Damageleft = true, DamageDown = true;
     public bool InstantKill = false;
 
-    public bool Interact(Frame f, EntityRef entity, IInteractableTile.InteractionDirection direction, IntVector2 tilePosition, StageTileInstance tileInstance, out bool playBumpSound) {
+    public bool Interact(Frame f, EntityRef entity, InteractionDirection direction, IntVector2 tilePosition, StageTileInstance tileInstance, out bool playBumpSound) {
         playBumpSound = false;
 
         switch (direction) {
-        case IInteractableTile.InteractionDirection.Right:
+        case InteractionDirection.Right:
             if (!DamageRight) {
                 return false;
             }
             break;
-        case IInteractableTile.InteractionDirection.Up:
+        case InteractionDirection.Up:
             if (!DamageUp) {
                 return false;
             }
             break;
-        case IInteractableTile.InteractionDirection.Left:
+        case InteractionDirection.Left:
             if (!Damageleft) {
                 return false;
             }
             break;
-        case IInteractableTile.InteractionDirection.Down:
+        case InteractionDirection.Down:
             if (!DamageDown) {
                 return false;
             }

@@ -30,7 +30,6 @@ namespace NSMB {
         public DiscordController discordController;
         public RumbleManager rumbleManager;
         public AddonManager addonManager;
-        public Gradient rainbowGradient;
         public Sprite[] pingIndicators;
         public PauseOptionMenuManager optionsManager;
         public SimulationConfig config;

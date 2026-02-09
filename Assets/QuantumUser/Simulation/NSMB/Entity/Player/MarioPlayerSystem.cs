@@ -1,7 +1,6 @@
 using Photon.Deterministic;
 using Quantum.Collections;
 using System;
-using static IInteractableTile;
 
 namespace Quantum {
     public unsafe class MarioPlayerSystem : SystemMainThreadEntityFilter<MarioPlayer, MarioPlayerSystem.Filter>, ISignalOnComponentRemoved<Projectile>,
@@ -2626,7 +2625,7 @@ namespace Quantum {
                     for (int i = 0; i < overlappingTiles; i++) {
                         StageTile stageTile = f.FindAsset(tiles[i].Tile.Tile);
                         if (stageTile is BreakableBrickTile bbt && bbt.BreakingRules.HasFlag(BreakableBrickTile.BreakableBy.LargeMario)) {
-                            f.Events.TileBroken(entity, tiles[i].Position, tiles[i].Tile, false, FP._0);
+                            f.Events.TileBroken(entity, tiles[i].Position, tiles[i].Tile, false, InteractionDirection.Up);
                             stage.SetTileRelative(f, tiles[i].Position, default);
                         }
                     }

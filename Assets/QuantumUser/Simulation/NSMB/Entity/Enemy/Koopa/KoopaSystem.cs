@@ -1,6 +1,5 @@
 using Photon.Deterministic;
 using Quantum.Collections;
-using static IInteractableTile;
 
 namespace Quantum {
     public unsafe class KoopaSystem : SystemMainThreadEntityFilter<Koopa, KoopaSystem.Filter>, ISignalOnThrowHoldable, ISignalOnEnemyRespawned, ISignalOnEntityBumped,

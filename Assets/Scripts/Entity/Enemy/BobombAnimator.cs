@@ -30,7 +30,6 @@ namespace NSMB.Entities.Enemies {
         public void Start() {
             QuantumEvent.Subscribe<EventBobombExploded>(this, OnBobombExploded, FilterOutReplayFastForward);
             QuantumEvent.Subscribe<EventBobombLit>(this, OnBobombLit, FilterOutReplayFastForward);
-            QuantumEvent.Subscribe<EventEntityBlockBumped>(this, OnEntityBlockBumped, FilterOutReplayFastForward);
             QuantumEvent.Subscribe<EventPlayComboSound>(this, OnPlayComboSound, FilterOutReplayFastForward);
             QuantumEvent.Subscribe<EventGameEnded>(this, OnGameEnded);
         }
@@ -107,14 +106,6 @@ namespace NSMB.Entities.Enemies {
             sfx.PlayOneShot(QuantumUtils.GetComboSoundEffect(e.Combo));
         }
 
-        private void OnEntityBlockBumped(EventEntityBlockBumped e) {
-            if (e.Entity != EntityRef) {
-                return;
-            }
-
-            sfx.PlayOneShot(SoundEffect.Enemy_Shell_Kick);
-        }
-
         private void OnBobombExploded(EventBobombExploded e) {
             if (e.Entity != EntityRef) {
                 return;
@@ -130,12 +121,6 @@ namespace NSMB.Entities.Enemies {
             }
 
             sfx.Play(SoundEffect.Enemy_Bobomb_Fuse);
-
-            /*
-            if (e.Stomped) {
-                sfx.PlayOneShot(SoundEffect.Enemy_Generic_Stomp);
-            }
-            */
         }
     }
 }
