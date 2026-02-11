@@ -193,7 +193,8 @@ namespace NSMB.Utilities {
                 }
             }
 
-            return Mathf.FloorToInt(ourIndex / (totalPlayers + 1f));
+            // Mathf.Max makes it so 2 players uses indices 0 and 3, for red and green.
+            return Mathf.CeilToInt(((float) ourIndex / Mathf.Max(totalPlayers + 1, 4)) * GlobalController.Instance.playerSlots.Length);
         }
 
         public static PlayerSlotInfo GetPlayerSlotInfo(Frame f, PlayerRef player) {
@@ -218,11 +219,8 @@ namespace NSMB.Utilities {
             }
 
             // Prioritize spectator status
-            if (!f.TryResolveDictionary(f.Global->PlayerDatas, out var playerDataDict)
-                || !playerDataDict.TryGetValue(player, out EntityRef playerDataEntity)
-                || !f.Unsafe.TryGetPointer(playerDataEntity, out PlayerData* playerData)
-                || playerData->IsSpectator) {
-
+            var playerData = QuantumUtils.GetPlayerData(f, player);
+            if (playerData != null && playerData->IsSpectator) {
                 return spectatorColor;
             }
 

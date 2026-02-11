@@ -14,6 +14,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using NSMB.UI.Game;
+using NSMB.Sound;
+
 
 #if UNITY_STANDALONE
 using NSMB.UI.MainMenu.Submenus.Replays;
@@ -31,14 +33,15 @@ namespace NSMB {
         public DiscordController discordController;
         public RumbleManager rumbleManager;
         public AddonManager addonManager;
-        public Sprite[] pingIndicators;
         public PauseOptionMenuManager optionsManager;
+        public AudioMixerManager audioMixerManager;
         public SimulationConfig config;
 
         public ScriptableRendererFeature outlineFeature;
         public GameObject graphy, connecting;
         public LoadingCanvas loadingCanvas;
         public Image fullscreenFadeImage;
+        public Sprite[] pingIndicators;
         public AudioSource sfx;
 
         public PlayerSlotInfo[] playerSlots;
@@ -46,11 +49,8 @@ namespace NSMB {
         [NonSerialized] public bool checkedForVersion = false, firstConnection = true;
         [NonSerialized] public int windowWidth = 1280, windowHeight = 720;
 
-        //---Serialized Variables
-        [SerializeField] private AudioMixer mixer;
-
         //---Private Variables
-        private Coroutine fadeMusicRoutine, fadeSfxRoutine, totalFadeRoutine;
+        private Coroutine totalAudioFadeRoutine;
 #if IDLE_LOCK_30FPS
         private int previousVsyncCount, previousFrameRate;
 #endif
@@ -73,16 +73,6 @@ namespace NSMB {
 
         public void Start() {
             AuthenticationHandler.IsAuthenticating = false;
-
-            if (!Application.isFocused) {
-                if (Settings.Instance.audioMuteMusicOnUnfocus) {
-                    mixer.SetFloat("MusicVolume", -80f);
-                }
-
-                if (Settings.Instance.audioMuteSFXOnUnfocus) {
-                    mixer.SetFloat("SoundVolume", -80f);
-                }
-            }
             Settings.Controls.Enable();
             Settings.Controls.Debug.FPSMonitor.performed += ToggleFpsMonitor;
             QuantumEvent.Subscribe<EventStartGameEndFade>(this, OnStartGameEndFade);
@@ -158,35 +148,21 @@ namespace NSMB {
             }
         }
 
+#if IDLE_LOCK_30FPS
         public void OnApplicationFocus(bool focus) {
             if (focus) {
-                Settings.Instance.ApplyVolumeSettings();
-                this.StopCoroutineNullable(ref fadeMusicRoutine);
-                this.StopCoroutineNullable(ref fadeSfxRoutine);
-
-#if IDLE_LOCK_30FPS
                 QualitySettings.vSyncCount = previousVsyncCount;
                 Application.targetFrameRate = previousFrameRate;
-#endif
             } else {
-                if (Settings.Instance.audioMuteMusicOnUnfocus) {
-                    fadeMusicRoutine ??= StartCoroutine(FadeVolume("MusicVolume"));
-                }
-
-                if (Settings.Instance.audioMuteSFXOnUnfocus) {
-                    fadeSfxRoutine ??= StartCoroutine(FadeVolume("SoundVolume"));
-                }
-
-#if IDLE_LOCK_30FPS
                 // Lock framerate when losing focus to (hopefully) disable browsers slowing the game
                 previousVsyncCount = QualitySettings.vSyncCount;
                 previousFrameRate = Application.targetFrameRate;
 
                 QualitySettings.vSyncCount = 0;
                 Application.targetFrameRate = 30;
-#endif
             }
         }
+#endif
 
         public void OnUnitySceneLoadDone(CallbackUnitySceneLoadDone e) {
             if (e.SceneName != null) {
@@ -196,22 +172,9 @@ namespace NSMB {
             }
 
             discordController.UpdateActivity();
-            this.StopCoroutineNullable(ref totalFadeRoutine);
-            mixer.SetFloat("OverrideVolume", 0f);
+            this.StopCoroutineNullable(ref totalAudioFadeRoutine);
+            audioMixerManager.SetFloat(AudioMixerManager.KeyOverride, 0f);
             StartCoroutine(FadeFullscreenImage(0, 1/3f, 0.1f));
-        }
-
-        private IEnumerator FadeVolume(string key) {
-            mixer.GetFloat(key, out float currentVolume);
-            currentVolume = ToLinearScale(currentVolume);
-            float fadeRate = currentVolume * 2f;
-
-            while (currentVolume > 0f) {
-                currentVolume -= fadeRate * Time.fixedDeltaTime;
-                mixer.SetFloat(key, ToLogScale(currentVolume));
-                yield return null;
-            }
-            mixer.SetFloat(key, -80f);
         }
 
         public void PlaySound(SoundEffect soundEffect) {
@@ -238,20 +201,12 @@ namespace NSMB {
             if (MvLSceneLoader.Instance.CurrentLoadedMap != null) {
                 // In a game scene
                 StartCoroutine(FadeFullscreenImage(1, 1/3f));
-                totalFadeRoutine = StartCoroutine(FadeVolume("OverrideVolume"));
+                totalAudioFadeRoutine = StartCoroutine(audioMixerManager.FadeOut(AudioMixerManager.KeyOverride));
             }
         }
 
         private void ToggleFpsMonitor(InputAction.CallbackContext obj) {
             graphy.SetActive(!graphy.activeSelf);
-        }
-
-        private static float ToLinearScale(float x) {
-            return Mathf.Pow(10, x / 20);
-        }
-
-        private static float ToLogScale(float x) {
-            return 20 * Mathf.Log10(x);
         }
     }
 }

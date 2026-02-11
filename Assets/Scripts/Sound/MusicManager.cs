@@ -5,6 +5,7 @@ using NSMB.UI.Loading;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using UnityEngine;
+using UnityEngine.Audio;
 using static NSMB.Utilities.QuantumViewUtils;
 
 namespace NSMB.Sound {
@@ -12,6 +13,7 @@ namespace NSMB.Sound {
 
         //---Serialized Variables
         [SerializeField] private LoopingMusicPlayer musicPlayer;
+        [SerializeField] private AudioMixer mixer; 
 
         public void OnValidate() {
             this.SetIfNull(ref musicPlayer);
@@ -27,6 +29,7 @@ namespace NSMB.Sound {
 
             ActiveReplayManager.OnReplayFastForwardEnded += OnReplayFastForwardEnded;
             LoadingCanvas.OnLoadingEnded += OnLoadingEnded;
+            AudioMixerManager.OnAudioMixerValueChanged += OnAudioMixerValueChanged;
 
             var game = QuantumRunner.DefaultGame;
             Frame f;
@@ -42,6 +45,7 @@ namespace NSMB.Sound {
         public void OnDestroy() {
             ActiveReplayManager.OnReplayFastForwardEnded -= OnReplayFastForwardEnded;
             LoadingCanvas.OnLoadingEnded -= OnLoadingEnded;
+            AudioMixerManager.OnAudioMixerValueChanged -= OnAudioMixerValueChanged;
         }
 
         public void OnUpdateView(CallbackUpdateView e) {
@@ -147,6 +151,10 @@ namespace NSMB.Sound {
             if (!longIntro && Game != null) {
                 HandleMusic(Game, true);
             }
+        }
+
+        private void OnAudioMixerValueChanged(string key, float value) {
+            mixer.SetFloat(key, value);
         }
 
         private void OnGameStateChanged(EventGameStateChanged e) {

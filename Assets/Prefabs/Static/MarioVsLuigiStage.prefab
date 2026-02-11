@@ -213,6 +213,7 @@ MonoBehaviour:
   Updater: {fileID: 2550855901662361809}
   UseFindUpdater: 0
   musicPlayer: {fileID: 539312975697019843}
+  mixer: {fileID: 24100000, guid: b73add24eb026c844b85593f8bab1f8c, type: 2}
 --- !u!114 &539312975697019843
 MonoBehaviour:
   m_ObjectHideFlags: 0

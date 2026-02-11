@@ -65,9 +65,15 @@ namespace NSMB.UI.Intro {
         }
 
         private IEnumerator LoadAssetBundles() {
-            string[] bundleNames = { /*"basegame-assets",*/ "basegame-scenes" };
+#if !UNITY_EDITOR
+            string[] bundleNames = { "basegame-assets", "basegame-scenes" };
 
             foreach (var bundle in bundleNames) {
+                if (AssetBundle.GetAllLoadedAssetBundles().Any(ab => ab.name == bundle)) {
+                    // Ignore if already loaded
+                    continue;
+                }
+
                 using var loadRequest = UnityWebRequestAssetBundle.GetAssetBundle(Application.streamingAssetsPath + "/" + bundle);
                 yield return loadRequest.SendWebRequest();
 
@@ -80,9 +86,11 @@ namespace NSMB.UI.Intro {
                 var loadedBundle = DownloadHandlerAssetBundle.GetContent(loadRequest);
                 Debug.Log($"[Bundles] Successfully loaded {loadedBundle.name} ({(loadedBundle.isStreamedSceneAssetBundle ? loadedBundle.GetAllScenePaths().Length + " scenes" : loadedBundle.GetAllAssetNames().Length + " assets")})");
             }
+#endif
 
             Debug.Log("[Bundles] Loaded all base game content!");
             doneLoadingBundles = true;
+            yield break;
         }
 
         private IEnumerator IntroSequence() {

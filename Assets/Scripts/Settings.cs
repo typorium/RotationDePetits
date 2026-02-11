@@ -1,3 +1,4 @@
+using NSMB.Sound;
 using NSMB.UI.Game;
 using NSMB.Utilities;
 using Quantum;
@@ -225,10 +226,6 @@ namespace NSMB {
 
         public bool miscFilterFullRooms, miscFilterInProgressRooms, miscFilterAddons;
 
-        //---Private Variables
-        [SerializeField] private AudioMixer mixer;
-
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         public static void CreateInstance() {
             _controls = new();
@@ -297,9 +294,10 @@ namespace NSMB {
         }
 
         public void ApplyVolumeSettings() {
-            mixer.SetFloat("MasterVolume", Mathf.Log10(AudioMasterVolume) * 20);
-            mixer.SetFloat("MusicVolume", Mathf.Log10(AudioMusicVolume) * 20);
-            mixer.SetFloat("SoundVolume", Mathf.Log10(AudioSFXVolume) * 20);
+            var mixerManager = GlobalController.Instance.audioMixerManager;
+            mixerManager.SetFloat(AudioMixerManager.KeyMaster, Mathf.Log10(AudioMasterVolume) * 20);
+            mixerManager.SetFloat(AudioMixerManager.KeyMusic, Mathf.Log10(AudioMusicVolume) * 20);
+            mixerManager.SetFloat(AudioMixerManager.KeySfx, Mathf.Log10(AudioSFXVolume) * 20);
         }
 
         public void LoadSettings() {

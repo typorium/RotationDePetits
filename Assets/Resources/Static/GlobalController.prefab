@@ -19295,6 +19295,7 @@ GameObject:
   - component: {fileID: 4465003512522454241}
   - component: {fileID: 7662282222624482137}
   - component: {fileID: 6932446485402536007}
+  - component: {fileID: 6114239374411719935}
   - component: {fileID: 405963795238578845}
   - component: {fileID: 5858149666679547523}
   m_Layer: 0
@@ -19341,14 +19342,8 @@ MonoBehaviour:
   discordController: {fileID: 6841901076153067735}
   rumbleManager: {fileID: 4506347848550621655}
   addonManager: {fileID: 7662282222624482137}
-  pingIndicators:
-  - {fileID: 762531918, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
-  - {fileID: -1762235557, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
-  - {fileID: 1763873500, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
-  - {fileID: -1507071055, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
-  - {fileID: 1021722474, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
-  - {fileID: 116447381, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
   optionsManager: {fileID: 6650708626366051462}
+  audioMixerManager: {fileID: 6114239374411719935}
   config: {fileID: -4363489268676355003, guid: 89b430ef207c0e04997f44798547dc4d, type: 2}
   outlineFeature: {fileID: 8738572190042607270, guid: 5f58d6b1c480f4b4f9c77b6264ddfa5b,
     type: 2}
@@ -19356,8 +19351,25 @@ MonoBehaviour:
   connecting: {fileID: 8037377025181158649}
   loadingCanvas: {fileID: 8956540992486063079}
   fullscreenFadeImage: {fileID: 8865099243651785905}
+  pingIndicators:
+  - {fileID: 762531918, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
+  - {fileID: -1762235557, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
+  - {fileID: 1763873500, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
+  - {fileID: -1507071055, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
+  - {fileID: 1021722474, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
+  - {fileID: 116447381, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
   sfx: {fileID: 405963795238578845}
-  mixer: {fileID: 24100000, guid: b73add24eb026c844b85593f8bab1f8c, type: 2}
+  playerSlots:
+  - {fileID: 11400000, guid: 7717ad278203bbd4c8c0d0a039be104a, type: 2}
+  - {fileID: 11400000, guid: 24d7a63da0a235f449b11b9b33459162, type: 2}
+  - {fileID: 11400000, guid: 00f95006819b0044381f00fc822c5b03, type: 2}
+  - {fileID: 11400000, guid: 85f4f3d41ef670a4095a0811b79a1994, type: 2}
+  - {fileID: 11400000, guid: b90b6fe4aca1107449a33ed864adafe6, type: 2}
+  - {fileID: 11400000, guid: 9ed51294e5bfdc845b87e7faf7037c35, type: 2}
+  - {fileID: 11400000, guid: eea49b729bba7044ba770a4bd3dda923, type: 2}
+  - {fileID: 11400000, guid: be7769442f9b4cd44aeb256db50398e2, type: 2}
+  - {fileID: 11400000, guid: b9b562fba336dad42a67fcbdceff8c4f, type: 2}
+  - {fileID: 11400000, guid: 5342342e7a65afa4080514abb85baa52, type: 2}
 --- !u!114 &1217248114408797113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19395,7 +19407,6 @@ MonoBehaviour:
   miscFilterFullRooms: 0
   miscFilterInProgressRooms: 0
   miscFilterAddons: 0
-  mixer: {fileID: 24100000, guid: b73add24eb026c844b85593f8bab1f8c, type: 2}
 --- !u!114 &6974483067213173336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19533,6 +19544,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultProvider: {fileID: 11400000, guid: bad12b6809ed5404481a9e8c48ade007, type: 2}
   globalSfxSource: {fileID: 405963795238578845}
+--- !u!114 &6114239374411719935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938254683282774592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a9e3a50fb7cb143b0e6cb6e4a77c0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NSMB.Sound.AudioMixerManager
+  mainMixer: {fileID: 24100000, guid: b73add24eb026c844b85593f8bab1f8c, type: 2}
 --- !u!82 &405963795238578845
 AudioSource:
   m_ObjectHideFlags: 0
