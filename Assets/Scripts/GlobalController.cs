@@ -49,6 +49,8 @@ namespace NSMB {
         [NonSerialized] public bool checkedForVersion = false, firstConnection = true;
         [NonSerialized] public int windowWidth = 1280, windowHeight = 720;
 
+        public AssetRef<CharacterAsset> defaultCharacter;
+
         //---Private Variables
         private Coroutine totalAudioFadeRoutine;
 #if IDLE_LOCK_30FPS

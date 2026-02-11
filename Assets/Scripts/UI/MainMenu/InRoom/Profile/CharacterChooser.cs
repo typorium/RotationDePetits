@@ -37,7 +37,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
             characterButtons.Clear();
 
-            List<CharacterAsset> characters = QuantumViewUtils.Characters
+            var characters = AssetRepository<CharacterAsset>.AllAssets
                 .OrderBy(ca => ca ? ca.SelectionOrder : int.MinValue)
                 .ToList();
             

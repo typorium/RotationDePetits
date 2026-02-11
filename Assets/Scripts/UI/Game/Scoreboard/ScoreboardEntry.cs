@@ -112,7 +112,7 @@ namespace NSMB.UI.Game.Scoreboard {
                 teamSprite.gameObject.SetActive(false);
             }
 
-            var character = QuantumViewUtils.FindAssetOrFirst(info.Character);
+            var character = QuantumViewUtils.FindAssetOrDefault(info.Character, GlobalController.Instance.defaultCharacter);
             int objective = 0;
             int lives = 0;
             if (f.Unsafe.TryGetPointer(Target, out MarioPlayer* mario)) {

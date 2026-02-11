@@ -10,7 +10,7 @@ namespace NSMB.Replay {
         public AssetRef<CharacterAsset> Character;
         public PlayerRef PlayerRef;
 
-        public void Serialize(BinaryWriter writer) {
+        public readonly void Serialize(BinaryWriter writer) {
             writer.Write(Nickname);
             writer.Write(FinalObjectiveCount);
             writer.Write(Team);
@@ -32,7 +32,7 @@ namespace NSMB.Replay {
                     Nickname = reader.ReadString(),
                     FinalObjectiveCount = reader.ReadInt32(),
                     Team = reader.ReadByte(),
-                    Character = QuantumViewUtils.Characters[reader.ReadByte()],
+                    Character = AssetRepository<CharacterAsset>.AllAssetRefs[reader.ReadByte()],
                     PlayerRef = reader.ReadInt32(),
                 };
             }

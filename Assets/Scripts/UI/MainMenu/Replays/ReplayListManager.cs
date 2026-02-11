@@ -601,7 +601,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         }
 
         public int SortByStage(ReplayListEntry a, ReplayListEntry b) {
-            var allMaps = QuantumViewUtils.Maps;
+            var allMaps = AssetRepository<Map>.AllAssetRefs;
 
             if (sortAscending) {
                 return

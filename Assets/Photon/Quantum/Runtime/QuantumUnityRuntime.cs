@@ -7381,7 +7381,7 @@ namespace Quantum {
         var allAssets = AssetDatabase.GetAssetPathsFromAssetBundleAndAssetName(AssetBundleName, AssetName[..AssetName.LastIndexOf('.')])
           .SelectMany(AssetDatabase.LoadAllAssetsAtPath);
         foreach (var asset in allAssets) {
-          if (asset && (string.IsNullOrEmpty(NestedAssetName) || asset.name == NestedAssetName)) {
+          if (asset && asset is T && (string.IsNullOrEmpty(NestedAssetName) || asset.name == NestedAssetName)) {
             _state = asset;
             return;
           }

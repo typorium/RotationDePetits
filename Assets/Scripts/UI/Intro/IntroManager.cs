@@ -38,15 +38,15 @@ namespace NSMB.UI.Intro {
         }
 
         public void PlayRandomCharacterSound() {
+            /*
             var possibleCharacters = QuantumViewUtils.Characters;
             var randomCharacterRef = possibleCharacters[UnityEngine.Random.Range(0, possibleCharacters.Length)];
             var randomCharacter = QuantumUnityDB.GetGlobalAsset<CharacterAsset>(randomCharacterRef);
             var randomSfx = possibleSfx[UnityEngine.Random.Range(0, possibleSfx.Length)];
             sfx.PlayOneShot(randomSfx, new List<ISoundOverrideProvider>() { randomCharacter });
+            */
 
-            if (logoBounceRoutine != null) {
-                StopCoroutine(logoBounceRoutine);
-            }
+            this.StopCoroutineNullable(ref logoBounceRoutine);
             logoBounceRoutine = StartCoroutine(LogoBounce());
         }
 

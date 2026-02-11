@@ -39,7 +39,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
             paletteButtons.Clear();
 
-            List<PaletteSet> palettes = QuantumViewUtils.Palettes
+            List<PaletteSet> palettes = AssetRepository<PaletteSet>.AllAssets
                 .OrderBy(ps => ps ? ps.order : int.MinValue)
                 .ToList();
             palettes.Insert(0, null);

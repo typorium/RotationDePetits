@@ -158,7 +158,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 builder.Append("<sprite name=room_host>");
             }
 
-            var character = QuantumViewUtils.FindAssetOrFirst(playerData->Character);
+            var character = QuantumViewUtils.FindAssetOrDefault(playerData->Character, GlobalController.Instance.defaultCharacter);
             builder.Append(character.UiString);
 
             if (Settings.Instance.GraphicsColorblind && !playerData->ManualSpectator) {

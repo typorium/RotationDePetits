@@ -22,8 +22,8 @@ namespace NSMB.UI.MainMenu {
 
         public void PreviewRandomStage() {
             UnityEngine.Random.InitState((int) DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            var maps = QuantumViewUtils.Maps;
-            PreviewStage(maps[UnityEngine.Random.Range(0, maps.Length)]);
+            var maps = AssetRepository<Map>.AllAssetRefs;
+            PreviewStage(maps[UnityEngine.Random.Range(0, maps.Count)]);
         }
 
         public void PreviewStage(VersusStageData stage) {
@@ -36,13 +36,20 @@ namespace NSMB.UI.MainMenu {
                 Destroy(currentActivePrefab);
             }
 
-            GameObject prefabToSpawn = noPreviewPrefab;
+            GameObject prefabToSpawn;
             if (stage && stage.MainMenuPreviewPrefab) {
                 prefabToSpawn = stage.MainMenuPreviewPrefab;
+            } else {
+                prefabToSpawn = noPreviewPrefab;
             }
-
+            
             currentActivePrefab = Instantiate(prefabToSpawn, transform);
-            targetCamera.transform.position = currentActivePrefab.GetComponentInChildren<MainMenuCameraOrigin>().transform.position;
+            var origin = currentActivePrefab.GetComponentInChildren<MainMenuCameraOrigin>();
+            if (origin) {
+                targetCamera.transform.position = origin.transform.position;
+            } else {
+                targetCamera.transform.position = Vector3.zero;
+            }
         }
 
         public void PreviewStage(AssetRef<Map> map) {

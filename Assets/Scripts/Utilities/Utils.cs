@@ -9,11 +9,11 @@ using UnityEngine;
 namespace NSMB.Utilities {
     public class Utils {
 
-        public static T IndexIntoArrayOrFirstElement<T>(T[] array, int index) {
-            if (index < 0 || index >= array.Length) {
-                return array[0];
+        public static T IndexIntoOrFirstElement<T>(IList<T> list, int index) {
+            if (index < 0 || index >= list.Count) {
+                return list[0];
             }
-            return array[index];
+            return list[index];
         }
 
         public static bool BitTest(long v, int index) {

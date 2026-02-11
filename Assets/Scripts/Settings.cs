@@ -328,8 +328,8 @@ namespace NSMB {
             generalScoreboardAlways = PlayerPrefs.GetInt("ScoreboardAlwaysVisible", 1) != 0;
             GeneralDisableChat = false;
             generalChatFiltering = PlayerPrefs.GetInt("ChatFilter", 1) != 0;
-            generalCharacter = Utils.IndexIntoArrayOrFirstElement(QuantumViewUtils.Characters, PlayerPrefs.GetInt("Character", 0));
-            generalPalette = Utils.IndexIntoArrayOrFirstElement(QuantumViewUtils.Palettes, PlayerPrefs.GetInt("Skin", 0));
+            generalCharacter = Utils.IndexIntoOrFirstElement(AssetRepository<CharacterAsset>.AllAssetRefs, PlayerPrefs.GetInt("Character", 0));
+            generalPalette = Utils.IndexIntoOrFirstElement(AssetRepository<PaletteSet>.AllAssetRefs, PlayerPrefs.GetInt("Skin", 0));
             GeneralLocale = "en-US";
             generalUseNicknameColor = true;
             GeneralReplaysEnabled = true;
@@ -384,11 +384,11 @@ namespace NSMB {
             TryGetSetting("General_ChatFilter", ref generalChatFiltering);
             int generalCharacterOld = 0;
             if (TryGetSetting("General_Character", ref generalCharacterOld)) {
-                generalCharacter = Utils.IndexIntoArrayOrFirstElement(QuantumViewUtils.Characters, generalCharacterOld);
+                generalCharacter = Utils.IndexIntoOrFirstElement(AssetRepository<CharacterAsset>.AllAssetRefs, generalCharacterOld);
             }
             int generalPaletteOld = 0;
             if (TryGetSetting("General_Palette", ref generalPaletteOld)) {
-                generalPalette = Utils.IndexIntoArrayOrFirstElement(QuantumViewUtils.Palettes, generalPaletteOld);
+                generalPalette = Utils.IndexIntoOrFirstElement(AssetRepository<PaletteSet>.AllAssetRefs, generalPaletteOld);
             }
             TryGetSetting<string>("General_Locale", nameof(GeneralLocale));
             TryGetSetting("General_UseNicknameColor", ref generalUseNicknameColor);

@@ -50,7 +50,7 @@ namespace NSMB.UI.Loading {
                 return;
             }
 
-            CharacterAsset character = QuantumViewUtils.Characters[0];
+            AssetRef<CharacterAsset> characterRef = default;
             if (game != null) {
                 Frame f = game.Frames.Predicted;
                 List<PlayerRef> localPlayers = game.GetLocalPlayers();
@@ -59,12 +59,14 @@ namespace NSMB.UI.Loading {
                     var playerData = QuantumUtils.GetPlayerData(f, player);
 
                     if (playerData != null) {
-                        character = QuantumViewUtils.FindAssetOrFirst(playerData->Character);
+                        characterRef = playerData->Character;
                     } else {
-                        character = QuantumViewUtils.FindAssetOrFirst(Settings.Instance.generalCharacter);
+                        characterRef = Settings.Instance.generalCharacter;
                     }
                 }
             }
+
+            CharacterAsset character = FindAssetOrDefault(characterRef, GlobalController.Instance.defaultCharacter);
 
             mario.Initialize(character);
             readyImage.sprite = character.ReadySprite;

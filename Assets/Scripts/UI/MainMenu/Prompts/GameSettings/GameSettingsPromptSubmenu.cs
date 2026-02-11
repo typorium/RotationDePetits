@@ -75,7 +75,7 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
             }
             allMapListGameObjects.Clear();
 
-            var stages = QuantumViewUtils.Maps;
+            var stages = AssetRepository<Map>.AllAssets;
             var stageGroups = stages
                 .Select(m => (m, m ? (VersusStageData) QuantumUnityDB.GetGlobalAsset(m.UserAsset) : null))
                 .Where(vsd => vsd.Item2)
