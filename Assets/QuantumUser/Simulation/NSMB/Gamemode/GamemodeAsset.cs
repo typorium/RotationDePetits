@@ -201,12 +201,21 @@ namespace Quantum {
             Span<int> teamObjectives = stackalloc int[Constants.MaxPlayers];
             GetAllTeamsObjectiveCounts(f, teamObjectives);
 
+            int aliveTeamCount = 0;
+            int aliveTeam = -1;
+            for (int i = 0; i < teamObjectives.Length; i++) {
+                if (teamObjectives[i] > -1) {
+                    aliveTeamCount++;
+                    aliveTeam = i;
+                }
+            }
+
             int sum = 0;
             foreach (int objectiveCount in teamObjectives) {
                 sum += objectiveCount;
             }
 
-            return ((FP)sum / f.PlayerConnectedCount);
+            return ((FP)sum / aliveTeamCount);
         }
 
         public virtual EntityRef SpawnLooseCoin(Frame f, FPVector2 position) {
