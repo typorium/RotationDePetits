@@ -1,6 +1,7 @@
 using Photon.Deterministic;
 using Quantum.Prototypes;
 using System;
+using System.Linq;
 
 namespace Quantum {
     public abstract unsafe class GamemodeAsset : AssetObject {
@@ -29,13 +30,12 @@ namespace Quantum {
             // "Losing" variable based on ln(x+1)
 
             int ourObjectiveCount = GetTeamObjectiveCount(f, mario->GetTeam(f)) ?? 0;
-            int leaderObjectiveCount = GetFirstPlaceObjectiveCount(f);
+            FP averageObjectiveCount = GetAverageObjectiveCount(f);
 
             var rules = f.Global->Rules;
+            PowerupAsset[] bannedPowerUPs = stage.BannedPowerUPs;
             bool custom = rules.CustomPowerupsEnabled;
             bool lives = rules.IsLivesEnabled;
-            bool big = stage.SpawnBigPowerups;
-            bool vertical = stage.SpawnVerticalPowerups;
 
             bool canSpawnMega = true;
 
@@ -64,16 +64,18 @@ namespace Quantum {
                     continue;
                 }
 
-                if ((coinItem.BigPowerup && !big)
-                    || (coinItem.VerticalPowerup && !vertical)
-                    || (coinItem.CustomPowerup && !custom)
+                if ((coinItem is PowerupAsset powerUP) && bannedPowerUPs.Any(p => p == powerUP)) {
+                    continue;
+                }
+
+                if ((coinItem.CustomPowerup && !custom)
                     || (coinItem.LivesOnlyPowerup && !lives)
                     || (!coinItem.CanSpawnFromBlock && fromBlock)
                     || (coinItem.OnlyOneCanExist && onlyOneAlreadyExists)) {
                     continue;
                 }
 
-                totalChance += GetItemSpawnWeight(f, coinItem, leaderObjectiveCount, ourObjectiveCount);
+                totalChance += GetItemSpawnWeight(f, coinItem, averageObjectiveCount, ourObjectiveCount);
             }
 
             FP rand = mario->RNG.Next(0, totalChance);
@@ -83,16 +85,18 @@ namespace Quantum {
                     continue;
                 }
 
-                if ((coinItem.BigPowerup && !big)
-                    || (coinItem.VerticalPowerup && !vertical)
-                    || (coinItem.CustomPowerup && !custom)
+                if ((coinItem is PowerupAsset powerUP) && bannedPowerUPs.Any(p => p == powerUP)) {
+                    continue;
+                }
+
+                if ((coinItem.CustomPowerup && !custom)
                     || (coinItem.LivesOnlyPowerup && !lives)
                     || (!coinItem.CanSpawnFromBlock && fromBlock)
                     || (coinItem.OnlyOneCanExist && onlyOneAlreadyExists)) {
                     continue;
                 }
 
-                FP chance = GetItemSpawnWeight(f, coinItem, leaderObjectiveCount, ourObjectiveCount);
+                FP chance = GetItemSpawnWeight(f, coinItem, averageObjectiveCount, ourObjectiveCount);
 
                 if (rand < chance) {
                     return coinItem;
@@ -104,7 +108,7 @@ namespace Quantum {
             return f.FindAsset(FallbackCoinItem);
         }
 
-        public abstract FP GetItemSpawnWeight(Frame f, CoinItemAsset item, int leaderObjectiveCount, int ourObjectiveCount);
+        public abstract FP GetItemSpawnWeight(Frame f, CoinItemAsset item, FP averageObjectiveCount, int ourObjectiveCount);
 
         public virtual int? GetWinningTeam(Frame f, out int winningObjectiveCount) {
             winningObjectiveCount = 0;
@@ -191,6 +195,18 @@ namespace Quantum {
             }
 
             return max;
+        }
+
+        public virtual FP GetAverageObjectiveCount(Frame f) {
+            Span<int> teamObjectives = stackalloc int[Constants.MaxPlayers];
+            GetAllTeamsObjectiveCounts(f, teamObjectives);
+
+            int sum = 0;
+            foreach (int objectiveCount in teamObjectives) {
+                sum += objectiveCount;
+            }
+
+            return ((FP)sum / f.PlayerConnectedCount);
         }
 
         public virtual EntityRef SpawnLooseCoin(Frame f, FPVector2 position) {

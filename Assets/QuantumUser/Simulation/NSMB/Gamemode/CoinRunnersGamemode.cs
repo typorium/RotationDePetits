@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using System;
+using static UnityEditor.Progress;
 
 namespace Quantum {
     public unsafe class CoinRunnersGamemode : GamemodeAsset {
@@ -87,11 +88,12 @@ namespace Quantum {
             return gamemodeDataCopy.CoinRunners->ObjectiveCoins;
         }
 
-        public override FP GetItemSpawnWeight(Frame f, CoinItemAsset coinItem, int leaderCoins, int ourCoins) {
-            FP coinDifference = leaderCoins - ourCoins;
+        public override FP GetItemSpawnWeight(Frame f, CoinItemAsset item, FP averageCoins, int ourCoins) {
+            FP avgDiff = ourCoins - averageCoins;
             FP percentageTimeRemaining = f.Global->Timer / (f.Global->Rules.TimerMinutes * 60);
-            FP bonus = coinItem.LosingSpawnBonus * FPMath.Log((coinDifference / 40) + 1, FP.E) * 1 - (percentageTimeRemaining * percentageTimeRemaining);
-            return FPMath.Max(0, coinItem.SpawnChance + bonus);
+            FP whichBonus = avgDiff > 0 ? item.AboveAverageBonus : item.BelowAverageBonus;
+            FP bonus = whichBonus * FPMath.Log((FPMath.Abs(avgDiff) / 40) + 1, FP.E) * 1 - (percentageTimeRemaining * percentageTimeRemaining);
+            return FPMath.Max(0, item.SpawnChance + bonus);
         }
     }
 }
