@@ -20,12 +20,12 @@ MonoBehaviour:
     Id:
       Value: 1268531089014898302
   SpawnChance:
-    RawValue: 524288
-  LosingSpawnBonus:
-    RawValue: -524288
+    RawValue: 81920
+  AboveAverageBonus:
+    RawValue: 131072
+  BelowAverageBonus:
+    RawValue: -131072
   BlockSpawnSoundEffect: 69
-  BigPowerup: 0
-  VerticalPowerup: 0
   CustomPowerup: 0
   LivesOnlyPowerup: 0
   CanSpawnFromBlock: 1

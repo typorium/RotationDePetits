@@ -20,12 +20,12 @@ MonoBehaviour:
     Id:
       Value: 1466930856010351358
   SpawnChance:
-    RawValue: 98304
-  LosingSpawnBonus:
-    RawValue: -16384
+    RawValue: 81920
+  AboveAverageBonus:
+    RawValue: 131072
+  BelowAverageBonus:
+    RawValue: -131072
   BlockSpawnSoundEffect: 69
-  BigPowerup: 0
-  VerticalPowerup: 0
   CustomPowerup: 0
   LivesOnlyPowerup: 0
   CanSpawnFromBlock: 1
@@ -76,5 +76,5 @@ MonoBehaviour:
     Keys: []
   StatePriority: 2
   ItemPriority: 2
-  EnterReserveIfOverridden: 1
+  EnterReserveIfOverridden: 0
   SfxOverrides: []
