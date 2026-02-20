@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -25,10 +24,10 @@ namespace NSMB.UI.Intro {
         //---Private Variables
         private SoundEffect[] possibleSfx;
         private Coroutine logoBounceRoutine;
-        private bool doneLoadingBundles;
+        //private bool doneLoadingBundles;
 
         public void Start() {
-            StartCoroutine(LoadAssetBundles());
+            //StartCoroutine(LoadAssetBundles());
             StartCoroutine(IntroSequence());
             
             possibleSfx = ((SoundEffect[]) Enum.GetValues(typeof(SoundEffect)))
@@ -38,13 +37,11 @@ namespace NSMB.UI.Intro {
         }
 
         public void PlayRandomCharacterSound() {
-            /*
-            var possibleCharacters = QuantumViewUtils.Characters;
-            var randomCharacterRef = possibleCharacters[UnityEngine.Random.Range(0, possibleCharacters.Length)];
+            var possibleCharacters = AssetRepository<CharacterAsset>.AllAssets;
+            var randomCharacterRef = possibleCharacters[UnityEngine.Random.Range(0, possibleCharacters.Count)];
             var randomCharacter = QuantumUnityDB.GetGlobalAsset<CharacterAsset>(randomCharacterRef);
             var randomSfx = possibleSfx[UnityEngine.Random.Range(0, possibleSfx.Length)];
             sfx.PlayOneShot(randomSfx, new List<ISoundOverrideProvider>() { randomCharacter });
-            */
 
             this.StopCoroutineNullable(ref logoBounceRoutine);
             logoBounceRoutine = StartCoroutine(LogoBounce());
@@ -64,6 +61,7 @@ namespace NSMB.UI.Intro {
             logoBounceRoutine = null;
         }
 
+        /*
         private IEnumerator LoadAssetBundles() {
 #if !UNITY_EDITOR
             string[] bundleNames = { "basegame-assets", "basegame-scenes" };
@@ -92,6 +90,7 @@ namespace NSMB.UI.Intro {
             doneLoadingBundles = true;
             yield break;
         }
+        */
 
         private IEnumerator IntroSequence() {
             yield return new WaitForSeconds(0.75f);
@@ -99,9 +98,11 @@ namespace NSMB.UI.Intro {
             yield return FadeImageToValue(fullscreenImage, 0, 0.33f);
             yield return new WaitForSeconds(0.5f);
 
+            /*
             while (!doneLoadingBundles) {
                 yield return null;
             }
+            */
 
 #if !DISABLE_SCENE_CHANGE
             AsyncOperation sceneLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);
