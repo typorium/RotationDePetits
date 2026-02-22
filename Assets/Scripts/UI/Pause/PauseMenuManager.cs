@@ -1,6 +1,5 @@
 using NSMB.Quantum;
 using NSMB.UI.Game;
-using NSMB.UI.Options;
 using NSMB.UI.Translation;
 using NSMB.Utilities.Extensions;
 using Quantum;
@@ -104,7 +103,6 @@ namespace NSMB.UI.Pause {
             confirmationPrompt.SetActive(false);
 
             main.SetActive(true);
-            inputCollector.IsPaused = true;
             isPaused = true;
 
             if (playSound) {
@@ -121,7 +119,6 @@ namespace NSMB.UI.Pause {
             TranslationManager.OnLanguageChanged -= OnLanguageChanged;
 
             main.SetActive(false);
-            inputCollector.IsPaused = false;
             isPaused = false;
 
             if (playSound) {

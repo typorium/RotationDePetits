@@ -10,9 +10,6 @@ using Input = Quantum.Input;
 namespace NSMB.Quantum {
     public class InputCollector : MonoBehaviour {
 
-        //---Properties
-        public bool IsPaused { get; set; }
-
         //---Serialized Variables
         [SerializeField] private List<DebugSpawnCommand> debugSpawnCommands = new();
         [SerializeField] private PlayerElements playerElements;
@@ -62,7 +59,7 @@ namespace NSMB.Quantum {
         public void OnPollInput(CallbackPollInput callback) {
             Input i;
 
-            if (IsPaused) {
+            if (playerElements.PauseMenu.IsPaused) {
                 i = new();
             } else {
                 Settings.Controls.Player.Enable();

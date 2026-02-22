@@ -17,7 +17,7 @@ namespace Quantum {
             var breakable = f.Unsafe.GetPointer<BreakableObject>(breakableObjectEntity);
             var breakableCollider = f.Unsafe.GetPointer<PhysicsCollider2D>(breakableObjectEntity);
             var breakableTransform = f.Unsafe.GetPointer<Transform2D>(breakableObjectEntity);
-            FPVector2 breakableUp = FPVector2.Rotate(FPVector2.Up, breakableTransform->Rotation);
+            FPVector2 breakableUp = FPVector2.Rotate(FPVector2.Down, breakableTransform->Rotation);
 
             FPVector2 effectiveNormal;
             if (contact != null) {
@@ -33,7 +33,9 @@ namespace Quantum {
                 // Hit the top of a pipe
                 // Shrink by 1, if we can.
                 var marioPhysicsObject = f.Unsafe.GetPointer<PhysicsObject>(marioEntity);
-                if (breakable->IsDestroyed && breakable->IsStompable && breakable->CurrentHeight >= breakable->MinimumHeight + 1 && !marioPhysicsObject->WasTouchingGround && (breakable->CurrentHeight - 1 > 0)) {
+                if (!breakable->IsDestroyed && breakable->IsStompable && breakable->CurrentHeight >= breakable->MinimumHeight + 1 && (breakable->CurrentHeight - 1 > 0)
+                    && !marioPhysicsObject->WasTouchingGround && mario->JumpState != JumpState.None) {
+
                     ChangeHeight(f, breakableObjectEntity, breakable, breakableCollider, breakable->CurrentHeight - 1, null);
                     mario->JumpState = JumpState.None;
                 }
@@ -82,7 +84,7 @@ namespace Quantum {
 
         #region Interactions
         private void OnMarioBreakableObjectInteract(Frame f, EntityRef marioEntity, EntityRef breakableEntity) {
-            TryInteraction(f, marioEntity, breakableEntity);
+            //TryInteraction(f, marioEntity, breakableEntity);
         }
 
         private void OnMarioBreakableObjectPreContact(Frame f, VersusStageData stage, EntityRef entity, PhysicsContact contact, ref bool keepContacts) {

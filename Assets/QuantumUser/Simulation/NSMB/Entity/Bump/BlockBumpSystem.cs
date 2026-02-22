@@ -73,6 +73,7 @@ namespace Quantum {
                             origin + FPVector2.Up * FP._0_50,
                             origin + FPVector2.Up * FP._0_50,
                             false);
+                        coinItem->IgnorePlayerFrames = 85;
                     } else {
                         if (blockBump->IsDownwards) {
                             origin.Y -= (tile.BumpSize.Y / 2);
@@ -85,6 +86,8 @@ namespace Quantum {
                             origin,
                             origin + (blockBump->IsDownwards ? new FPVector2(0, -FP._0_50) : new FPVector2(0, FP._0_50)),
                             launch);
+
+                        coinItem->IgnorePlayerFrames = 10;
                     }
                 }
             }

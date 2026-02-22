@@ -123,10 +123,11 @@ namespace NSMB.Tiles {
 
         private void OnTileChanged(EventTileChanged e) {
             Vector3Int coords = (Vector3Int) e.Position.ToVector2Int();
-            Vector2 scale = new Vector2 {
-                x = e.NewTile.Flags.HasFlag(StageTileFlags.MirrorX) ? -1 : 1,
-                y = e.NewTile.Flags.HasFlag(StageTileFlags.MirrorY) ? -1 : 1,
-            };
+            Vector3 scale = new(
+                e.NewTile.Flags.HasFlag(StageTileFlags.MirrorX) ? -1 : 1,
+                e.NewTile.Flags.HasFlag(StageTileFlags.MirrorY) ? -1 : 1,
+                1
+            );
 
             var tile = QuantumUnityDB.GetGlobalAsset(e.NewTile.Tile);
             TileBase unityTile = tile ? tile.Tile : null;

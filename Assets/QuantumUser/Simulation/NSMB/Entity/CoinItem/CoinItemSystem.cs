@@ -48,10 +48,6 @@ namespace Quantum {
                     FP t = 1 - ((FP) coinItem->SpawnAnimationFrames / (FP) coinItem->BlockSpawnAnimationLength);
                     transform->Position = FPVector2.Lerp(coinItem->BlockSpawnOrigin, coinItem->BlockSpawnDestination, t);
 
-                    if (interactable != null && coinItem->SpawnAnimationFrames == 7) {
-                        interactable->ColliderDisabled = false;
-                    }
-
                     if (QuantumUtils.Decrement(ref coinItem->SpawnAnimationFrames)) {
                         if (PhysicsObjectSystem.BoxInGround(f, transform->Position, collider->Shape, false, stage, entity)) {
                             f.Events.CollectableDespawned(entity, transform->Position, false);

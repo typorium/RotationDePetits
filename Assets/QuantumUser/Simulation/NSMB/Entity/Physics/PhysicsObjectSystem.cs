@@ -215,7 +215,7 @@ namespace Quantum {
             var filter = f.Filter<PhysicsObject>();
             while (filter.NextUnsafe(out EntityRef entity, out PhysicsObject* physicsObject)) {
                 if (physicsObject->IsFrozen) {
-                    return;
+                    continue;
                 }
 
                 if (!physicsObject->WasTouchingGround && physicsObject->IsTouchingGround) {
@@ -312,7 +312,7 @@ namespace Quantum {
                 FPVector2 raycastOrigin = position - (directionVector * Constants.PhysicsRaycastSkin);
                 FPVector2 raycastTranslation = new FPVector2(0, velocityY) + (directionVector * (Constants.PhysicsRaycastSkin * 2 + Constants.PhysicsSkin));
 
-                var mask = ((Frame) f).Context.ExcludeEntityAndPlayerMask;
+                var mask = f.Context.ExcludeEntityAndPlayerMask;
                 var physicsHits = f.Physics2D.ShapeCastAll(raycastOrigin, 0, shape, raycastTranslation, mask, QueryOptions.HitKinematics | QueryOptions.HitTriggers | QueryOptions.ComputeDetailedInfo);
 
                 if (stage.IsWrappingLevel) {
@@ -367,7 +367,7 @@ namespace Quantum {
 
                     for (FP x = left; x <= right; x += FP._0_50) {
                         FPVector2 worldPos = new FPVector2(x + FP._0_25, y + FP._0_25);
-                        StageTileInstance tile = stage.GetTileWorld((Frame) f, worldPos);
+                        StageTileInstance tile = stage.GetTileWorld(f, worldPos);
 
                         if (!tile.GetWorldPolygons(f, stage, vertexBuffer, shapeVertexCountBuffer, out StageTile stageTile, worldPos)) {
                             continue;
@@ -475,8 +475,8 @@ namespace Quantum {
                         }
 
                         bool keepContact = true;
-                        foreach (var callback in ((Frame) f).Context.PreContactCallbacks) {
-                            callback?.Invoke((Frame) f, stage, filter.Entity, contact, ref keepContact);
+                        foreach (var callback in f.Context.PreContactCallbacks) {
+                            callback?.Invoke(f, stage, filter.Entity, contact, ref keepContact);
                         }
 
                         if (keepContact) {
@@ -600,7 +600,7 @@ namespace Quantum {
 
                     for (FP y = bottom; y <= top; y += FP._0_50) {
                         FPVector2 worldPos = new FPVector2(x + FP._0_25, y + FP._0_25);
-                        StageTileInstance tile = stage.GetTileWorld((Frame) f, worldPos);
+                        StageTileInstance tile = stage.GetTileWorld(f, worldPos);
 
                         if (!tile.GetWorldPolygons(f, stage, vertexBuffer, shapeVertexCountBuffer, out StageTile stageTile, worldPos)) {
                             continue;
@@ -707,8 +707,8 @@ namespace Quantum {
                         }
 
                         bool keepContact = true;
-                        foreach (var callback in ((Frame) f).Context.PreContactCallbacks) {
-                            callback?.Invoke((Frame) f, stage, filter.Entity, contact, ref keepContact);
+                        foreach (var callback in f.Context.PreContactCallbacks) {
+                            callback?.Invoke(f, stage, filter.Entity, contact, ref keepContact);
                         }
 
                         if (keepContact) {
@@ -914,7 +914,7 @@ namespace Quantum {
             }
 
             finish:
-            var nullableHit = f.Physics2D.Raycast(worldPos, direction, maxDistance, ((Frame) f).Context.ExcludeEntityAndPlayerMask, QueryOptions.HitAll & ~QueryOptions.HitTriggers | QueryOptions.ComputeDetailedInfo);
+            var nullableHit = f.Physics2D.Raycast(worldPos, direction, maxDistance, f.Context.ExcludeEntityAndPlayerMask, QueryOptions.HitAll & ~QueryOptions.HitTriggers | QueryOptions.ComputeDetailedInfo);
             if (nullableHit.HasValue) {
                 var hit = nullableHit.Value;
                 FP hitDistance = hit.CastDistanceNormalized * maxDistance;
@@ -1125,7 +1125,7 @@ namespace Quantum {
             Span<PhysicsContact> contactBuffer = stackalloc PhysicsContact[32];
             
             Span<LocationTilePair> tiles = stackalloc LocationTilePair[64];
-            int overlappingTiles = GetTilesOverlappingHitbox((Frame) f, position, shape, tiles, stage);
+            int overlappingTiles = GetTilesOverlappingHitbox(f, position, shape, tiles, stage);
 
             for (int i = 0; i < overlappingTiles; i++) {
                 StageTileInstance tile = tiles[i].Tile;
@@ -1134,7 +1134,7 @@ namespace Quantum {
 
                 while (stageTile is TileInteractionRelocator tir) {
                     location = tir.RelocateTo;
-                    tile = stage.GetTileRelative((Frame) f, location);
+                    tile = stage.GetTileRelative(f, location);
                     stageTile = f.FindAsset(tile.Tile);
                 }
 
