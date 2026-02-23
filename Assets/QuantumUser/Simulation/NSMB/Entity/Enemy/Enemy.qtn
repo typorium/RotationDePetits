@@ -1,7 +1,10 @@
+#define EnemyHomeRadius 12
+
 table component Enemy {
 	FPVector2 Spawnpoint;
 	bool IgnorePlayerWhenRespawning;
 	bool DisableRespawning;
+	bool StayAtHomeWhenOffscreen;
 
 	[ExcludeFromPrototype] bool IsActive;
 	[ExcludeFromPrototype] bool IsDead;
@@ -13,6 +16,7 @@ signal OnEnemyRespawned(EntityRef entity);
 signal OnEnemyEnemyCollision(EntityRef a, EntityRef b);
 signal OnEnemyKilledByStageReset(EntityRef entity);
 signal OnEnemyTurnaround(EntityRef entity);
+signal OnEnemyReturnedHome(EntityRef entity);
 
 enum EnemyKillReason : Byte {
 	Normal,
