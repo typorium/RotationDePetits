@@ -1,7 +1,6 @@
 using NSMB.UI.Translation;
 using Quantum;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -190,7 +189,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             label.text = labelPrefix + value.ToString();
         }
 
-        private void FindValue(in GameRules rules) {
+        private void FindValue(ref GameRules rules) {
             value = ruleType switch {
                 CommandChangeRules.Rules.Stage => rules.Stage,
                 CommandChangeRules.Rules.Gamemode => rules.Gamemode,
@@ -208,11 +207,11 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         }
 
         private unsafe void OnRulesChanged(EventRulesChanged e) {
-            FindValue(e.Game.Frames.Predicted.Global->Rules);
+            FindValue(ref e.Game.Frames.Predicted.Global->Rules);
         }
 
         private unsafe void OnGameStarted(CallbackGameStarted e) {
-            FindValue(e.Game.Frames.Predicted.Global->Rules);
+            FindValue(ref e.Game.Frames.Predicted.Global->Rules);
         }
 
         private void OnLanguageChanged(TranslationManager tm) {

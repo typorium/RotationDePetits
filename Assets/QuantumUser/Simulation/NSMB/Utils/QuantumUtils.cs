@@ -6,17 +6,6 @@ using System;
 
 public static unsafe class QuantumUtils {
 
-    private static readonly SoundEffect[] ComboSounds = {
-        SoundEffect.Enemy_Shell_Kick,
-        SoundEffect.Enemy_Shell_Combo1,
-        SoundEffect.Enemy_Shell_Combo2,
-        SoundEffect.Enemy_Shell_Combo3,
-        SoundEffect.Enemy_Shell_Combo4,
-        SoundEffect.Enemy_Shell_Combo5,
-        SoundEffect.Enemy_Shell_Combo6,
-        SoundEffect.Enemy_Shell_Combo7,
-    };
-
     public static T SetFlag<T>(T value, T flag, bool set) where T : Enum {
         long longValue = (long) (object) value;
         long longFlag = (long) (object) flag;
@@ -29,7 +18,6 @@ public static unsafe class QuantumUtils {
     }
 
     public static unsafe PlayerData* GetPlayerData(Frame f, PlayerRef player, QDictionary<PlayerRef, EntityRef>? dictionary = default) {
-
         QDictionary<PlayerRef, EntityRef> playerDataDictionary; 
         if (dictionary == null) {
             if (!f.TryResolveDictionary(f.Global->PlayerDatas, out playerDataDictionary)) {
@@ -49,7 +37,6 @@ public static unsafe class QuantumUtils {
     }
 
     public static PlayerData? GetPlayerDataSafe(Frame f, PlayerRef player, QDictionary<PlayerRef, EntityRef>? dictionary = default) {
-
         QDictionary<PlayerRef, EntityRef> playerDataDictionary;
         if (dictionary == null) {
             if (!f.TryResolveDictionary(f.Global->PlayerDatas, out playerDataDictionary)) {
@@ -66,10 +53,6 @@ public static unsafe class QuantumUtils {
         }
 
         return data;
-    }
-
-    public static SoundEffect GetComboSoundEffect(int combo) {
-        return ComboSounds[FPMath.Clamp(combo, 0, ComboSounds.Length - 1)];
     }
 
     public static IntVector2 WorldToUnityTile(Frame f, FPVector2 worldPos) {

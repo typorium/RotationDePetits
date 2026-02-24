@@ -144,7 +144,7 @@ namespace NSMB {
                     if (f.Global->Rules.IsTimerEnabled) {
                         activity.Timestamps = new() { End = now + (long) (f.Global->Timer.AsFloat * 1000) };
                     } else {
-                        activity.Timestamps = new() { Start = now - ((long) (f.Number - f.Global->StartFrame) * (1000 / f.UpdateRate)) };
+                        activity.Timestamps = new() { Start = now - ((long) ((f.Number + game.InterpolationFactor) - f.Global->StartFrame) * (1000 / f.UpdateRate)) };
                     }
                 }
             } else {

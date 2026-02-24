@@ -1,4 +1,5 @@
 using NSMB.Sound;
+using NSMB.Utilities;
 using NSMB.Utilities.Components;
 using NSMB.Utilities.Extensions;
 using Quantum;
@@ -96,7 +97,7 @@ namespace NSMB.Entities.Enemies {
                 return;
             }
 
-            if (e.KillReason == EnemyKillReason.Special || e.KillReason == EnemyKillReason.Groundpounded) {
+            if (e.KillReason is EnemyKillReason.Special or EnemyKillReason.Groundpounded) {
                 Instantiate(specialKillParticles, transform.position, Quaternion.identity);
             } else {
                 // sfx.PlayOneShot(SoundEffect.Enemy_Generic_Stomp);
@@ -108,7 +109,7 @@ namespace NSMB.Entities.Enemies {
                 return;
             }
 
-            sfx.PlayOneShot(QuantumUtils.GetComboSoundEffect(e.Combo));
+            sfx.PlayOneShot(QuantumViewUtils.GetComboSoundEffect(e.Combo));
         }
     }
 }

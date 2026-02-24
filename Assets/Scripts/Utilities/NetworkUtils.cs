@@ -44,7 +44,6 @@ namespace NSMB.Utilities {
                 StarRequirement = 10
             };
 
-            // Level :: Value ranges from 0-63: 6 bits
             // Timer :: Value ranges from 0-99: 7 bits
             // Lives :: Value ranges from 1-25: 5 bits
             // CoinRequirement :: Value ranges from 3-25: 5 bits
@@ -52,8 +51,8 @@ namespace NSMB.Utilities {
             // MaxPlayers :: Value ranges from 1-10: 4 bits
 
             // 31....26   25.....19   18...14   13...9   8...4   3..0
-            // Level      Timer       Lives     Coins    Stars   Unused
-            public int /*Level,*/ Timer, Lives, CoinRequirement, StarRequirement;
+            // Unused     Timer       Lives     Coins    Stars   Unused
+            public int Timer, Lives, CoinRequirement, StarRequirement;
 
             public static implicit operator int(IntegerProperties props) {
                 int value = 0;

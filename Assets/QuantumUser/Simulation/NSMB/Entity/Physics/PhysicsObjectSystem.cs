@@ -1,6 +1,7 @@
 using Photon.Deterministic;
 using Quantum.Collections;
 using System;
+using Unity.Collections;
 
 namespace Quantum {
 #if MULTITHREADED
@@ -123,7 +124,7 @@ namespace Quantum {
             Filter filter = default;
             var loop = f.Unsafe.FilterStruct<Filter>();
             while (loop.Next(&filter)) {
-                using var _profiler3= HostProfiler.Start("PhysicsObjectSystem.UpdateLoop");
+                using var _profiler3 = HostProfiler.Start("PhysicsObjectSystem.UpdateLoop");
                 var physicsObject = filter.PhysicsObject;
                 if (physicsObject->IsFrozen) {
                     continue;
@@ -190,7 +191,7 @@ namespace Quantum {
 
                 HandleCeilingCrushers(f, ref filter, contacts);
 
-#if DEBUG
+#if DEBUG && UNITY_EDITOR
                 foreach (var contact in contacts) {
                     Draw.Ray(contact.Position, contact.Normal, ColorRGBA.Red);
                 }

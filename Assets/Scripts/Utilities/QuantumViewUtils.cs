@@ -4,9 +4,21 @@ using NSMB.UI.Game;
 using Photon.Deterministic;
 using Quantum;
 using System.Linq;
+using UnityEngine;
 
 namespace NSMB.Utilities {
     public static class QuantumViewUtils {
+
+        private static readonly SoundEffect[] ComboSounds = {
+            SoundEffect.Enemy_Shell_Kick,
+            SoundEffect.Enemy_Shell_Combo1,
+            SoundEffect.Enemy_Shell_Combo2,
+            SoundEffect.Enemy_Shell_Combo3,
+            SoundEffect.Enemy_Shell_Combo4,
+            SoundEffect.Enemy_Shell_Combo5,
+            SoundEffect.Enemy_Shell_Combo6,
+            SoundEffect.Enemy_Shell_Combo7,
+        };
 
         public static bool IsReplay => QuantumRunner.Default?.Session.IsReplay ?? false;
         public static bool IsReplayFastForwarding => ActiveReplayManager.Instance.IsReplayFastForwarding;
@@ -28,6 +40,10 @@ namespace NSMB.Utilities {
                 QuantumUnityDB.TryGetGlobalAsset(def, out result);
             }
             return result;
+        }
+
+        public static SoundEffect GetComboSoundEffect(int combo) {
+            return ComboSounds[Mathf.Clamp(combo, 0, ComboSounds.Length - 1)];
         }
     }
 }
