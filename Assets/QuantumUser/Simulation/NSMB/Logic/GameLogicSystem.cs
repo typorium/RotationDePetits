@@ -374,8 +374,7 @@ namespace Quantum {
                     continue;
                 }
 
-                CharacterAsset character = f.FindAsset(data->Character);
-                if (character == null) {
+                if (!f.TryFindAsset(data->Character, out var character)) {
                     character = f.Context.CharacterDatas[0];
                 }
 

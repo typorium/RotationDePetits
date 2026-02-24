@@ -1,7 +1,6 @@
 using Photon.Deterministic;
 using Quantum.Prototypes;
 using System;
-using System.Linq;
 
 namespace Quantum {
     public abstract unsafe class GamemodeAsset : AssetObject {
@@ -176,7 +175,7 @@ namespace Quantum {
             foreach (int objectiveCount in teamObjectives) {
                 if (objectiveCount > 0) sum += objectiveCount;
             }
-            return (FP)sum / aliveTeamCount;
+            return (FP) sum / aliveTeamCount;
         }
 
         public virtual EntityRef SpawnLooseCoin(Frame f, FPVector2 position) {
