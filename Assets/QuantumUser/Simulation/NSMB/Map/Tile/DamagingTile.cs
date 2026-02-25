@@ -3,33 +3,14 @@ using Quantum;
 
 public unsafe class DamagingTile : StageTile, IInteractableTile {
 
-    public bool DamageRight = true, DamageUp = true, Damageleft = true, DamageDown = true;
+    public InteractionDirection DamageDirections = InteractionDirection.Up | InteractionDirection.Down | InteractionDirection.Left | InteractionDirection.Right;
     public bool InstantKill = false;
 
     public bool Interact(Frame f, EntityRef entity, InteractionDirection direction, IntVector2 tilePosition, StageTileInstance tileInstance, out bool playBumpSound) {
         playBumpSound = false;
 
-        switch (direction) {
-        case InteractionDirection.Right:
-            if (!DamageRight) {
-                return false;
-            }
-            break;
-        case InteractionDirection.Up:
-            if (!DamageUp) {
-                return false;
-            }
-            break;
-        case InteractionDirection.Left:
-            if (!Damageleft) {
-                return false;
-            }
-            break;
-        case InteractionDirection.Down:
-            if (!DamageDown) {
-                return false;
-            }
-            break;
+        if (!DamageDirections.HasFlag(direction)) {
+            return false;
         }
 
         if (!f.Unsafe.TryGetPointer(entity, out MarioPlayer* mario)) {

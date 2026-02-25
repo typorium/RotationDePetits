@@ -11,9 +11,6 @@ namespace Quantum {
             if (f.Unsafe.TryGetPointer(thisEntity, out PhysicsObject* physicsObject)) {
                 physicsObject->DisableCollision = true;
             }
-            if (f.Unsafe.TryGetPointer(thisEntity, out Interactable* interactable)) {
-                interactable->ColliderDisabled = true;
-            }
         }
 
         public void Initialize(Frame f, EntityRef thisEntity, byte spawnAnimationLength, PowerupSpawnReason spawnReason, FPVector2 spawnOrigin, FPVector2 spawnDestination, bool launch = false) {

@@ -16,11 +16,12 @@ namespace Quantum {
             var collider = filter.Collider;
             var entity = filter.Entity;
 
+            QuantumUtils.Decrement(ref coinItem->IgnorePlayerFrames);
+
             f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject);
 
             if (coinItem->SpawnAnimationFrames > 0) {
                 var asset = f.FindAsset(coinItem->Scriptable);
-                f.Unsafe.TryGetPointer(filter.Entity, out Interactable* interactable);
 
                 if (f.Exists(coinItem->ParentMarioPlayer)) {
                     // Attached to a player. Don't interact, and follow the player.
@@ -33,9 +34,6 @@ namespace Quantum {
 
                     if (QuantumUtils.Decrement(ref coinItem->SpawnAnimationFrames)) {
                         coinItem->ParentMarioPlayer = EntityRef.None;
-                        if (interactable != null) {
-                            interactable->ColliderDisabled = false;
-                        }
                         if (physicsObject != null) {
                             physicsObject->IsFrozen = false;
                         }
@@ -55,9 +53,6 @@ namespace Quantum {
                             return;
                         }
                         coinItem->BlockSpawn = false;
-                        if (interactable != null) {
-                            interactable->ColliderDisabled = false;
-                        }
                         if (physicsObject != null) {
                             physicsObject->IsFrozen = false;
                         }
@@ -70,19 +65,12 @@ namespace Quantum {
                     // Back to normal layers
                     if (QuantumUtils.Decrement(ref coinItem->SpawnAnimationFrames)) {
                         coinItem->LaunchSpawn = false;
-                        if (interactable != null) {
-                            interactable->ColliderDisabled = false;
-                        }
                         if (physicsObject != null) {
                             physicsObject->IsFrozen = false;
                         }
                     }
                 } else {
-                    if (QuantumUtils.Decrement(ref coinItem->SpawnAnimationFrames)) {
-                        if (interactable != null) {
-                            interactable->ColliderDisabled = false;
-                        }
-                    }
+                    QuantumUtils.Decrement(ref coinItem->SpawnAnimationFrames);
                 }
             }
 
