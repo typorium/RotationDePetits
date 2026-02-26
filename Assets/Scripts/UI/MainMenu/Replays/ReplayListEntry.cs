@@ -42,7 +42,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
         //---Private Variables
         private ReplayListManager manager;
-        private Coroutine showHideButtonsCoroutine;
+        //private Coroutine showHideButtonsCoroutine;
 
         public void Initialize(ReplayListManager ourManager, BinaryReplayFile ourReplay) {
             manager = ourManager;
@@ -59,11 +59,11 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             TranslationManager.OnLanguageChanged -= OnLanguageChanged;
         }
 
+        /*
         public void Update() {
-            //UpdateVisibility();
+            UpdateVisibility();
         }
 
-        /*
         private static readonly Vector3[] corners = new Vector3[4];
         public void UpdateVisibility(Rect parentRect) {
             if (mainPanel.activeSelf) {
@@ -140,6 +140,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             IsOpen = open;
         }
 
+        /*
         private IEnumerator SmoothResize(float target, float time) {
             float start = dropDownRectTransform.sizeDelta.y;
             float progress = 0;
@@ -156,6 +157,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             manager.layout.SetLayoutVertical();
             showHideButtonsCoroutine = null;
         }
+        */
 
         public void OnFavoriteClicked() {
             string destination = ReplayListManager.ReplayDirectory;

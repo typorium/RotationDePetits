@@ -37,9 +37,9 @@ namespace NSMB.UI.Intro {
         }
 
         public void PlayRandomCharacterSound() {
-            var possibleCharacters = AssetRepository<CharacterAsset>.AllAssets;
+            var possibleCharacters = AssetRepository<CharacterAsset>.AllAssetRefs;
             var randomCharacterRef = possibleCharacters[UnityEngine.Random.Range(0, possibleCharacters.Count)];
-            var randomCharacter = QuantumUnityDB.GetGlobalAsset<CharacterAsset>(randomCharacterRef);
+            var randomCharacter = QuantumUnityDB.GetGlobalAsset(randomCharacterRef);
             var randomSfx = possibleSfx[UnityEngine.Random.Range(0, possibleSfx.Length)];
             sfx.PlayOneShot(randomSfx, new List<ISoundOverrideProvider>() { randomCharacter });
 

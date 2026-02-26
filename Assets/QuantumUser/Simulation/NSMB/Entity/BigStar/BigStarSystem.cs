@@ -134,7 +134,7 @@ namespace Quantum {
                 && transform->Position.Y < FPMath.Max(stage.StageWorldMin.Y + 7, stage.StageWorldMax.Y)) {
 
                 var physicsCollider = f.Unsafe.GetPointer<PhysicsCollider2D>(entity);
-                if (!PhysicsObjectSystem.BoxInGround(f, transform->Position, physicsCollider->Shape, true, stage)) {
+                if (!PhysicsObjectSystem.BoxInGround(f, transform->Position, physicsCollider->Shape, stage: stage)) {
                     physicsObject->DisableCollision = false;
                 }
             }

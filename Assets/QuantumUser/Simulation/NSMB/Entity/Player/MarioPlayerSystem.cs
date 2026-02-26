@@ -2032,7 +2032,7 @@ namespace Quantum {
             bool damageable = !mario->IsInKnockback
                 && mario->CurrentPowerupState != PowerupState.MegaMushroom
                 && mario->IsDamageable
-                && !((mario->IsCrouchedInShell || mario->IsInShell) || (mario->CurrentPowerupState == PowerupState.HammerSuit && marioPhysics->IsTouchingGround && mario->IsCrouching) && projectileAsset.DoesntEffectBlueShell);
+                 && !((mario->IsCrouchedInShell || mario->IsInShell) && projectileAsset.DoesntEffectBlueShell);
 
             if (damageable) {
                 bool didKnockback = false;
@@ -2400,6 +2400,15 @@ namespace Quantum {
                     defenderMario->DoKnockback(f, defender, !fromRight, 0, KnockbackStrength.Groundpound, attacker);
                 }
                 attackerMario->DoEntityBounce = false;
+            } else if (defenderMario->CurrentPowerupState == PowerupState.HammerSuit && defenderPhysicsObject->IsTouchingGround && defenderMario->IsCrouching && !groundpounded) {
+                // Bounce
+                var attackerPhysicsObject = f.Unsafe.GetPointer<PhysicsObject>(attacker);
+                if (FPMath.Abs(attackerPhysicsObject->Velocity.X) < 2) {
+                    attackerPhysicsObject->Velocity.X = fromRight ? -2 : 2;
+                }
+                attackerPhysicsObject->Velocity.Y = 4;
+                attackerMario->DoEntityBounce = false;
+                f.Events.EnemyKicked(defender, false);
             } else {
                 // Normal knockbacks
                 if (defenderMario->CurrentPowerupState == PowerupState.MiniMushroom && groundpounded) {
@@ -2570,18 +2579,21 @@ namespace Quantum {
             case IceBlockBreakReason.HitWall:
             case IceBlockBreakReason.Other:
                 // Weak knockback, i-frames.
-                damaged = mario->DoKnockback(f, entity, mario->FacingRight, 1, (strength = KnockbackStrength.FireballBump), brokenIceBlock);
+                strength = KnockbackStrength.FireballBump;
+                damaged = mario->DoKnockback(f, entity, mario->FacingRight, 1, strength, brokenIceBlock);
                 mario->DamageInvincibilityFrames = 120;
                 break;
 
             case IceBlockBreakReason.BlockBump:
                 // Soft knockback, no i-frames.
-                damaged = mario->DoKnockback(f, entity, mario->FacingRight, 0, (strength = KnockbackStrength.Normal), brokenIceBlock);
+                strength = KnockbackStrength.Normal;
+                damaged = mario->DoKnockback(f, entity, mario->FacingRight, 1, strength, brokenIceBlock);
                 break;
 
             case IceBlockBreakReason.Groundpounded:
                 // Hard knockback, i-frames.
-                damaged = mario->DoKnockback(f, entity, mario->FacingRight, 2, (strength = KnockbackStrength.Groundpound), brokenIceBlock);
+                strength = KnockbackStrength.Groundpound;
+                damaged = mario->DoKnockback(f, entity, mario->FacingRight, 2, strength, brokenIceBlock);
                 mario->DamageInvincibilityFrames = 120;
                 break;
 
@@ -2590,7 +2602,6 @@ namespace Quantum {
                 var iceBlockHoldable = f.Unsafe.GetPointer<Holdable>(brokenIceBlock);
                 if (f.Unsafe.TryGetPointer(iceBlockHoldable->Holder, out MarioPlayer* holderMario)) {
                     OnMarioMarioInteraction(f, entity, iceBlockHoldable->Holder);
-                    mario->DamageInvincibilityFrames = 120;
                 }
                 mario->DamageInvincibilityFrames = 120;
                 break;
