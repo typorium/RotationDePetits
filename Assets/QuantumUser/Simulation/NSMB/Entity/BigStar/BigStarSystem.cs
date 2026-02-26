@@ -181,7 +181,62 @@ namespace Quantum {
 
         public void OnMarioPlayerDropObjective(Frame f, EntityRef entity, int amount, EntityRef attacker) {
             if (f.Unsafe.TryGetPointer(entity, out MarioPlayer* mario)) {
-                mario->SpawnStars(f, entity, amount);
+                SpawnStarsFromPlayer(f, entity, mario, amount);
+            }
+        }
+
+        private static void SpawnStarsFromPlayer(Frame f, EntityRef marioEntity, MarioPlayer* mario, int amount) {
+            var starChasersData = mario->GamemodeData.StarChasers;
+
+            var stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
+            var transform = f.Unsafe.GetPointer<Transform2D>(marioEntity);
+
+            bool fastStars = amount > 2 && starChasersData->Stars > 2;
+            int starDirection = mario->FacingRight ? 1 : 2;
+
+            if (f.Global->Rules.IsLivesEnabled && mario->Lives == 0) {
+                fastStars = true;
+                mario->NoLivesStarDirection = (byte) ((mario->NoLivesStarDirection + 1) % 4);
+                starDirection = mario->NoLivesStarDirection;
+
+                starDirection = starDirection switch {
+                    2 => 1,
+                    1 => 2,
+                    _ => starDirection
+                };
+            }
+
+            int droppedStars = 0;
+            while (amount > 0) {
+                if (starChasersData->Stars <= 0) {
+                    break;
+                }
+
+                int actualStarDirection = starDirection % 4;
+                if (!fastStars) {
+                    actualStarDirection = starDirection switch {
+                        0 => 2,
+                        3 => 1,
+                        _ => starDirection
+                    };
+                }
+
+                var gamemode = f.FindAsset(f.Global->Rules.Gamemode) as StarChasersGamemode;
+                EntityRef newStarEntity = f.Create(gamemode.BigStarPrototype);
+                var newStar = f.Unsafe.GetPointer<BigStar>(newStarEntity);
+                var newStarTransform = f.Unsafe.GetPointer<Transform2D>(newStarEntity);
+                newStarTransform->Position = transform->Position;
+                newStar->InitializeMovingStar(f, stage, newStarEntity, actualStarDirection);
+
+                starChasersData->Stars--;
+                amount--;
+                droppedStars++;
+                starDirection++;
+            }
+
+            if (droppedStars > 0) {
+                f.Events.MarioPlayerDroppedStar(marioEntity);
+                GameLogicSystem.CheckForGameEnd(f);
             }
         }
     }

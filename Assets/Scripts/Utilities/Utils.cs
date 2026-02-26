@@ -162,10 +162,11 @@ namespace NSMB.Utilities {
             if (f.Global->GameState == GameState.PreGameRoom) {
                 // use PlayerData here
                 PlayerData* ourPlayerData = QuantumUtils.GetPlayerData(f, player);
+                if (ourPlayerData == null) {
+                    return null;
+                }
 
-                var playerFilter = f.Filter<PlayerData>();
-                playerFilter.UseCulling = false;
-                while (playerFilter.NextUnsafe(out _, out PlayerData* otherPlayerData)) {
+                foreach ((_, var otherPlayerData) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) { 
                     if (otherPlayerData->IsSpectator) {
                         continue;
                     }
@@ -226,10 +227,8 @@ namespace NSMB.Utilities {
 
             // Or dead marios
             if (f.Global->GameState > GameState.WaitingForPlayers && considerDisqualifications) {
-                var marioFilter = f.Filter<MarioPlayer>();
-                marioFilter.UseCulling = false;
                 MarioPlayer* existingMario = null;
-                while (marioFilter.NextUnsafe(out _, out MarioPlayer* mario)) {
+                foreach ((_, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                     if (mario->PlayerRef == player) {
                         existingMario = mario;
                         break;
@@ -237,7 +236,7 @@ namespace NSMB.Utilities {
                 }
 
                 if (existingMario == null
-                    || (f.Global->GameState >= GameState.Playing && f.Global->Rules.IsLivesEnabled && existingMario->Lives <= 0)) {
+                    || (f.Global->GameState >= GameState.Playing && !existingMario->IsValid(f))) {
                     return spectatorColor;
                 }
             }

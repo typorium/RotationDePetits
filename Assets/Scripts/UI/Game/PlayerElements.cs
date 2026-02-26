@@ -193,9 +193,7 @@ namespace NSMB.UI.Game {
             }
 
             List<(EntityRef, PlayerRef)> marios = new();
-            var marioFilter = f.Filter<MarioPlayer>();
-            marioFilter.UseCulling = false;
-            while (marioFilter.NextUnsafe(out EntityRef entity, out MarioPlayer* mario)) {
+            foreach ((var entity, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                 marios.Add((entity, mario->PlayerRef));
             }
             marios.Sort((a, b) => {

@@ -23,6 +23,36 @@ namespace Quantum {
 
         public abstract int GetObjectiveCount(Frame f, MarioPlayer* mario);
 
+        public virtual bool IsFastMusicEnabled(Frame f) {
+            ref var rules = ref f.Global->Rules;
+
+            if (rules.IsTimerEnabled && f.Global->Timer <= 60) {
+                // Timer expiring, panic music
+                return true;
+            }
+
+            if (rules.IsLivesEnabled) {
+                // Low on lives. Two cases:
+                // A: two players left, at least one has one life
+                // B: three+ players left, all have one life
+
+                int playersWithOneLife = 0;
+                foreach ((_, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
+                    if (mario->IsValid(f)) {
+                        if (mario->Lives == 1) {
+                            playersWithOneLife++;
+                        }
+                    }
+                }
+
+                if ((f.Global->RealPlayers <= 2 && playersWithOneLife > 0) || (playersWithOneLife >= f.Global->RealPlayers)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool CanItemSpawn(Frame f, CoinItemAsset coinItem, bool fromRouletteBlock) {
             var stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
             if (stage.BannedCoinItems.Contains(coinItem)) {
@@ -105,10 +135,7 @@ namespace Quantum {
             }
 
             foreach ((_, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
-                if (mario->Disconnected || (mario->Lives <= 0 && f.Global->Rules.IsLivesEnabled)) {
-                    continue;
-                }
-                if (mario->GetTeam(f) is not byte team) {
+                if (!mario->IsValid(f) || mario->GetTeam(f) is not byte team) {
                     continue;
                 }
 
@@ -132,9 +159,7 @@ namespace Quantum {
         public virtual int GetTeamObjectiveCount(Frame f, byte team) {
             int sum = 0;
             foreach ((_, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
-                if (mario->GetTeam(f) != team
-                    || (mario->Lives <= 0 && f.Global->Rules.IsLivesEnabled)
-                    || mario->Disconnected) {
+                if (mario->GetTeam(f) != team || !mario->IsValid(f)) {
                     continue;
                 }
 

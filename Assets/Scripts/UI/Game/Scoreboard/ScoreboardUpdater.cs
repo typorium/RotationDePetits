@@ -150,11 +150,12 @@ namespace NSMB.UI.Game.Scoreboard {
             StringBuilder result = new();
 
             var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
-            Span<int> teamObjectiveCounts = stackalloc int[10];
+            Span<int> teamObjectiveCounts = stackalloc int[Constants.MaxPlayers];
             gamemode.GetAllTeamsObjectiveCounts(f, teamObjectiveCounts);
-            int aliveTeams = QuantumUtils.GetValidTeams(f);
-            for (int i = 0; i < 10; i++) {
-                if ((aliveTeams & (1 << i)) == 0) {
+
+            int validTeams = QuantumUtils.GetValidTeams(f);
+            for (int i = 0; i < teamObjectiveCounts.Length; i++) {
+                if ((validTeams & (1 << i)) == 0) {
                     // Invalid team
                     continue;
                 }

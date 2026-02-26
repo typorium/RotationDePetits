@@ -460,12 +460,11 @@ namespace NSMB.UI.Game {
                     ChatManager.Instance.AddSystemMessage("ui.inroom.chat.server.ended.team", color: ChatManager.Red, "team", winner);
                 } else {
                     // Winning player
-                    var allPlayers = f.Filter<PlayerData>();
-                    allPlayers.UseCulling = false;
-                    while (allPlayers.NextUnsafe(out _, out PlayerData* data)) {
+                    foreach ((_, var data) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) {
                         if (data->RealTeam == e.WinningTeam) {
                             RuntimePlayer runtimePlayer = f.GetPlayerData(data->PlayerRef);
                             winner = runtimePlayer?.PlayerNickname.ToValidNickname(f, data->PlayerRef);
+                            break;
                         }
                     }
                     resultText = tm.GetTranslationWithReplacements("ui.result.playerwin", "playername", winner);

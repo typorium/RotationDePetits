@@ -35,8 +35,8 @@ public unsafe class CoinItemAsset : AssetObject {
         if (Flags.HasFlag(TypeFlags.LivesEnabledOnly) && !f.Global->Rules.IsLivesEnabled) {
             return false;
         }
-        if (MaxNumberOfItems > 0) {
-            return CountItemsExisting(f) < MaxNumberOfItems;
+        if (MaxNumberOfItems > 0 && CountItemsExisting(f) >= MaxNumberOfItems) {
+            return false;
         }
         return true;
     }

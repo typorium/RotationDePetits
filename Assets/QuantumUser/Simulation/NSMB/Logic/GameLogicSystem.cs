@@ -194,9 +194,7 @@ namespace Quantum {
             f.Signals.OnGameEnding(winningTeam.GetValueOrDefault(), winningTeam.HasValue);
             f.Events.GameEnded(endedByHost, winningTeam.GetValueOrDefault(), winningTeam.HasValue);
 
-            var playerDatas = f.Filter<PlayerData>();
-            playerDatas.UseCulling = false;
-            while (playerDatas.NextUnsafe(out _, out PlayerData* data)) {
+            foreach ((_, var data) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) {
                 if (winningTeam == data->RealTeam && !data->IsSpectator) {
                     data->Wins++;
                 }

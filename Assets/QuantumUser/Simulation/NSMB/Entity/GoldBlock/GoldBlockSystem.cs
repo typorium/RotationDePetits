@@ -184,7 +184,7 @@ namespace Quantum {
 
         private static int GetCoinsInGoldBlock(Frame f, MarioPlayer* mario) {
             var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
-            int firstPlaceCoins = gamemode.GetFirstPlaceObjectiveCount(f);
+            _ = gamemode.GetWinningTeam(f, out int firstPlaceCoins);
             return FPMath.CeilToInt(25 + (firstPlaceCoins - mario->GamemodeData.CoinRunners->ObjectiveCoins) / Constants._2_50);
         }
     }

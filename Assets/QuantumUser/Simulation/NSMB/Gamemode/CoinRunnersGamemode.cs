@@ -62,10 +62,7 @@ namespace Quantum {
         }
 
         public override int GetObjectiveCount(Frame f, PlayerRef player) {
-            var marioFilter = f.Filter<MarioPlayer>();
-            marioFilter.UseCulling = false;
-
-            while (marioFilter.NextUnsafe(out _, out MarioPlayer* mario)) {
+            foreach ((_, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                 if (player != mario->PlayerRef) {
                     continue;
                 }
@@ -77,7 +74,7 @@ namespace Quantum {
         }
 
         public override int GetObjectiveCount(Frame f, MarioPlayer* mario) {
-            if (mario == null || mario->Disconnected || (mario->Lives == 0 && f.Global->Rules.IsLivesEnabled)) {
+            if (mario == null || !mario->IsValid(f)) {
                 return -1;
             }
 

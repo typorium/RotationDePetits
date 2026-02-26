@@ -1936,11 +1936,11 @@ namespace Quantum {
 
             // Death up
             if (mario->DeathAnimationFrames > 0 && QuantumUtils.Decrement(ref mario->DeathAnimationFrames)) {
-                bool doRespawn = !mario->Disconnected && (!f.Global->Rules.IsLivesEnabled || mario->Lives > 0);
-                if (!doRespawn && mario->GamemodeData.StarChasers->Stars > 0) {
+                bool doRespawn = mario->IsValid(f);
+                if (!doRespawn && f.FindAsset(f.Global->Rules.Gamemode) is StarChasersGamemode && mario->GamemodeData.StarChasers->Stars > 0) {
                     // Try to drop more stars
                     f.Signals.OnMarioPlayerDropObjective(entity, 1, filter.Entity);
-                    mario->DeathAnimationFrames = 30;
+                    mario->DeathAnimationFrames = 36;
                     mario->PreRespawnFrames = 180;
                 } else {
                     // Play the animation as normal
@@ -2438,9 +2438,7 @@ namespace Quantum {
         public void OnGameStarting(Frame f) {
             // Respawn players
             var stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
-            var filter = f.Filter<MarioPlayer>();
-            filter.UseCulling = false;
-            while (filter.NextUnsafe(out EntityRef entity, out MarioPlayer* mario)) {
+            foreach ((var entity, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) {
                 mario->PreRespawn(f, entity, stage);
             }
         }
