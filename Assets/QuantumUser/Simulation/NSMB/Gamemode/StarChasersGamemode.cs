@@ -101,11 +101,30 @@ namespace Quantum {
             return gamemodeDataCopy.StarChasers->Stars;
         }
 
-        public override FP GetItemSpawnWeight(Frame f, CoinItemAsset item, FP starAverage, int ourStars) {
+        public override FP GetItemSpawnWeight(Frame f, CoinItemAsset item, int ourStars) {
             int starsToWin = f.Global->Rules.StarsToWin;
-            FP avgDiff = ourStars - starAverage;
-            FP whichBonus = avgDiff > 0 ? item.AboveAverageBonus : item.BelowAverageBonus;
-            FP bonus = whichBonus * FPMath.Log(FPMath.Abs(avgDiff) + 1, FP.E) * (FP._1 - ((FP) (starsToWin - starAverage) / starsToWin));
+            
+            FP starsAvg = GetAverageObjectiveCount(f);
+            int starsFirstPlace = GetFirstPlaceObjectiveCount(f);
+            int starsLastPlace = GetLastPlaceObjectiveCount(f);
+
+            FP avgDiff = ourStars - starsAvg;
+            int diffLeader = ourStars - starsFirstPlace;
+
+            int starBand = starsFirstPlace - starsLastPlace;
+
+            // item ranking formulas which is used for determining which items spawn
+            FP itemRank = avgDiff + (FP)diffLeader / 5 * starBand / starsToWin;
+            FP bonus;
+
+            // being above the average means you get different formula
+            if (avgDiff > 0) {
+                FP magni = (FP)starBand / starsToWin;
+                bonus = item.AboveAverageBonus * FPMath.Log(itemRank + 1, FP.E) * magni;
+            } else {
+                FP magni = (starsAvg + (FP)starsFirstPlace * FP._5) / starsToWin;
+                bonus = item.BelowAverageBonus * FPMath.Log(itemRank + 1, FP.E) * magni;
+            }
             return FPMath.Max(0, item.SpawnChance + bonus);
         }
     }

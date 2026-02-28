@@ -68,7 +68,6 @@ namespace Quantum {
             // "Losing" variable based on ln(x+1)
 
             int ourObjectiveCount = GetTeamObjectiveCount(f, mario->GetTeam(f)) ?? 0;
-            FP averageObjectiveCount = GetAverageObjectiveCount(f);
 
             FP totalChance = 0;
             foreach (AssetRef<CoinItemAsset> coinItemAsset in AllCoinItems) {
@@ -77,7 +76,7 @@ namespace Quantum {
                     continue;
                 }
 
-                totalChance += GetItemSpawnWeight(f, coinItem, averageObjectiveCount, ourObjectiveCount);
+                totalChance += GetItemSpawnWeight(f, coinItem, ourObjectiveCount);
             }
 
             FP rand = mario->RNG.Next(0, totalChance);
@@ -87,7 +86,7 @@ namespace Quantum {
                     continue;
                 }
 
-                FP chance = GetItemSpawnWeight(f, coinItem, averageObjectiveCount, ourObjectiveCount);
+                FP chance = GetItemSpawnWeight(f, coinItem, ourObjectiveCount);
 
                 if (rand < chance) {
                     return coinItem;
@@ -99,7 +98,7 @@ namespace Quantum {
             return f.FindAsset(FallbackCoinItem);
         }
 
-        public abstract FP GetItemSpawnWeight(Frame f, CoinItemAsset item, FP averageObjectiveCount, int ourObjectiveCount);
+        public abstract FP GetItemSpawnWeight(Frame f, CoinItemAsset item, int ourObjectiveCount);
 
         public virtual int? GetWinningTeam(Frame f, out int winningObjectiveCount) {
             winningObjectiveCount = 0;
@@ -181,6 +180,20 @@ namespace Quantum {
             }
 
             return max;
+        }
+
+        public virtual int GetLastPlaceObjectiveCount(Frame f) {
+            Span<int> teamObjectives = stackalloc int[Constants.MaxPlayers];
+            GetAllTeamsObjectiveCounts(f, teamObjectives);
+
+            int min = 0xFFFFFF;
+            foreach (int objectiveCount in teamObjectives) {
+                if (objectiveCount < min) {
+                    min = objectiveCount;
+                }
+            }
+
+            return min;
         }
 
         public virtual FP GetAverageObjectiveCount(Frame f) {

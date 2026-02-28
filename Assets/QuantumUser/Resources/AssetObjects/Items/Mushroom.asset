@@ -20,9 +20,9 @@ MonoBehaviour:
     Id:
       Value: 1268531089014898302
   SpawnChance:
-    RawValue: 81920
+    RawValue: 98304
   AboveAverageBonus:
-    RawValue: 131072
+    RawValue: 65536
   BelowAverageBonus:
     RawValue: -131072
   BlockSpawnSoundEffect: 69
