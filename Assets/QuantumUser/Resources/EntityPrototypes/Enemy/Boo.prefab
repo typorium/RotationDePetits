@@ -344,6 +344,8 @@ MonoBehaviour:
       Value: 0
     DisableRespawning:
       Value: 0
+    StayAtHomeWhenOffscreen:
+      Value: 0
 --- !u!114 &5623453289331559766
 MonoBehaviour:
   m_ObjectHideFlags: 0

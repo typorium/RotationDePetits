@@ -13,6 +13,11 @@ PrefabInstance:
       propertyPath: m_SynchronizeParameters.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1004745928310103790, guid: 8cf8f49ac0882ed44953ea53ff901f11,
+        type: 3}
+      propertyPath: Prototype.StayAtHomeWhenOffscreen.Value
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1172164201446178320, guid: 8cf8f49ac0882ed44953ea53ff901f11,
         type: 3}
       propertyPath: Prototype.DontWalkOfLedges.Value

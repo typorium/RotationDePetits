@@ -1,5 +1,6 @@
 //#define MULTITHREADED
 
+using Photon.Deterministic;
 using Quantum.Task;
 
 namespace Quantum {
@@ -60,6 +61,8 @@ namespace Quantum {
                 }
                 return;
             }
+
+            if (enemy->StayAtHomeWhenOffscreen) OffscreenCheck(f, filter, stage);
         }
 
         public void SendSignalsTask(FrameThreadSafe f, int start, int count, void* arg) {
@@ -116,6 +119,8 @@ namespace Quantum {
                 f.Signals.OnEnemyDespawned(filter.Entity);
                 return;
             }
+
+            if (enemy->StayAtHomeWhenOffscreen) OffscreenCheck(f, filter, stage);
         }
 
 #endif
@@ -142,6 +147,25 @@ namespace Quantum {
             if (turnBoth) {
                 enemyB->ChangeFacingRight(f, entityB, !right);
             }
+        }
+
+        public void OffscreenCheck(Frame f, Filter filter, VersusStageData stage)
+        {
+            var allPlayersFilter = f.Filter<MarioPlayer, Transform2D>();
+            while (allPlayersFilter.NextUnsafe(out _, out _, out Transform2D* marioTransform)) {
+                QuantumUtils.WrappedDistance(stage, filter.Transform->Position, marioTransform->Position, out FP distance);
+                QuantumUtils.WrappedDistance(stage, filter.Enemy->Spawnpoint, marioTransform->Position, out FP spawnpointDistance);
+                if (FPMath.Abs(distance) < Constants.EnemyHomeRadius || FPMath.Abs(spawnpointDistance) < Constants.EnemyHomeRadius) return;
+            }
+
+            if (f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject))
+            {
+                if (physicsObject->IsFrozen) return;
+                physicsObject->Velocity = FPVector2.Zero;
+            }
+            if (filter.Transform->Position != filter.Enemy->Spawnpoint) f.Signals.OnEnemyReturnedHome(filter.Entity);
+            filter.Transform->Teleport(f, filter.Enemy->Spawnpoint);
+            filter.Enemy->FacingRight = false;
         }
 
         public void OnStageReset(Frame f, QBoolean full) {
