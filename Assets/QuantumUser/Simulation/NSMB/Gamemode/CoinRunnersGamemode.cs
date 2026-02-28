@@ -84,7 +84,8 @@ namespace Quantum {
             return gamemodeDataCopy.CoinRunners->ObjectiveCoins;
         }
 
-        public override FP GetItemSpawnWeight(Frame f, CoinItemAsset item, FP averageCoins, int ourCoins) {
+        public override FP GetItemSpawnWeight(Frame f, CoinItemAsset item, int ourCoins) {
+            FP averageCoins = GetAverageObjectiveCount(f);
             FP avgDiff = ourCoins - averageCoins;
             FP percentageTimeRemaining = f.Global->Timer / (f.Global->Rules.TimerMinutes * 60);
             FP whichBonus = avgDiff > 0 ? item.AboveAverageBonus : item.BelowAverageBonus;
