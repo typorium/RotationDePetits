@@ -109,12 +109,12 @@ namespace Quantum {
             int starsLastPlace = GetLastPlaceObjectiveCount(f);
 
             FP avgDiff = ourStars - starsAvg;
-            int diffLeader = ourStars - starsFirstPlace;
+            int diffLeader = starsFirstPlace - ourStars;
 
             int starBand = starsFirstPlace - starsLastPlace;
 
             // item ranking formulas which is used for determining which items spawn
-            FP itemRank = avgDiff + (FP)diffLeader / 5 * starBand / starsToWin;
+            FP itemRank = avgDiff - (FP)diffLeader / 5 * starBand / starsToWin;
             FP bonus;
 
             // being above the average means you get different formula
