@@ -2214,10 +2214,13 @@ namespace Quantum {
     public const Int32 SIZE = 16;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(8)]
+    [ExcludeFromPrototype()]
     public EntityRef AttachedTo;
     [FieldOffset(4)]
+    [ExcludeFromPrototype()]
     public Int32 ObjectiveCoinsRemaining;
     [FieldOffset(0)]
+    [ExcludeFromPrototype()]
     public Byte Timer;
     public override readonly Int32 GetHashCode() {
       unchecked { 

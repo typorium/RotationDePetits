@@ -13,7 +13,7 @@ global {
 
 	array<PlayerInformation>[MaxPlayers] PlayerInfo;
 	byte RealPlayers;
-	byte TotalMarios;
+	byte TotalMarios; // Different from RealPlayers- count of all Marios at game start, including ones baked into the scene.
 
 	int WinningTeam;
 	bool HasWinner;
