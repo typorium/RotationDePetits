@@ -24,7 +24,7 @@ MonoBehaviour:
   AboveAverageBonus:
     RawValue: -65536
   BelowAverageBonus:
-    RawValue: 8192
+    RawValue: 65536
   BlockSpawnSoundEffect: 69
   Flags: 3
   MaxNumberOfItems: 0
