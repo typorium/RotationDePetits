@@ -373,6 +373,7 @@ namespace Quantum {
                 }
 
                 if (!f.TryFindAsset(data->Character, out var character)) {
+                    // TODO: Define mario as the strict fallback character.
                     character = f.Context.CharacterDatas[0];
                 }
 

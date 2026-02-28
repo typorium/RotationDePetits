@@ -67,21 +67,6 @@ namespace Quantum.Prototypes.Unity {
     }
   }
   [System.SerializableAttribute()]
-  public unsafe partial class GoldBlockPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.GoldBlockPrototype> {
-    public Quantum.QuantumEntityPrototype AttachedTo;
-    public Int32 ObjectiveCoinsRemaining;
-    public Byte Timer;
-    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.GoldBlockPrototype prototype);
-    public override Quantum.Prototypes.GoldBlockPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
-      var result = new Quantum.Prototypes.GoldBlockPrototype();
-      converter.Convert(this.AttachedTo, out result.AttachedTo);
-      converter.Convert(this.ObjectiveCoinsRemaining, out result.ObjectiveCoinsRemaining);
-      converter.Convert(this.Timer, out result.Timer);
-      ConvertUser(converter, ref result);
-      return result;
-    }
-  }
-  [System.SerializableAttribute()]
   public unsafe partial class PhysicsContactPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.PhysicsContactPrototype> {
     public FPVector2 Position;
     public FPVector2 Normal;
