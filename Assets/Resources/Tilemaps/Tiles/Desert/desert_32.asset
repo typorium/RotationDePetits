@@ -49,7 +49,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Desert/desert_32|desert_32StageTile
     Guid:
-      Value: 501792556657503508
+      Value: 4481447864499017051
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

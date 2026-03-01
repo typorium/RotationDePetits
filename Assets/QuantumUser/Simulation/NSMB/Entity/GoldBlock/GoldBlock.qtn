@@ -1,4 +1,4 @@
-table component GoldBlock {
+component GoldBlock {
 	[ExcludeFromPrototype] EntityRef AttachedTo;
 	[ExcludeFromPrototype] int ObjectiveCoinsRemaining;
 	[ExcludeFromPrototype] byte Timer;

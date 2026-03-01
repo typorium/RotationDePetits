@@ -88,7 +88,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/BeachBlue/BeachPlatforms|BeachPlatformsStageTile
     Guid:
-      Value: 489492624515062745
+      Value: 1496526718416575190
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0

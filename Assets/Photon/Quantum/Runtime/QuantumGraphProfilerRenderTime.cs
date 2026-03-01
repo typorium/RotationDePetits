@@ -1,5 +1,4 @@
 namespace Quantum.Profiling {
-#if !QUANTUM_DISABLE_GRAPHPROFILER
   /// <summary>
   /// A Quantum graph profiler that shows the render time
   /// </summary>
@@ -15,5 +14,4 @@ namespace Quantum.Profiling {
       Graph.SetThresholds(frameMs * 0.75f, frameMs, frameMs * 1.5f);
     }
   }
-#endif
 }

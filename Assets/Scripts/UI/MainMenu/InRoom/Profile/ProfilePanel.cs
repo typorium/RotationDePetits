@@ -51,7 +51,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         public void OnSpectateToggled() {
             QuantumGame game = NetworkHandler.Runner.Game;
             foreach (var slot in game.GetLocalPlayerSlots()) {
-                game.AddCommand(slot, new CommandChangePlayerData {
+                game.SendCommand(slot, new CommandChangePlayerData {
                     EnabledChanges = CommandChangePlayerData.Changes.Spectating,
                     Spectating = spectateToggle.isOn,
                 });

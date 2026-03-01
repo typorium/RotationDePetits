@@ -278,7 +278,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             PlayerRef host = game.Frames.Predicted.Global->Host;
             if (game.PlayerIsLocal(host)) {
                 int slot = game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)];
-                game.AddCommand(slot, new CommandBanPlayer {
+                game.SendCommand(slot, new CommandBanPlayer {
                     Target = player
                 });
             }
@@ -290,7 +290,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             PlayerRef host = game.Frames.Predicted.Global->Host;
             if (game.PlayerIsLocal(host)) {
                 int slot = game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)];
-                game.AddCommand(slot, new CommandKickPlayer {
+                game.SendCommand(slot, new CommandKickPlayer {
                     Target = player
                 });
             }
@@ -324,7 +324,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             PlayerRef host = f.Global->Host;
 
             if (game.PlayerIsLocal(host)) {
-                game.AddCommand(game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)], new CommandChangeHost {
+                game.SendCommand(game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)], new CommandChangeHost {
                     Target = player,
                 });
                 RuntimePlayer runtimePlayer = f.GetPlayerData(player);
@@ -343,7 +343,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
             if (game.PlayerIsLocal(host)) {
                 int hostSlot = game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)];
-                game.AddCommand(hostSlot, new CommandAssignTeam {
+                game.SendCommand(hostSlot, new CommandAssignTeam {
                     Target = player,
                     Team = (byte) selector.TeamIndex,
                     Clear = selector.TeamIndex >= f.SimulationConfig.Teams.Length,

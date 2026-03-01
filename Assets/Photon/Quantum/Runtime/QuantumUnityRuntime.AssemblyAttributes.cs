@@ -13,22 +13,6 @@
 
 // merged AssemblyAttributes
 
-#region MarkPlatformAsIL2CPPIfEnableIL2CPPDefined.cs
-
-[assembly: Quantum.MarkPlatformAsIL2CPPIfEnableIL2CPPDefined]
-
-#endregion
-
-
-#region RegisterHostProvider.cs
-
-#if !QUANTUM_DISABLE_UNITY_HOST_PROFILER && ENABLE_PROFILER
-[assembly: Quantum.DefaultHostProfilerAttribute(typeof(Quantum.QuantumUnityHostProfiler))]
-#endif
-
-#endregion
-
-
 #region RegisterResourcesLoader.cs
 
 // register a default loader; it will attempt to load the asset from their default paths if they happen to be Resources

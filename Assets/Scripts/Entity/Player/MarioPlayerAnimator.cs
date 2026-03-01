@@ -7,6 +7,7 @@ using NSMB.Utilities;
 using NSMB.Utilities.Extensions;
 using Photon.Deterministic;
 using Quantum;
+using Quantum.Profiling;
 using System;
 using System.Collections;
 using System.Collections.Generic;

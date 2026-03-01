@@ -1,5 +1,6 @@
 using Quantum.Collections;
 using Quantum.Physics2D;
+using Quantum.Profiling;
 using System;
 using System.Collections.Generic;
 
@@ -49,6 +50,7 @@ namespace Quantum {
             using var profileScope = HostProfiler.Start("InteractionSystem.CollideWithHitbox");
 
             if (entityA.Equals(entityB)
+                || !f.Exists(entityA)
                 || !f.Exists(entityB)
                 || (f.Unsafe.TryGetPointer(entityB, out Interactable* entityBInteractable) && entityBInteractable->ColliderDisabled)) {
                 return;

@@ -104,7 +104,7 @@ namespace Quantum {
     /// <summary>
     /// System entries to be instantiated on simulation start.
     /// </summary>
-    [InlineHelp] public List<SystemEntry> Entries = new();
+    public List<SystemEntry> Entries = new();
 
     /// <summary>
     /// Converts the systems configuration into a list of system objects while calling the matching (Name, Children) constructors.
@@ -148,7 +148,7 @@ namespace Quantum {
       var childrenEntries = entry.GetChildren();
       var children = new List<SystemBase>(childrenEntries.Count);
       for (int i = 0; i < childrenEntries.Count; i++) {
-        children.Add(CreateSystems<SystemBase>(childrenEntries[i]));
+        children.Add(CreateSystems<SystemBase>(childrenEntries[i]) as SystemBase);
       }
 
       var result = Create(type, children.ToArray());

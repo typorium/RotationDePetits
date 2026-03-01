@@ -1,3 +1,4 @@
+using Photon.Deterministic;
 using Quantum;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ public class CharacterAsset : AssetObject, ISoundOverrideProvider {
     public SoundEffectOverride[] SfxOverrides;
 
     [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
-    public override void Loaded(IResourceManager resourceManager) {
+    public override void Loaded(IResourceManager resourceManager, Native.Allocator allocator) {
         overridesDict = new();
         if (SfxOverrides != null) {
             foreach (var @override in SfxOverrides) {

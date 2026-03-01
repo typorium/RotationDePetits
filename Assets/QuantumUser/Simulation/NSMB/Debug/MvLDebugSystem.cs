@@ -4,9 +4,15 @@ namespace Quantum {
     public unsafe class MvLDebugSystem : SystemMainThread {
         public override void Update(Frame f) {
             for (PlayerRef player = 0; player < f.MaxPlayerCount; player++) {
+#if QUANTUM_3_1
                 foreach (var cmd in f.GetPlayerCommands<CommandMvLDebugCmd>(player)) {
                     ExecuteCommand(f, player, cmd);
                 }
+#else
+                if (f.GetPlayerCommand(player) is CommandMvLDebugCmd cmd) {
+                    ExecuteCommand(f, player, cmd);
+                }
+#endif
             }
         }
 

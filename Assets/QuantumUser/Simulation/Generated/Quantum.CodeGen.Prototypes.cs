@@ -637,7 +637,7 @@ namespace Quantum.Prototypes {
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.Liquid))]
   public unsafe partial class LiquidPrototype : ComponentPrototype<Quantum.Liquid> {
-    public Quantum.QEnum8<LiquidType> LiquidType;
+    public LiquidType LiquidType;
     public Int32 WidthTiles;
     public FP HeightTiles;
     partial void MaterializeUser(Frame frame, ref Quantum.Liquid result, in PrototypeMaterializationContext context);
@@ -765,7 +765,7 @@ namespace Quantum.Prototypes {
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.PhysicsObjectData))]
   public unsafe partial class PhysicsObjectDataPrototype : StructPrototype {
-    public Quantum.QEnum8<PhysicsFlags> Flags;
+    public PhysicsFlags Flags;
     public FP FloorAngle;
     partial void MaterializeUser(Frame frame, ref Quantum.PhysicsObjectData result, in PrototypeMaterializationContext context);
     public void Materialize(Frame frame, ref Quantum.PhysicsObjectData result, in PrototypeMaterializationContext context = default) {

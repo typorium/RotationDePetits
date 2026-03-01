@@ -37,7 +37,7 @@ MonoBehaviour:
   GridSizeX: 64
   GridSizeY: 64
   GridNodeSize: 4
-  NavMeshAssets: []
+  NavMeshLinks: []
   Regions: []
   StaticColliders2D: []
   StaticColliders3D: []
@@ -1007,8 +1007,7 @@ MonoBehaviour:
     - rid: 5252895610331201539
       type: {class: LiquidPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
-        LiquidType:
-          Value: 0
+        LiquidType: 0
         WidthTiles: 64
         HeightTiles:
           RawValue: 327680

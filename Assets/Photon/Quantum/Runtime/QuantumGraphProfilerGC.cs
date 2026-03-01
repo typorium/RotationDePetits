@@ -1,5 +1,4 @@
 namespace Quantum.Profiling {
-#if !QUANTUM_DISABLE_GRAPHPROFILER
   using Unity.Profiling;
 
   /// <summary>
@@ -33,5 +32,4 @@ namespace Quantum.Profiling {
       Graph.SetThresholds(frameMs * 0.25f, frameMs * 0.375f, frameMs * 0.5f);
     }
   }
-#endif
 }

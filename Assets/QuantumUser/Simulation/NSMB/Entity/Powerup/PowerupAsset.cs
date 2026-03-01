@@ -32,8 +32,8 @@ public unsafe class PowerupAsset : CoinItemAsset, ISoundOverrideProvider {
     public SoundEffectOverride[] SfxOverrides;
 
     [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
-    public override void Loaded(IResourceManager resourceManager) {
-        base.Loaded(resourceManager);
+    public override void Loaded(IResourceManager resourceManager, Native.Allocator allocator) {
+        base.Loaded(resourceManager, allocator);
 
         overridesDict = new();
         if (SfxOverrides != null) {

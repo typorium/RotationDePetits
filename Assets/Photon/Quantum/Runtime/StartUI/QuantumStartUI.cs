@@ -336,15 +336,6 @@ namespace Quantum {
     /// Unity Awake() method to register button listeners and get components.
     /// </summary>
     protected virtual void Awake() {
-#if QUANTUM_UNITY
-      var eventSystem = FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>();
-      if (eventSystem == null) {
-        // UI does not work without a UI input module, create it lazily because EventSystem quickly complains about multiple instance.
-        gameObject.AddComponent<UnityEngine.EventSystems.EventSystem>();
-        gameObject.AddComponent<QuantumUnityInputSystemWithLegacyFallback>();
-      }
-#endif
-
       Connection = Connection != null ? Connection : GetComponent<QuantumStartUIConnectionBase>();
       Animator = Animator != null ? Animator : GetComponent<Animator>();
 
@@ -385,8 +376,6 @@ namespace Quantum {
     protected virtual void OnEnable() {
       UI.PlayerNameInput.text = PlayerName;
       UI.StatusText.text = null;
-      UI.PanelGroup.interactable = true;
-
       if (UI.StatusGroup) UI.StatusGroup.SetActive(false);
 
       if (UI.TabInput[(int)Tab.Online]) UI.TabInput[(int)Tab.Online].isOn = true;
@@ -412,8 +401,8 @@ namespace Quantum {
         Application.runInBackground = true;
       }
 
-#if !UNITY_EDITOR && UNITY_STANDALONE
-      if (UI.QuitButtonGroup) UI.QuitButtonGroup.SetActive(true);
+#if UNITY_EDITOR
+      if (UI.QuitButtonGroup) UI.QuitButtonGroup.SetActive(false);
 #endif
     }
 
@@ -516,10 +505,8 @@ namespace Quantum {
         // Only process and show errors if the menu is still connecting.
         if (CurrentState == State.Starting) {
           Debug.LogException(e);
-#if QUANTUM_UNITY
-          if (Photon.Realtime.AsyncConfig.Global.IsCancellationRequested) {
-            // Any code after await will never run when the tasks are cancelled.
-            // Don't proceed here when the global cancellation is already triggered to avoid UI issues and error logs.
+#if UNITY_EDITOR
+          if (UnityEditor.EditorApplication.isPlaying == false) {
             return;
           }
 #endif

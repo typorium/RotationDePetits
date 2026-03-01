@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using Quantum;
+using Quantum.Profiling;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

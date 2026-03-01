@@ -1,4 +1,4 @@
-table component StarCoin {
+component StarCoin {
 	byte DespawnCounter;
 	EntityRef Collector;
 }

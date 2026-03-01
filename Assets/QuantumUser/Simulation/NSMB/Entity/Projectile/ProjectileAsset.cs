@@ -22,7 +22,7 @@ public class ProjectileAsset : AssetObject, ISoundOverrideProvider {
     public SoundEffectOverride[] SfxOverrides;
 
     [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
-    public override void Loaded(IResourceManager resourceManager) {
+    public override void Loaded(IResourceManager resourceManager, Native.Allocator allocator) {
         overridesDict = new();
         if (SfxOverrides != null) {
             foreach (var @override in SfxOverrides) {

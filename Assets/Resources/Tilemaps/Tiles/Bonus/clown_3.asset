@@ -50,7 +50,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Bonus/clown_3|clown_3StageTile
     Guid:
-      Value: 313985419167361497
+      Value: 4309358298201503544
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

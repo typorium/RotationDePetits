@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Bonus/EmptyBigBlock|EmptyBigBlockStageTile
     Guid:
-      Value: 512892963162341307
+      Value: 1138970648612223160
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

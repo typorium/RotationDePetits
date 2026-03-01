@@ -98,7 +98,7 @@ namespace NSMB.Networking {
                 if (Game != null) {
                     pingCommand.PingMs = (int) Ping.Value;
                     foreach (int slot in Game.GetLocalPlayerSlots()) {
-                        Game.AddCommand(slot, pingCommand);
+                        Game.SendCommand(slot, pingCommand);
                     }
                 }
                 yield return seconds;
@@ -309,7 +309,7 @@ namespace NSMB.Networking {
 
         public static void ThrowError(string key, bool network) {
             if (Runner && Runner.IsRunning) {
-                Runner.Shutdown(ShutdownCause.Error, key);
+                Runner.Shutdown(ShutdownCause.NetworkError);
             }
             OnError?.Invoke(key, network);
         }
@@ -332,7 +332,7 @@ namespace NSMB.Networking {
                 sb.Append("Frame info ").Append(i + 1).AppendLine(":");
                 sb.AppendLine(e.Frames[i].DumpFrame());
                 sb.AppendLine();
-                sb.AppendLine(Convert.ToBase64String(e.Frames[i].Serialize()));
+                sb.AppendLine(Convert.ToBase64String(e.Frames[i].Serialize(DeterministicFrameSerializeMode.Serialize)));
                 sb.AppendLine();
                 sb.AppendLine("-----");
             }
@@ -353,7 +353,7 @@ namespace NSMB.Networking {
 
         private IEnumerator AutoDisconnectAfterSeconds(float seconds) {
             yield return new WaitForSecondsRealtime(seconds);
-            Runner.Shutdown(ShutdownCause.Error, "Desync");
+            Runner.Shutdown(ShutdownCause.NetworkError);
             ThrowError("A desync was detected in the previous game. The game was automatically aborted.\nPlease send your player.log file in the #technical-support channel within the Mario vs Luigi Online Discord and ping @ipodtouch0218.", false);
         }
 
@@ -363,7 +363,7 @@ namespace NSMB.Networking {
             ThrowError(e.Reason, true);
 
             if (Runner) {
-                Runner.Shutdown(ShutdownCause.Error, e.Reason);
+                Runner.Shutdown(ShutdownCause.NetworkError);
             }
         }
 
@@ -424,7 +424,7 @@ namespace NSMB.Networking {
             var bans = f.ResolveList(f.Global->BannedPlayerIds);
             foreach (var ban in bans) {
                 if (ban.UserId == Client.UserId) {
-                    QuantumRunner.Default.Shutdown(ShutdownCause.Error, "Banned");
+                    QuantumRunner.Default.Shutdown(ShutdownCause.NetworkError);
                     ThrowError("ui.error.join.banned", true);
                     return;
                 }
@@ -439,7 +439,7 @@ namespace NSMB.Networking {
             Debug.Log($"[Network] Disconnected. Reason: {cause}");
 
             if (Runner) {
-                Runner.Shutdown(ShutdownCause.Error, cause.ToString());
+                Runner.Shutdown(ShutdownCause.NetworkError);
             }
         }
 

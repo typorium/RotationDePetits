@@ -1,4 +1,4 @@
-table component CoinItem {
+component CoinItem {
 	AssetRef<CoinItemAsset> Scriptable;
 	ushort Lifetime;
 	[ExcludeFromPrototype] PowerupSpawnReason SpawnReason;

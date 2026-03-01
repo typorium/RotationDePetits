@@ -1,4 +1,4 @@
-table component Holdable {
+component Holdable {
 	bool HoldAboveHead;
 
 	[ExcludeFromPrototype] EntityRef Holder;

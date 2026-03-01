@@ -72,13 +72,12 @@ namespace Quantum {
           return false;
         }
 
-        resourceManager = new ResourceManagerStatic(serializer.AssetsFromByteArray(assetDBData));
+        resourceManager = new ResourceManagerStatic(serializer.AssetsFromByteArray(assetDBData), DotNetRunnerFactory.CreateNativeAllocator());
       }
 
       var arguments = new SessionRunner.Arguments {
         RunnerFactory = new DotNetRunnerFactory(),
         AssetSerializer = serializer,
-        TaskRunner = new DotNetTaskRunner(),
         // Create own callback or event dispatcher instances here to subscribe to callbacks
         // var callbackDispatcher = new CallbackDispatcher();
         // var eventDispatcher = new EventDispatcher();

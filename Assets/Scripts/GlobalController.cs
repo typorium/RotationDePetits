@@ -169,7 +169,7 @@ namespace NSMB {
         public void OnUnitySceneLoadDone(CallbackUnitySceneLoadDone e) {
             if (e.SceneName != null) {
                 foreach (int slot in e.Game.GetLocalPlayerSlots()) {
-                    e.Game.AddCommand(slot, new CommandPlayerLoaded());
+                    e.Game.SendCommand(slot, new CommandPlayerLoaded());
                 }
             }
 

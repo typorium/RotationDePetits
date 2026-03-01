@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/BeachBlue/beachsand_slightslope_R|beachsand_slightslope_RStageTile
     Guid:
-      Value: 356516316320245210
+      Value: 1079265687292766986
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0

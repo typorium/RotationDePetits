@@ -32,19 +32,19 @@ namespace NSMB.Quantum {
 
             foreach (var debug in debugSpawnCommands) {
                 if (keyboard[debug.Key].wasPressedThisFrame) {
-                    game.AddCommand(new CommandMvLDebugCmd {
+                    game.SendCommand(new CommandMvLDebugCmd {
                         CommandId = CommandMvLDebugCmd.DebugCommand.SpawnEntity,
                         SpawnData = debug.Entity,
                     });
                 }
             }
             if (keyboard[Key.P].wasPressedThisFrame) {
-                game.AddCommand(new CommandMvLDebugCmd {
+                game.SendCommand(new CommandMvLDebugCmd {
                     CommandId = CommandMvLDebugCmd.DebugCommand.KillSelf,
                 });
             }
             if (keyboard[Key.O].wasPressedThisFrame) {
-                game.AddCommand(new CommandMvLDebugCmd {
+                game.SendCommand(new CommandMvLDebugCmd {
                     CommandId = CommandMvLDebugCmd.DebugCommand.FreezeSelf,
                 });
             }
@@ -52,7 +52,7 @@ namespace NSMB.Quantum {
 
         public void OnPowerupAction(InputAction.CallbackContext context) {
             if (!playerElements.IsSpectating && !playerElements.PauseMenu.IsPaused) {
-                QuantumRunner.DefaultGame.AddCommand(new CommandSpawnReserveItem());
+                QuantumRunner.DefaultGame.SendCommand(new CommandSpawnReserveItem());
             }
         }
 

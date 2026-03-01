@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Castle/FortressGround|FortressGroundStageTile
     Guid:
-      Value: 319909369411498505
+      Value: 3674051481417807958
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

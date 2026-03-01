@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/SpecialTiles/Blue/BlueBrick|BlueBrickStageTile
     Guid:
-      Value: 492425210941159355
+      Value: 1504651423117342151
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

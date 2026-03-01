@@ -49,7 +49,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Sky/BigGreen/sky-mushroom_71|sky-mushroom_71StageTile
     Guid:
-      Value: 378209660040255156
+      Value: 2038363330543581901
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0

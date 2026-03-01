@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/SpecialTiles/YellowPowerup|YellowPowerupStageTile
     Guid:
-      Value: 477683130632991220
+      Value: 1223032229101960633
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1
@@ -41,7 +41,7 @@ MonoBehaviour:
   resultTile:
     Tile:
       Id:
-        Value: 520268055672688161
+        Value: 2276636638621846876
     Rotation: 0
     Flags: 0
   smallPowerup:

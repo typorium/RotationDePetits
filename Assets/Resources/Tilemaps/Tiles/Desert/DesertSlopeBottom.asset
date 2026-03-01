@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Desert/DesertSlopeBottom|DesertSlopeBottomStageTile
     Guid:
-      Value: 426402005774207000
+      Value: 411569816939319434
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0

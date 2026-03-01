@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Grass/BrownSemisolid|BrownSemisolidStageTile
     Guid:
-      Value: 393438471761372052
+      Value: 971729107064745400
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0

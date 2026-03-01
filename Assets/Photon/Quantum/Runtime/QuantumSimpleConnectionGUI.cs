@@ -1,6 +1,8 @@
 namespace Quantum.Demo {
+  using Photon.Deterministic;
   using Photon.Realtime;
   using System;
+  using System.Collections.Generic;
   using UnityEngine;
 
   /// <summary>
@@ -14,7 +16,7 @@ namespace Quantum.Demo {
     /// <summary>
     /// The RuntimePlayers to add to the Quantum game session. The RuntimePlayers describe individual custom player properties.
     /// </summary>
-    public RuntimePlayer RuntimePlayer;
+    public List<RuntimePlayer> RuntimePlayers;
     /// <summary>
     /// The Photon RealtimeClient object that represents the connection to the Quantum cloud.
     /// </summary>
@@ -28,6 +30,7 @@ namespace Quantum.Demo {
     QuantumRunner _runner;
     GUIStyle _style;
     State _state = State.Disconnected;
+    IDisposable _pluginDisconnectSubscription;
 
     enum State {
       Disconnected,
@@ -40,8 +43,9 @@ namespace Quantum.Demo {
 
     /// <summary>
     /// 1) await MatchmakingExtensions.ConnectToRoomAsync
-    /// 2) await SessionRunner.StartAsync
-    /// 3) QuantumGame.AddPlayer
+    /// 2) subscribe to CallbackPluginDisconnect
+    /// 3) await SessionRunner.StartAsync
+    /// 4) QuantumGame.AddPlayer
     /// </summary>
     async void Connect() {
       // Enabled runInBackground to improve the online stability in background mode.
@@ -63,17 +67,34 @@ namespace Quantum.Demo {
 
         _state = State.Starting;
 
-        // Optionally create a scope that updates the Photon connection while starting the game
-        // which is helpful when the start procedure takes longer when loading levels for example.
-        using var connectionScope = new ConnectionServiceScope(_client);
+        var sessionRunnerArguments = new SessionRunner.Arguments {
+          RunnerFactory = QuantumRunnerUnityFactory.DefaultFactory,
+          GameParameters = QuantumRunnerUnityFactory.CreateGameParameters,
+          Communicator = new QuantumNetworkCommunicator(Client),
+          GameMode = DeterministicGameMode.Multiplayer,
+          PlayerCount = Quantum.Input.MAX_COUNT,
+          ClientId = Client.UserId,
+          RuntimeConfig = RuntimeConfig,
+          SessionConfig = QuantumDeterministicSessionConfigAsset.DefaultConfig,
+        };
 
-        // Create online game arguments and start the session
-        var sessionRunnerArguments = new SessionRunner.Arguments();
-        sessionRunnerArguments.InitForMultiplayer(RuntimeConfig, Client, Client.UserId);      
-        _runner = (QuantumRunner)await SessionRunner.StartAsync(sessionRunnerArguments);
+        // Start listen to disconnect callbacks from the Quantum plugin (CallbackPluginDisconnect can be thrown during StartAsync)
+        _pluginDisconnectSubscription = QuantumCallback.SubscribeManual<CallbackPluginDisconnect>(m => {
+          Disconnect();
+        });
 
-        // Add a player to the game
-        _runner.Game.AddPlayer(RuntimePlayer);
+        // Create a scope that updates the Photon connection while starting the game
+        using (new ConnectionServiceScope(_client)) {
+          // Start and wait for the game start
+          _runner = (QuantumRunner)await SessionRunner.StartAsync(sessionRunnerArguments);
+        }
+
+        // Add the players to the game
+        if (RuntimePlayers != null && RuntimePlayers.Count > 0) {
+          for (int i = 0; i < RuntimePlayers.Count; i++) {
+            _runner.Game.AddPlayer(i, RuntimePlayers[i]);
+          }
+        }
 
         _state = State.Running;
       } catch (Exception e) {
@@ -89,6 +110,8 @@ namespace Quantum.Demo {
     async void Disconnect() {
       try {
         _state = State.ShuttingDown;
+        _pluginDisconnectSubscription?.Dispose();
+        _pluginDisconnectSubscription = null;
 
         if (_runner) await _runner.ShutdownAsync();
         _runner = null;

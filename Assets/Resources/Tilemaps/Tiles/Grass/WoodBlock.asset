@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Grass/WoodBlock|WoodBlockStageTile
     Guid:
-      Value: 404632403293626365
+      Value: 3289034758093972735
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

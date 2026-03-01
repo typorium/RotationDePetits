@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/GhostHouse/GhostGround|GhostGroundStageTile
     Guid:
-      Value: 468427430646780385
+      Value: 49292830726006587
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

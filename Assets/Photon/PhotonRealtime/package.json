@@ -1,13 +1,13 @@
 {
   "name": "com.photonengine.realtime",
-  "version": "5.1.9",
+  "version": "5.1.5",
   "displayName": "Photon Realtime",
   "description": "Photon Realtime - Cross-Platform Networking Engine",
   "unity": "2021.3",
   "documentationUrl": "https://doc.photonengine.com/realtime",
   "licensesUrl": "https://www.photonengine.com/terms",
   "dependencies": {
-    "com.photonengine.photonlibs": "5.1.9"
+    "com.photonengine.photonlibs": "5.1.0"
    },
   "samples": [
   ],

@@ -1,4 +1,4 @@
-table component Goomba {
+component Goomba {
 	FP Speed;
 	[ExcludeFromPrototype] byte DeathAnimationFrames;
 }

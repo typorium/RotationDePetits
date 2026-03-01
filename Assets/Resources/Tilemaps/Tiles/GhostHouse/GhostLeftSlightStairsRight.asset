@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/GhostHouse/GhostLeftSlightStairsRight|GhostLeftSlightStairsRightStageTile
     Guid:
-      Value: 488754340094250671
+      Value: 443923675689364348
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

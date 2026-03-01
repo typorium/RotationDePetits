@@ -1,4 +1,4 @@
-table component MovingPlatform {
+component MovingPlatform {
 	FPVector2 Velocity;
 	bool IgnoreMovement;
 	bool CanCrushEntities;

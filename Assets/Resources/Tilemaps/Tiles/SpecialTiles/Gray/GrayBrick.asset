@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/SpecialTiles/Gray/GrayBrick|GrayBrickStageTile
     Guid:
-      Value: 514708089056635918
+      Value: 1317456322093146059
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

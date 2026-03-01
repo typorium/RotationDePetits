@@ -1,8 +1,7 @@
 namespace Quantum {
-  using Photon.Client;
-  using Quantum.Core;
   using System;
   using System.Diagnostics;
+  using Photon.Client;
   using UnityEngine;
   using UnityEngine.EventSystems;
   using UnityEngine.UI;
@@ -21,17 +20,9 @@ namespace Quantum {
     /// </summary>
     public Text FramePredicted;
     /// <summary>
-    /// The number of frames currently predicted into the future.
+    /// Number of predicted frames.
     /// </summary>
     public Text Predicted;
-    /// <summary>
-    /// Verified frames per Unity update.
-    /// </summary>
-    public Text VerifiedFrames;
-    /// <summary>
-    /// Predicted frames per Unity update.
-    /// </summary>
-    public Text PredictedFrames;
     /// <summary>
     /// The last simulation time.
     /// </summary>
@@ -44,10 +35,6 @@ namespace Quantum {
     /// The network ping measured by the simulation.
     /// </summary>
     public Text NetworkPing;
-    /// <summary>
-    /// The connected region.
-    /// </summary>
-    public Text Region;
     /// <summary>
     /// The bytes received per second.
     /// </summary>
@@ -81,18 +68,12 @@ namespace Quantum {
     /// </summary>
     public Boolean ShowCompactStats = true;
     /// <summary>
-    /// The text field set when <see cref="ShowCompactStats"/> is <see langword="true"/>.
+    /// The text field set when <see cref="ShowCompactStats"/> is <see langword="true"/>."/>
     /// </summary>
     public Text CompactStatsText;
 
-    const float SmoothingTimeSec = 1f;
-
     double _lastTime = 0;
-    int _lastVerifiedFrame = 0;
-    SmoothedValue _prediction;
-    SmoothedValue _verifiedFrames;
-    SmoothedValue _predictedFrames;
-    SmoothedValue _simulateTime;
+    int _lastFrame = 0;
     Stopwatch _networkTimer;
     TrafficStatsSnapshot _snapshotDelta;
 
@@ -121,8 +102,8 @@ namespace Quantum {
         if (QuantumRunner.Default.IsRunning) {
           if (ShowCompactStats) {
             var currentFrame = QuantumRunner.Default.Game.Session.FrameVerified.Number;
-            if (_lastVerifiedFrame != currentFrame) {
-              _lastVerifiedFrame = currentFrame;
+            if (_lastFrame != currentFrame) {
+              _lastFrame = currentFrame;
               var ping = QuantumRunner.Default.Game.Session.Stats.Ping;
               CompactStatsText.text =
                 QuantumRunner.Default.Game.Session.IsOnline
@@ -140,27 +121,11 @@ namespace Quantum {
           if (gameInstance.Session.FramePredicted != null) {
             FrameVerified.text = gameInstance.Session.FrameVerified.Number.ToString();
             FramePredicted.text = gameInstance.Session.FramePredicted.Number.ToString();
-
-            _prediction ??= new SmoothedValue(Mathf.CeilToInt(gameInstance.Session.SessionConfig.UpdateFPS * SmoothingTimeSec));
-            _prediction.Push(gameInstance.Session.FramePredicted.Number - gameInstance.Session.FrameVerified.Number);
-            Predicted.text = ($"{ Math.Round(_prediction.Average, 2):0.00}").ToString();
-
-            _verifiedFrames ??= new SmoothedValue(Mathf.CeilToInt(gameInstance.Session.SessionConfig.UpdateFPS * SmoothingTimeSec));
-            _lastVerifiedFrame = _lastVerifiedFrame < gameInstance.Session.SessionConfig.UpdateFPS ? gameInstance.Session.SessionConfig.UpdateFPS : _lastVerifiedFrame;
-            _verifiedFrames.Push(gameInstance.Session.FrameVerified.Number - _lastVerifiedFrame);
-            _lastVerifiedFrame = gameInstance.Session.FrameVerified.Number;
-            VerifiedFrames.text = $"{Math.Round(_verifiedFrames.Average, 2):0.00} ({_verifiedFrames.Min}-{_verifiedFrames.Max})";
           }
 
-          _predictedFrames ??= new SmoothedValue(Mathf.CeilToInt(gameInstance.Session.SessionConfig.UpdateFPS * SmoothingTimeSec));
-          _predictedFrames.Push(gameInstance.Session.PredictedFrames);
-          PredictedFrames.text = $"{Math.Round(_predictedFrames.Average, 2):0.00} ({_predictedFrames.Min}-{_predictedFrames.Max})";
-
-          _simulateTime ??= new SmoothedValue(Mathf.CeilToInt(gameInstance.Session.SessionConfig.UpdateFPS * SmoothingTimeSec));
-          _simulateTime.Push((float)gameInstance.Session.Stats.UpdateTime);
-          SimulateTime.text = Math.Round(_simulateTime.Average * 1000, 2) + " ms";
-
+          Predicted.text = gameInstance.Session.PredictedFrames.ToString();
           NetworkPing.text = gameInstance.Session.Stats.Ping.ToString();
+          SimulateTime.text = Math.Round(gameInstance.Session.Stats.UpdateTime * 1000, 2) + " ms";
           InputOffset.text = gameInstance.Session.Stats.Offset.ToString();
 
           if (gameInstance.Session.IsStalling) {
@@ -177,8 +142,6 @@ namespace Quantum {
             _networkTimer = Stopwatch.StartNew();
           }
 
-          Region.text = QuantumRunner.Default.NetworkClient.CurrentRegion;
-
           if (UseCurrentBandwidth) {
             var deltaTime = _networkTimer.Elapsed.TotalSeconds - _lastTime;
             if (deltaTime > 1) {
@@ -192,6 +155,7 @@ namespace Quantum {
               _lastTime = _networkTimer.Elapsed.TotalSeconds;
             }
           } else {
+            QuantumRunner.Default.NetworkClient.RealtimePeer.Stats.ToSnapshot();
             NetworkIn.text = FormatBandwidth(QuantumRunner.Default.NetworkClient.RealtimePeer.Stats.BytesIn / _networkTimer.Elapsed.TotalSeconds);
             NetworkOut.text = FormatBandwidth(QuantumRunner.Default.NetworkClient.RealtimePeer.Stats.BytesOut / _networkTimer.Elapsed.TotalSeconds);
           }
@@ -274,39 +238,6 @@ namespace Quantum {
       var num = Math.Round(bytes / Math.Pow(1024, place), 1);
 
       return $"{(Math.Sign(byteCount) * num):0.0} {BytesPerSecondUnits[Math.Min(place, BytesPerSecondUnits.Length - 1)]}";
-    }
-
-    private class SmoothedValue {
-      RingBuffer<float> _ringBuffer;
-      float _avg;
-      float _min;
-      float _max;
-
-      public SmoothedValue(int bufferSize) {
-        _ringBuffer = new RingBuffer<float>(bufferSize);
-      }
-
-      public float Min => _min;
-      public float Max => _max;
-      public float Average => _avg;
-
-      public void Push(float value) {
-        _ringBuffer.PushFront(value);
-
-        var min = float.MaxValue;
-        var max = float.MinValue;
-        var iterator = _ringBuffer.GetIterator();
-        var accumulated = 0.0f;
-        while (iterator.MoveNext()) {
-          accumulated += iterator.Current;
-          min = Mathf.Min(min, iterator.Current);
-          max = Mathf.Max(max, iterator.Current);
-        }
-
-        _avg = accumulated / _ringBuffer.Size;
-        _min = min < float.MaxValue ? min : 0.0f;
-        _max = max > float.MinValue ? max : 0.0f;
-      }
     }
   }
 }

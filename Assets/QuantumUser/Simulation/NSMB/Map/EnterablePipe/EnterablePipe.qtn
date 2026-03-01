@@ -1,4 +1,4 @@
-table component EnterablePipe {
+component EnterablePipe {
 	EntityRef OtherPipe;
 	bool IsEnterable;
 	bool IsCeilingPipe;

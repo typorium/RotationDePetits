@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/SpecialTiles/BrownBrick|BrownBrickStageTile
     Guid:
-      Value: 362633902293829697
+      Value: 3252961391906570809
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

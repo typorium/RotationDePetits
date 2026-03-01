@@ -1,4 +1,4 @@
-table component DonutBlock {
+component DonutBlock {
 	ushort FramesUntilFall;
 	ushort FramesUntilRespawn;
 	FP FallSpeed;

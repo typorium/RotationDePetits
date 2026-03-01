@@ -19,7 +19,7 @@ namespace NSMB.Replay {
         }
 
         public static ReplayPlayerInformation Deserialize(BinaryReader reader, GameVersion version) {
-            if (version > new GameVersion(2, 1, 0)) {
+            if (version >= new GameVersion(2, 0, 5)) {
                 return new ReplayPlayerInformation {
                     Nickname = reader.ReadString(),
                     FinalObjectiveCount = reader.ReadInt32(),

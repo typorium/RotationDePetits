@@ -14,18 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Content:
   - Title: Welcome
-    Description: Welcome to Photon Quantum 3.1 Preview
+    Description: Welcome to Photon Quantum 3
     Icon: {fileID: 2800000, guid: 0a86c2478d62ef74bb46b7906cac7fb2, type: 3}
     OverwritePage: 
     PopupOncePlayerPrefsKey: 
     Elements:
-    - Text: 'Welcome to the Quantum 3.1 Game Engine.
-
-
-        The Quantum SDK 3.1.0
-        is provided as development snapshots and is not intended to be used for live
-        or released games. There may be blocker bugs and the API can change or break
-        during the preview phase.'
+    - Text: Welcome to the Quantum 3 Game Engine.
       Subtext: 
       WidgetMode:
         Value: Text
@@ -104,8 +98,49 @@ MonoBehaviour:
           Class: 
         Asset: {fileID: 0}
         Id: becfca26-dbc4-45b6-9478-6969c5665767
-    - Text: Register a Photon account on the photonengine website and create an AppId
-        to run online games on the Photon public cloud.
+    - Text: Install the asteroids Quantum game sample and press play see the game
+        running in local mode.
+      Subtext: 
+      WidgetMode:
+        Value: Step
+      AutoComplete:
+        Value: TypeIsValid
+      Hide:
+        Value: AssetMissing
+      Scene: 
+      AddSceneToTop: 0
+      Icon: {fileID: 0}
+      StatusIcon: {fileID: 0}
+      StartPlayMode: 0
+      Url: 
+      Type:
+        ScriptableObject: 
+        Class: AsteroidsGameConfig
+      Asset: {fileID: 102900000, guid: 4b3bb7bcca93ef748a68af25d13db229, type: 3}
+      Id: fdd69fd4-9268-44d6-9136-9f67f653477e
+      StepElements:
+      - Text: Install Quantum Asteroids Sample Game
+        Subtext: Imports the asteroids game sample programmed with Quantum. Parts
+          of the sample are covered by the Quantum online tutorials.
+        WidgetMode:
+          Value: InstallPackage
+        AutoComplete:
+          Value: None
+        Hide:
+          Value: None
+        Scene: Assets/Photon/QuantumAsteroids/Scenes/AsteroidsGameplay.unity
+        AddSceneToTop: 0
+        Icon: {fileID: 2800000, guid: 24a22d21fe312f44892796563f01c302, type: 3}
+        StatusIcon: {fileID: 0}
+        StartPlayMode: 0
+        Url: 
+        Type:
+          ScriptableObject: 
+          Class: 
+        Asset: {fileID: 102900000, guid: 4b3bb7bcca93ef748a68af25d13db229, type: 3}
+        Id: 6861967a-1e87-4fa7-85ec-ad198c24c6ca
+    - Text: Register to a Photon account on our website and create an AppId to run
+        online games.
       Subtext: 
       WidgetMode:
         Value: Step
@@ -185,8 +220,8 @@ MonoBehaviour:
           Class: 
         Asset: {fileID: 0}
         Id: cbfc9fb4-9126-4a15-99e4-65a10d0dec57
-    - Text: Install the asteroids Quantum game sample and press play see the game
-        running in online and local mode.
+    - Text: Install the menu package and make Unity builds to see the asteroids sample
+        in online mode.
       Subtext: 
       WidgetMode:
         Value: Step
@@ -201,21 +236,20 @@ MonoBehaviour:
       StartPlayMode: 0
       Url: 
       Type:
-        ScriptableObject: 
-        Class: AsteroidsGameConfig
-      Asset: {fileID: 102900000, guid: 4b3bb7bcca93ef748a68af25d13db229, type: 3}
-      Id: fdd69fd4-9268-44d6-9136-9f67f653477e
+        ScriptableObject: QuantumMenuConfig
+        Class: 
+      Asset: {fileID: 102900000, guid: d0bb1444b9231574e8dc3305f8a7946a, type: 3}
+      Id: 28de5e25-3ed0-4cbd-9583-8a6a9af38221
       StepElements:
-      - Text: Install Quantum Asteroids Sample Game
-        Subtext: Imports the asteroids game sample programmed with Quantum. Parts
-          of the sample are covered by the Quantum online tutorials.
+      - Text: Install Quantum Menu
+        Subtext: Fully-fledged prototyping online game menu
         WidgetMode:
           Value: InstallPackage
         AutoComplete:
           Value: None
         Hide:
           Value: None
-        Scene: Assets/Photon/QuantumAsteroids/Scenes/AsteroidsGameplay.unity
+        Scene: Assets/Photon/QuantumMenu/QuantumSampleMenu.unity
         AddSceneToTop: 1
         Icon: {fileID: 2800000, guid: 24a22d21fe312f44892796563f01c302, type: 3}
         StatusIcon: {fileID: 0}
@@ -224,8 +258,8 @@ MonoBehaviour:
         Type:
           ScriptableObject: 
           Class: 
-        Asset: {fileID: 102900000, guid: 4b3bb7bcca93ef748a68af25d13db229, type: 3}
-        Id: 6861967a-1e87-4fa7-85ec-ad198c24c6ca
+        Asset: {fileID: 102900000, guid: d0bb1444b9231574e8dc3305f8a7946a, type: 3}
+        Id: e42a1602-dea2-486c-a803-175b1fac2798
     - Text: Futher Configurations
       Subtext: 
       WidgetMode:
@@ -310,29 +344,9 @@ MonoBehaviour:
       Asset: {fileID: 0}
       Id: 94d5d5d5-cf50-40a1-9f66-199a6ed3e6e9
       StepElements: []
-    - Text: What's New In Quantum 3.1 (Opens Web Browser)
-      Subtext: Open the Quantum 3.1 online What's New article to read about new features.
-      WidgetMode:
-        Value: LinkButton
-      AutoComplete:
-        Value: None
-      Hide:
-        Value: None
-      Scene: 
-      AddSceneToTop: 0
-      Icon: {fileID: 2800000, guid: 48362b7bdabe49d4b93c092e53f3c269, type: 3}
-      StatusIcon: {fileID: 0}
-      StartPlayMode: 0
-      Url: https://doc.photonengine.com/quantum/current/getting-started/preview-3-1/whats-new
-      Type:
-        ScriptableObject: 
-        Class: 
-      Asset: {fileID: 0}
-      Id: 0f1e4b63-13b1-41e9-b86e-8a83dac311ef
-      StepElements: []
     - Text: Quantum 3 Online Documentation (Opens Web Browser)
       Subtext: Open the Quantum 3 online documentation to discover tons of material
-        including tutorials, manuals, concepts, samples and addons.
+        including tutorials, manuals, concepts, samples and addons")
       WidgetMode:
         Value: LinkButton
       AutoComplete:
@@ -389,7 +403,7 @@ MonoBehaviour:
         Hide:
           Value: TypeIsValid
         Scene: Assets/Photon/QuantumAsteroids/Scenes/AsteroidsGameplay.unity
-        AddSceneToTop: 1
+        AddSceneToTop: 0
         Icon: {fileID: 2800000, guid: 24a22d21fe312f44892796563f01c302, type: 3}
         StatusIcon: {fileID: 2800000, guid: 8491ac03603357649a00077468789d52, type: 3}
         StartPlayMode: 0
@@ -418,47 +432,6 @@ MonoBehaviour:
           Class: AsteroidsGameConfig
         Asset: {fileID: 102900000, guid: 4b3bb7bcca93ef748a68af25d13db229, type: 3}
         Id: 
-    - Text: Follow the step-by-step guide to get up and running with the Quantum
-        SDK in Unity.
-      Subtext: 
-      WidgetMode:
-        Value: Text
-      AutoComplete:
-        Value: None
-      Hide:
-        Value: None
-      Scene: 
-      AddSceneToTop: 0
-      Icon: {fileID: 0}
-      StatusIcon: {fileID: 0}
-      StartPlayMode: 0
-      Url: 
-      Type:
-        ScriptableObject: 
-        Class: 
-      Asset: {fileID: 0}
-      Id: 
-      StepElements: []
-    - Text: Quantum Asteroids Tutorial (Opens Web Browser)
-      Subtext: Open Online Documentation About Quantum Fundamentals
-      WidgetMode:
-        Value: LinkButton
-      AutoComplete:
-        Value: None
-      Hide:
-        Value: None
-      Scene: 
-      AddSceneToTop: 0
-      Icon: {fileID: 2800000, guid: 48362b7bdabe49d4b93c092e53f3c269, type: 3}
-      StatusIcon: {fileID: 0}
-      StartPlayMode: 0
-      Url: https://doc.photonengine.com/quantum/v3/tutorials/asteroids/1-overview
-      Type:
-        ScriptableObject: 
-        Class: 
-      Asset: {fileID: 0}
-      Id: 
-      StepElements: []
     - Text: Install the <b>menu package</b> to have a fully functional online game
         menu and it works well together with the asteroids game sample. Create Unity
         builds to play the asteroids sample <b>online</b> after installing the two
@@ -520,13 +493,10 @@ MonoBehaviour:
           Class: 
         Asset: {fileID: 102900000, guid: d0bb1444b9231574e8dc3305f8a7946a, type: 3}
         Id: 
-    - Text: 'Install the Quantum <b>demo input</b> package for pre-configured reusable
+    - Text: Install the Quantum <b>demo input</b> package for pre-configured reusable
         Quantum input definitions that work for different game genres. Chose a polling
         script to add it to the game scene and cast the Quantum input to the chosen
         input in the simulation.
-
-
-        Requires Unity Input System module.'
       Subtext: 
       WidgetMode:
         Value: Hierarchy
@@ -643,16 +613,15 @@ MonoBehaviour:
           Class: 
         Asset: {fileID: 0}
         Id: 
-    - Text: Install the Quantum <b>multi client</b> package to get access to a simple
-        UI that can quickly add multiple separate online connections to a Quantum
-        game scene.
+    - Text: Follow the step-by-step guide to get up and running with the Quantum
+        SDK in Unity.
       Subtext: 
       WidgetMode:
-        Value: Hierarchy
+        Value: Text
       AutoComplete:
         Value: None
       Hide:
-        Value: AssetMissing
+        Value: None
       Scene: 
       AddSceneToTop: 0
       Icon: {fileID: 0}
@@ -662,47 +631,29 @@ MonoBehaviour:
       Type:
         ScriptableObject: 
         Class: 
-      Asset: {fileID: 102900000, guid: 1c327e165902b31489abfbdc0b25cd43, type: 3}
+      Asset: {fileID: 0}
       Id: 
-      StepElements:
-      - Text: Install Quantum Multi Client Package
-        Subtext: Imports the Quantum multi client scripts and prefabs
-        WidgetMode:
-          Value: InstallPackage
-        AutoComplete:
-          Value: None
-        Hide:
-          Value: TypeIsValid
-        Scene: 
-        AddSceneToTop: 0
-        Icon: {fileID: 2800000, guid: 24a22d21fe312f44892796563f01c302, type: 3}
-        StatusIcon: {fileID: 2800000, guid: 8491ac03603357649a00077468789d52, type: 3}
-        StartPlayMode: 0
-        Url: 
-        Type:
-          ScriptableObject: 
-          Class: QuantumMultiClientRunner
-        Asset: {fileID: 102900000, guid: 1c327e165902b31489abfbdc0b25cd43, type: 3}
-        Id: 
-      - Text: Reimport Quantum Multi Client Package
-        Subtext: Reimports the Quantum multi client scripts and prefabs
-        WidgetMode:
-          Value: InstallPackage
-        AutoComplete:
-          Value: None
-        Hide:
-          Value: TypeIsNotValid
-        Scene: 
-        AddSceneToTop: 0
-        Icon: {fileID: 2800000, guid: 24a22d21fe312f44892796563f01c302, type: 3}
-        StatusIcon: {fileID: 2800000, guid: 8958b450dee843f41a091a734ed43ccd, type: 3}
-        StartPlayMode: 0
-        Url: 
-        Type:
-          ScriptableObject: 
-          Class: QuantumMultiClientRunner
-        Asset: {fileID: 102900000, guid: 1c327e165902b31489abfbdc0b25cd43, type: 3}
-        Id: 
+      StepElements: []
+    - Text: Quantum Asteroids Tutorial (Opens Web Browser)
+      Subtext: Open Online Documentation About Quantum Fundamentals
+      WidgetMode:
+        Value: LinkButton
+      AutoComplete:
+        Value: None
+      Hide:
+        Value: None
+      Scene: 
+      AddSceneToTop: 0
+      Icon: {fileID: 2800000, guid: 48362b7bdabe49d4b93c092e53f3c269, type: 3}
+      StatusIcon: {fileID: 0}
+      StartPlayMode: 0
+      Url: https://doc.photonengine.com/quantum/v3/tutorials/asteroids/1-overview
+      Type:
+        ScriptableObject: 
+        Class: 
+      Asset: {fileID: 0}
+      Id: 
+      StepElements: []
   - Title: Support
     Description: Support, Community and Documentation
     Icon: {fileID: 2800000, guid: 80faca055f57d5b449f78efe31607c57, type: 3}
@@ -791,8 +742,8 @@ MonoBehaviour:
       Asset: {fileID: 0}
       Id: 
       StepElements: []
-    - Text: Quantum 3.1 SDK and Release Notes (Opens Web Browser)
-      Subtext: Open the Quantum 3.1 SDK online download tables and release notes
+    - Text: Quantum 3 SDK and Release Notes (Opens Web Browser)
+      Subtext: Open the Quantum 3 SDK online download tables and release notes
       WidgetMode:
         Value: LinkButton
       AutoComplete:
@@ -804,7 +755,7 @@ MonoBehaviour:
       Icon: {fileID: 2800000, guid: 48362b7bdabe49d4b93c092e53f3c269, type: 3}
       StatusIcon: {fileID: 0}
       StartPlayMode: 0
-      Url: https://doc.photonengine.com/quantum/v3/getting-started/preview-3-1/sdk-download
+      Url: https://doc.photonengine.com/quantum/v3/getting-started/release-notes
       Type:
         ScriptableObject: 
         Class: 
@@ -858,7 +809,7 @@ MonoBehaviour:
       Asset: {fileID: 0}
       Id: 
       StepElements: []
-    - Text: Apply migrations for Quantum SDK 3.0.3
+    - Text: Upgrade SDK 3.0.3
       Subtext: Create QuantumLookupTables global scriptable asset inside the QuantumUser
         folder
       WidgetMode:
@@ -1183,24 +1134,24 @@ MonoBehaviour:
     OverwritePage: 
     PopupOncePlayerPrefsKey: 
     Elements:
-    - Text: '<b>Quantum SDK build Information</b>:'
-      Subtext: 
+    - Text: Build Info Text Asset
+      Subtext: Select the build_info.txt file in the Unity project
       WidgetMode:
-        Value: Text
+        Value: PingAsset
       AutoComplete:
         Value: None
       Hide:
         Value: None
       Scene: 
       AddSceneToTop: 0
-      Icon: {fileID: 0}
+      Icon: {fileID: 2800000, guid: 9fee294d467aef642a5e60b4c6778684, type: 3}
       StatusIcon: {fileID: 0}
       StartPlayMode: 0
       Url: 
       Type:
         ScriptableObject: 
         Class: 
-      Asset: {fileID: 0}
+      Asset: {fileID: 4900000, guid: 265ee2b8899374c4daacf1b15f99a002, type: 3}
       Id: 
       StepElements: []
     - Text: Draw Build Info File
@@ -1223,7 +1174,27 @@ MonoBehaviour:
       Asset: {fileID: 4900000, guid: 265ee2b8899374c4daacf1b15f99a002, type: 3}
       Id: 
       StepElements: []
-    - Text: Assembly version Engine
+    - Text: Assembly version
+      Subtext: 
+      WidgetMode:
+        Value: AssemblyVersion
+      AutoComplete:
+        Value: None
+      Hide:
+        Value: None
+      Scene: 
+      AddSceneToTop: 0
+      Icon: {fileID: 0}
+      StatusIcon: {fileID: 0}
+      StartPlayMode: 0
+      Url: 
+      Type:
+        ScriptableObject: 
+        Class: FP
+      Asset: {fileID: -1121539586, guid: da1c83ff0dd6e394292ac05c4584c4fe, type: 3}
+      Id: 
+      StepElements: []
+    - Text: Assembly version
       Subtext: 
       WidgetMode:
         Value: AssemblyVersion
@@ -1243,7 +1214,7 @@ MonoBehaviour:
       Asset: {fileID: 0}
       Id: 
       StepElements: []
-    - Text: Assembly version BotSDK
+    - Text: Assembly version
       Subtext: 
       WidgetMode:
         Value: AssemblyVersion
@@ -1261,25 +1232,5 @@ MonoBehaviour:
         ScriptableObject: 
         Class: BotSDKData
       Asset: {fileID: 0}
-      Id: 
-      StepElements: []
-    - Text: Quantum SDK Build Info Asset
-      Subtext: Select the build_info.txt file in the Unity project
-      WidgetMode:
-        Value: PingAsset
-      AutoComplete:
-        Value: None
-      Hide:
-        Value: None
-      Scene: 
-      AddSceneToTop: 0
-      Icon: {fileID: 2800000, guid: 9fee294d467aef642a5e60b4c6778684, type: 3}
-      StatusIcon: {fileID: 0}
-      StartPlayMode: 0
-      Url: 
-      Type:
-        ScriptableObject: 
-        Class: 
-      Asset: {fileID: 4900000, guid: 265ee2b8899374c4daacf1b15f99a002, type: 3}
       Id: 
       StepElements: []

@@ -39,7 +39,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Bonus/BigRouletteBlock|BigRouletteBlockStageTile
     Guid:
-      Value: 417990647365254194
+      Value: 759315216132667751
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1
@@ -65,6 +65,6 @@ MonoBehaviour:
   resultTile:
     Tile:
       Id:
-        Value: 512892963162341307
+        Value: 1138970648612223160
     Rotation: 0
     Flags: 0

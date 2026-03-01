@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/SpecialTiles/YellowCoin|YellowCoinStageTile
     Guid:
-      Value: 342476424856818660
+      Value: 787780346727776477
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1
@@ -41,7 +41,7 @@ MonoBehaviour:
   resultTile:
     Tile:
       Id:
-        Value: 520268055672688161
+        Value: 2276636638621846876
     Rotation: 0
     Flags: 0
 --- !u!114 &11400000

@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Pipes/Unbreakable/pipe_red_horizontal_top|pipe_red_horizontal_topStageTile
     Guid:
-      Value: 374175992408432418
+      Value: 521004033486195443
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Pipes/Unbreakable/pipe_junction_1|pipe_junction_1StageTile
     Guid:
-      Value: 344570485559856885
+      Value: 1578709665356263316
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

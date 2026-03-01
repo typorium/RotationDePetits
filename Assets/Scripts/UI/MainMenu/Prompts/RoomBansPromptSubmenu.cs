@@ -106,7 +106,7 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
             }
 
             int slot = game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)];
-            game.AddCommand(slot, new CommandUnbanPlayer() {
+            game.SendCommand(slot, new CommandUnbanPlayer() {
                 TargetUserId = entry.UserId,
             });
 

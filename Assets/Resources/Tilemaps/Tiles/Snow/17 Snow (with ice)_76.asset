@@ -50,7 +50,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Snow/17 Snow (with ice)_76|17 Snow (with ice)_76StageTile
     Guid:
-      Value: 477323803677872864
+      Value: 104829541857738063
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Sky/small-mushrooms/red-mushroom-side|red-mushroom-sideStageTile
     Guid:
-      Value: 485885322651314025
+      Value: 1007671395878794075
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0

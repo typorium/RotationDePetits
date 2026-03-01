@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/BeachBlue/beachsand_2R|beachsand_2RStageTile
     Guid:
-      Value: 369470366494741122
+      Value: 668831199362732366
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

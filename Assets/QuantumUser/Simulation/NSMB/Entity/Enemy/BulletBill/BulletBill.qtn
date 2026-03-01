@@ -1,11 +1,11 @@
-table component BulletBill {
+component BulletBill {
 	FP Speed;
 	FP DespawnRadius;
 	[ExcludeFromPrototype] byte DespawnFrames;
 	[ExcludeFromPrototype] EntityRef Owner;
 }
 
-table component BulletBillLauncher {
+component BulletBillLauncher {
 	AssetRef<EntityPrototype> BulletBillPrototype;
 	ushort TimeToShoot;
 	FP MinimumShootRadius;

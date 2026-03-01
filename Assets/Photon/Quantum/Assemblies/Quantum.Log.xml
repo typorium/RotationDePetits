@@ -282,9 +282,6 @@
         <member name="F:Quantum.TraceChannels.Input">
             <summary>Input</summary>
         </member>
-        <member name="F:Quantum.TraceChannels.NavMesh">
-            <summary>NavMesh</summary>
-        </member>
         <member name="T:Quantum.InternalLogStreams">
             <summary>
             Provides static log streams for different log levels.
@@ -307,9 +304,6 @@
         </member>
         <member name="F:Quantum.InternalLogStreams.LogTraceInput">
             <summary> Input trace stream </summary>
-        </member>
-        <member name="F:Quantum.InternalLogStreams.LogTraceNavMesh">
-            <summary> NavMesh trace stream </summary>
         </member>
         <member name="F:Quantum.InternalLogStreams.LogDebugPhysics2D">
             <summary> Physics2D debug stream </summary>

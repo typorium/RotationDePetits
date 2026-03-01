@@ -177,7 +177,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 8);
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -248,7 +248,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 16);
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 16);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -321,7 +321,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 256);
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 256);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -396,7 +396,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 8);
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -467,7 +467,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 32);
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 32);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -544,7 +544,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 512);
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 512);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -619,7 +619,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 64);
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 64);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -694,7 +694,7 @@ namespace Quantum {
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearAll() {
-      fixed (UInt64* p = Bits) QuantumUnsafe.Clear(p, 8);
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Boolean IsSet(Int32 bit) {
@@ -1274,75 +1274,75 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 3160;
+    public const Int32 SIZE = 3136;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
-    public Int32 PlayerConnectedCount;
-    [FieldOffset(8)]
     public AssetRef<Map> Map;
-    [FieldOffset(16)]
+    [FieldOffset(8)]
     public FP DeltaTime;
-    [FieldOffset(24)]
+    [FieldOffset(16)]
     public NavMeshRegionMask NavMeshRegions;
-    [FieldOffset(88)]
-    public PhysicsEngineState2D PhysicsState2D;
+    [FieldOffset(80)]
+    public PhysicsEngineState PhysicsState2D;
+    [FieldOffset(96)]
+    public PhysicsEngineState PhysicsState3D;
     [FieldOffset(112)]
-    public PhysicsEngineState3D PhysicsState3D;
-    [FieldOffset(136)]
     public RNGSession RngSession;
-    [FieldOffset(152)]
+    [FieldOffset(128)]
     public FrameMetaData FrameMetaData;
-    [FieldOffset(168)]
+    [FieldOffset(176)]
     public BitSet1024 Systems;
-    [FieldOffset(296)]
+    [FieldOffset(304)]
     public PhysicsSceneSettings PhysicsSettings;
-    [FieldOffset(632)]
+    [FieldOffset(600)]
+    public Int32 PlayerConnectedCount;
+    [FieldOffset(604)]
     [FramePrinter.FixedArrayAttribute(typeof(Input), 10)]
     private fixed Byte _input_[1200];
-    [FieldOffset(1832)]
+    [FieldOffset(1808)]
     public BitSet10 PlayerLastConnectionState;
-    [FieldOffset(1848)]
+    [FieldOffset(1824)]
     public UInt16 BigStarSpawnTimer;
-    [FieldOffset(1896)]
+    [FieldOffset(1872)]
     public EntityRef MainBigStar;
-    [FieldOffset(1888)]
+    [FieldOffset(1864)]
     public BitSet64 UsedStarSpawns;
-    [FieldOffset(1912)]
+    [FieldOffset(1888)]
     public GameRules Rules;
-    [FieldOffset(1842)]
+    [FieldOffset(1818)]
     public GameState GameState;
-    [FieldOffset(1856)]
+    [FieldOffset(1832)]
     public Int32 StartFrame;
-    [FieldOffset(1860)]
+    [FieldOffset(1836)]
     public Int32 TotalGamesPlayed;
-    [FieldOffset(1850)]
+    [FieldOffset(1826)]
     public UInt16 GameStartFrames;
-    [FieldOffset(1852)]
+    [FieldOffset(1828)]
     public UInt16 PlayerLoadFrames;
-    [FieldOffset(1844)]
+    [FieldOffset(1820)]
     public UInt16 AutomaticStageRefreshInterval;
-    [FieldOffset(1846)]
+    [FieldOffset(1822)]
     public UInt16 AutomaticStageRefreshTimer;
-    [FieldOffset(1960)]
+    [FieldOffset(1936)]
     [FramePrinter.FixedArrayAttribute(typeof(PlayerInformation), 10)]
     private fixed Byte _PlayerInfo_[1200];
-    [FieldOffset(1840)]
+    [FieldOffset(1816)]
     public Byte RealPlayers;
-    [FieldOffset(1841)]
+    [FieldOffset(1817)]
     public Byte TotalMarios;
-    [FieldOffset(1864)]
+    [FieldOffset(1840)]
     public Int32 WinningTeam;
-    [FieldOffset(1872)]
+    [FieldOffset(1848)]
     public QBoolean HasWinner;
-    [FieldOffset(1868)]
+    [FieldOffset(1844)]
     public PlayerRef Host;
-    [FieldOffset(1876)]
+    [FieldOffset(1852)]
     [AllocateOnComponentAdded()]
     public QDictionaryPtr<PlayerRef, EntityRef> PlayerDatas;
-    [FieldOffset(1880)]
+    [FieldOffset(1856)]
     [AllocateOnComponentAdded()]
     public QListPtr<BannedPlayerInfo> BannedPlayerIds;
-    [FieldOffset(1904)]
+    [FieldOffset(1880)]
     public FP Timer;
     public readonly FixedArray<Input> input {
       get {
@@ -1357,7 +1357,6 @@ namespace Quantum {
     public override readonly Int32 GetHashCode() {
       unchecked { 
         var hash = 12473;
-        hash = hash * 31 + PlayerConnectedCount.GetHashCode();
         hash = hash * 31 + Map.GetHashCode();
         hash = hash * 31 + DeltaTime.GetHashCode();
         hash = hash * 31 + NavMeshRegions.GetHashCode();
@@ -1367,6 +1366,7 @@ namespace Quantum {
         hash = hash * 31 + FrameMetaData.GetHashCode();
         hash = hash * 31 + Systems.GetHashCode();
         hash = hash * 31 + PhysicsSettings.GetHashCode();
+        hash = hash * 31 + PlayerConnectedCount.GetHashCode();
         hash = hash * 31 + HashCodeUtils.GetArrayHashCode(input);
         hash = hash * 31 + PlayerLastConnectionState.GetHashCode();
         hash = hash * 31 + BigStarSpawnTimer.GetHashCode();
@@ -1402,16 +1402,16 @@ namespace Quantum {
     }
     static partial void SerializeCodeGen(void* ptr, FrameSerializer serializer) {
         var p = (_globals_*)ptr;
-        serializer.Stream.Serialize(&p->PlayerConnectedCount);
         AssetRef.Serialize(&p->Map, serializer);
         FP.Serialize(&p->DeltaTime, serializer);
         NavMeshRegionMask.Serialize(&p->NavMeshRegions, serializer);
-        PhysicsEngineState2D.Serialize(&p->PhysicsState2D, serializer);
-        PhysicsEngineState3D.Serialize(&p->PhysicsState3D, serializer);
+        PhysicsEngineState.Serialize(&p->PhysicsState2D, serializer);
+        PhysicsEngineState.Serialize(&p->PhysicsState3D, serializer);
         RNGSession.Serialize(&p->RngSession, serializer);
         FrameMetaData.Serialize(&p->FrameMetaData, serializer);
         Quantum.BitSet1024.Serialize(&p->Systems, serializer);
         PhysicsSceneSettings.Serialize(&p->PhysicsSettings, serializer);
+        serializer.Stream.Serialize(&p->PlayerConnectedCount);
         FixedArray.Serialize(p->input, serializer, Statics.SerializeInput);
         Quantum.BitSet10.Serialize(&p->PlayerLastConnectionState, serializer);
         serializer.Stream.Serialize(&p->RealPlayers);
@@ -1462,7 +1462,7 @@ namespace Quantum {
       get {
         fixed (StarChasersData* p = &_StarChasers) {
           if (_field_used_ != STARCHASERS) {
-            QuantumUnsafe.Clear(p, 4);
+            Native.Utils.Clear(p, 4);
             _field_used_ = STARCHASERS;
           }
           return p;
@@ -1473,7 +1473,7 @@ namespace Quantum {
       get {
         fixed (CoinRunnersData* p = &_CoinRunners) {
           if (_field_used_ != COINRUNNERS) {
-            QuantumUnsafe.Clear(p, 4);
+            Native.Utils.Clear(p, 4);
             _field_used_ = COINRUNNERS;
           }
           return p;
@@ -3379,109 +3379,109 @@ namespace Quantum {
     }
   }
   public unsafe partial interface ISignalOnMarioPlayerCollectedStar : ISignal {
-    void OnMarioPlayerCollectedStar(Frame frame, EntityRef entity);
+    void OnMarioPlayerCollectedStar(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnEntityBumped : ISignal {
-    void OnEntityBumped(Frame frame, EntityRef entity, FPVector2 tileWorldPosition, EntityRef blockBump, QBoolean fromBelow);
+    void OnEntityBumped(Frame f, EntityRef entity, FPVector2 tileWorldPosition, EntityRef blockBump, QBoolean fromBelow);
   }
   public unsafe partial interface ISignalOnBobombExplodeEntity : ISignal {
-    void OnBobombExplodeEntity(Frame frame, EntityRef bobomb, EntityRef entity);
+    void OnBobombExplodeEntity(Frame f, EntityRef bobomb, EntityRef entity);
   }
   public unsafe partial interface ISignalOnBreakableObjectChangedHeight : ISignal {
-    void OnBreakableObjectChangedHeight(Frame frame, EntityRef breakable, FP newHeight);
+    void OnBreakableObjectChangedHeight(Frame f, EntityRef breakable, FP newHeight);
   }
   public unsafe partial interface ISignalOnMarioPlayerCollectedCoin : ISignal {
-    void OnMarioPlayerCollectedCoin(Frame frame, EntityRef marioEntity, EntityRef coinEntity, FPVector2 worldLocation, QBoolean fromBlock, QBoolean downwards);
+    void OnMarioPlayerCollectedCoin(Frame f, EntityRef marioEntity, EntityRef coinEntity, FPVector2 worldLocation, QBoolean fromBlock, QBoolean downwards);
   }
   public unsafe partial interface ISignalOnCoinItemSpawnEnded : ISignal {
-    void OnCoinItemSpawnEnded(Frame frame, EntityRef entity);
+    void OnCoinItemSpawnEnded(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnEnemyDespawned : ISignal {
-    void OnEnemyDespawned(Frame frame, EntityRef entity);
+    void OnEnemyDespawned(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnEnemyRespawned : ISignal {
-    void OnEnemyRespawned(Frame frame, EntityRef entity);
+    void OnEnemyRespawned(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnEnemyEnemyCollision : ISignal {
-    void OnEnemyEnemyCollision(Frame frame, EntityRef a, EntityRef b);
+    void OnEnemyEnemyCollision(Frame f, EntityRef a, EntityRef b);
   }
   public unsafe partial interface ISignalOnEnemyKilledByStageReset : ISignal {
-    void OnEnemyKilledByStageReset(Frame frame, EntityRef entity);
+    void OnEnemyKilledByStageReset(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnEnemyTurnaround : ISignal {
-    void OnEnemyTurnaround(Frame frame, EntityRef entity);
+    void OnEnemyTurnaround(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnEnemyReturnedHome : ISignal {
-    void OnEnemyReturnedHome(Frame frame, EntityRef entity);
+    void OnEnemyReturnedHome(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnEntityFreeze : ISignal {
-    void OnEntityFreeze(Frame frame, EntityRef entity, EntityRef iceBlock);
+    void OnEntityFreeze(Frame f, EntityRef entity, EntityRef iceBlock);
   }
   public unsafe partial interface ISignalOnLoadingComplete : ISignal {
-    void OnLoadingComplete(Frame frame);
+    void OnLoadingComplete(Frame f);
   }
   public unsafe partial interface ISignalOnGameStarting : ISignal {
-    void OnGameStarting(Frame frame);
+    void OnGameStarting(Frame f);
   }
   public unsafe partial interface ISignalOnGameEnding : ISignal {
-    void OnGameEnding(Frame frame, Int32 winningTeam, QBoolean hasWinner);
+    void OnGameEnding(Frame f, Int32 winningTeam, QBoolean hasWinner);
   }
   public unsafe partial interface ISignalOnReturnToRoom : ISignal {
-    void OnReturnToRoom(Frame frame);
+    void OnReturnToRoom(Frame f);
   }
   public unsafe partial interface ISignalOnThrowHoldable : ISignal {
-    void OnThrowHoldable(Frame frame, EntityRef entity, EntityRef mario, QBoolean crouching, QBoolean dropped);
+    void OnThrowHoldable(Frame f, EntityRef entity, EntityRef mario, QBoolean crouching, QBoolean dropped);
   }
   public unsafe partial interface ISignalOnIceBlockBroken : ISignal {
-    void OnIceBlockBroken(Frame frame, EntityRef brokenIceBlock, IceBlockBreakReason breakReason);
+    void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason);
   }
   public unsafe partial interface ISignalOnBeforeInteraction : ISignal {
-    void OnBeforeInteraction(Frame frame, EntityRef entity, bool* allowInteraction);
+    void OnBeforeInteraction(Frame f, EntityRef entity, bool* allowInteraction);
   }
   public unsafe partial interface ISignalOnTryLiquidSplash : ISignal {
-    void OnTryLiquidSplash(Frame frame, EntityRef entity, EntityRef liquid, QBoolean exit, bool* doSplash);
+    void OnTryLiquidSplash(Frame f, EntityRef entity, EntityRef liquid, QBoolean exit, bool* doSplash);
   }
   public unsafe partial interface ISignalOnEntityEnterExitLiquid : ISignal {
-    void OnEntityEnterExitLiquid(Frame frame, EntityRef entity, EntityRef liquid, QBoolean underwater);
+    void OnEntityEnterExitLiquid(Frame f, EntityRef entity, EntityRef liquid, QBoolean underwater);
   }
   public unsafe partial interface ISignalOnMarioPlayerDied : ISignal {
-    void OnMarioPlayerDied(Frame frame, EntityRef entity);
+    void OnMarioPlayerDied(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnMarioPlayerBecameInvincible : ISignal {
-    void OnMarioPlayerBecameInvincible(Frame frame, EntityRef entity);
+    void OnMarioPlayerBecameInvincible(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnMarioPlayerDropObjective : ISignal {
-    void OnMarioPlayerDropObjective(Frame frame, EntityRef entity, Int32 amount, EntityRef attacker);
+    void OnMarioPlayerDropObjective(Frame f, EntityRef entity, Int32 amount, EntityRef attacker);
   }
   public unsafe partial interface ISignalOnMarioPlayerTakeDamage : ISignal {
-    void OnMarioPlayerTakeDamage(Frame frame, EntityRef entity, ref QBoolean keepDamage);
+    void OnMarioPlayerTakeDamage(Frame f, EntityRef entity, ref QBoolean keepDamage);
   }
   public unsafe partial interface ISignalOnMarioPlayerGroundpoundedSolid : ISignal {
-    void OnMarioPlayerGroundpoundedSolid(Frame frame, EntityRef mario, PhysicsContact contact, ref QBoolean continueGroundpound);
+    void OnMarioPlayerGroundpoundedSolid(Frame f, EntityRef mario, PhysicsContact contact, ref QBoolean continueGroundpound);
   }
   public unsafe partial interface ISignalOnMarioPlayerGroundpoundEnded : ISignal {
-    void OnMarioPlayerGroundpoundEnded(Frame frame, EntityRef mario);
+    void OnMarioPlayerGroundpoundEnded(Frame f, EntityRef mario);
   }
   public unsafe partial interface ISignalOnMarioPlayerMegaMushroomFootstep : ISignal {
-    void OnMarioPlayerMegaMushroomFootstep(Frame frame);
+    void OnMarioPlayerMegaMushroomFootstep(Frame f);
   }
   public unsafe partial interface ISignalOnEntityChangeUnderwaterState : ISignal {
-    void OnEntityChangeUnderwaterState(Frame frame, EntityRef entity, EntityRef liquid, QBoolean underwater);
+    void OnEntityChangeUnderwaterState(Frame f, EntityRef entity, EntityRef liquid, QBoolean underwater);
   }
   public unsafe partial interface ISignalOnEntityCrushed : ISignal {
-    void OnEntityCrushed(Frame frame, EntityRef entity);
+    void OnEntityCrushed(Frame f, EntityRef entity);
   }
   public unsafe partial interface ISignalOnMarioPlayerCollectedPowerup : ISignal {
-    void OnMarioPlayerCollectedPowerup(Frame frame, EntityRef mario, EntityRef powerup);
+    void OnMarioPlayerCollectedPowerup(Frame f, EntityRef mario, EntityRef powerup);
   }
   public unsafe partial interface ISignalOnProjectileHitEntity : ISignal {
-    void OnProjectileHitEntity(Frame frame, EntityRef projectile, EntityRef hitEntity);
+    void OnProjectileHitEntity(Frame f, EntityRef projectile, EntityRef hitEntity);
   }
   public unsafe partial interface ISignalOnStageReset : ISignal {
-    void OnStageReset(Frame frame, QBoolean full);
+    void OnStageReset(Frame f, QBoolean full);
   }
   public unsafe partial interface ISignalOnTileChanged : ISignal {
-    void OnTileChanged(Frame frame, IntVector2 position, StageTileInstance newTile);
+    void OnTileChanged(Frame f, IntVector2 position, StageTileInstance newTile);
   }
   public static unsafe partial class Constants {
     public const Int32 MaxStarSpawns = 64;
@@ -3808,13 +3808,13 @@ namespace Quantum {
     private ISignalOnStageReset[] _ISignalOnStageResetSystems;
     private ISignalOnTileChanged[] _ISignalOnTileChangedSystems;
     partial void AllocGen() {
-      _globals = (_globals_*)QuantumUnsafe.AllocAndClear(sizeof(_globals_));
+      _globals = (_globals_*)Context.Allocator.AllocAndClear(sizeof(_globals_));
     }
     partial void FreeGen() {
-      QuantumUnsafe.Free(_globals);
+      Context.Allocator.Free(_globals);
     }
     partial void CopyFromGen(Frame frame) {
-      QuantumUnsafe.Copy(_globals, frame._globals, sizeof(_globals_));
+      Native.Utils.Copy(_globals, frame._globals, sizeof(_globals_));
     }
     partial void InitGen() {
       Initialize(this, this.SimulationConfig.Entities, 256);
@@ -3855,7 +3855,6 @@ namespace Quantum {
       _ISignalOnTileChangedSystems = BuildSignalsArray<ISignalOnTileChanged>();
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
-      _ComponentSignalsOnMoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       BuildSignalsArrayOnComponentAdded<Quantum.BetterPhysicsObject>();
       BuildSignalsArrayOnComponentRemoved<Quantum.BetterPhysicsObject>();
       BuildSignalsArrayOnComponentAdded<Quantum.BigStar>();
@@ -4446,8 +4445,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(PhysicsCollider2D), PhysicsCollider2D.SIZE);
       typeRegistry.Register(typeof(PhysicsCollider3D), PhysicsCollider3D.SIZE);
       typeRegistry.Register(typeof(Quantum.PhysicsContact), Quantum.PhysicsContact.SIZE);
-      typeRegistry.Register(typeof(PhysicsEngineState2D), PhysicsEngineState2D.SIZE);
-      typeRegistry.Register(typeof(PhysicsEngineState3D), PhysicsEngineState3D.SIZE);
+      typeRegistry.Register(typeof(PhysicsEngineState), PhysicsEngineState.SIZE);
       typeRegistry.Register(typeof(PhysicsFlags), 1);
       typeRegistry.Register(typeof(PhysicsJoints2D), PhysicsJoints2D.SIZE);
       typeRegistry.Register(typeof(PhysicsJoints3D), PhysicsJoints3D.SIZE);
@@ -4488,50 +4486,52 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum.WrappingObject), Quantum.WrappingObject.SIZE);
       typeRegistry.Register(typeof(Quantum._globals_), Quantum._globals_.SIZE);
     }
-    static partial void InitComponentTypeIdGen(Int32 extraComponentCount) {
-      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 39 + extraComponentCount);
-      ComponentTypeId.RegisterBuiltInComponents();
-      ComponentTypeId.RegisterComponent<Quantum.BetterPhysicsObject>(20, Quantum.BetterPhysicsObject.Serialize, Quantum.BetterPhysicsObject.OnAdded, Quantum.BetterPhysicsObject.OnRemoved, ComponentFlags.None);
-      ComponentTypeId.RegisterComponent<Quantum.BigStar>(21, Quantum.BigStar.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.BlockBump>(22, Quantum.BlockBump.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Bobomb>(23, Quantum.Bobomb.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Boo>(24, Quantum.Boo.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.BreakableObject>(25, Quantum.BreakableObject.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.BulletBill>(26, Quantum.BulletBill.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.BulletBillLauncher>(27, Quantum.BulletBillLauncher.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.CameraController>(28, Quantum.CameraController.Serialize, null, null, ComponentFlags.None);
-      ComponentTypeId.RegisterComponent<Quantum.Coin>(29, Quantum.Coin.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.CoinItem>(30, Quantum.CoinItem.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.ComboKeeper>(31, Quantum.ComboKeeper.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Cullable>(32, Quantum.Cullable.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.DonutBlock>(33, Quantum.DonutBlock.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Enemy>(34, Quantum.Enemy.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.EnterablePipe>(35, Quantum.EnterablePipe.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Freezable>(36, Quantum.Freezable.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.GenericMover>(37, Quantum.GenericMover.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.GoldBlock>(38, Quantum.GoldBlock.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Goomba>(39, Quantum.Goomba.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Holdable>(40, Quantum.Holdable.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.IceBlock>(41, Quantum.IceBlock.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Interactable>(42, Quantum.Interactable.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.InteractionInitiator>(43, Quantum.InteractionInitiator.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.InvisibleBlock>(44, Quantum.InvisibleBlock.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Koopa>(45, Quantum.Koopa.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Liquid>(46, Quantum.Liquid.Serialize, Quantum.Liquid.OnAdded, Quantum.Liquid.OnRemoved, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.MarioBrosPlatform>(47, Quantum.MarioBrosPlatform.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.MarioPlayer>(48, Quantum.MarioPlayer.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.MovingPlatform>(49, Quantum.MovingPlatform.Serialize, Quantum.MovingPlatform.OnAdded, Quantum.MovingPlatform.OnRemoved, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.ObjectiveCoin>(50, Quantum.ObjectiveCoin.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.PhysicsObject>(51, Quantum.PhysicsObject.Serialize, Quantum.PhysicsObject.OnAdded, Quantum.PhysicsObject.OnRemoved, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.PiranhaPlant>(52, Quantum.PiranhaPlant.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.PlayerData>(53, Quantum.PlayerData.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Powerup>(54, Quantum.Powerup.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Projectile>(55, Quantum.Projectile.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.Spinner>(56, Quantum.Spinner.Serialize, Quantum.Spinner.OnAdded, Quantum.Spinner.OnRemoved, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.StarCoin>(57, Quantum.StarCoin.Serialize, null, null, ComponentFlags.Table);
-      ComponentTypeId.RegisterComponent<Quantum.WrappingObject>(58, Quantum.WrappingObject.Serialize, null, null, ComponentFlags.Table);
+    static partial void InitComponentTypeIdGen() {
+      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 39)
+        .AddBuiltInComponents()
+        .Add<Quantum.BetterPhysicsObject>(Quantum.BetterPhysicsObject.Serialize, Quantum.BetterPhysicsObject.OnAdded, Quantum.BetterPhysicsObject.OnRemoved, ComponentFlags.None)
+        .Add<Quantum.BigStar>(Quantum.BigStar.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.BlockBump>(Quantum.BlockBump.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Bobomb>(Quantum.Bobomb.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Boo>(Quantum.Boo.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.BreakableObject>(Quantum.BreakableObject.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.BulletBill>(Quantum.BulletBill.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.BulletBillLauncher>(Quantum.BulletBillLauncher.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.CameraController>(Quantum.CameraController.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Coin>(Quantum.Coin.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.CoinItem>(Quantum.CoinItem.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.ComboKeeper>(Quantum.ComboKeeper.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Cullable>(Quantum.Cullable.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.DonutBlock>(Quantum.DonutBlock.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Enemy>(Quantum.Enemy.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.EnterablePipe>(Quantum.EnterablePipe.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Freezable>(Quantum.Freezable.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.GenericMover>(Quantum.GenericMover.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.GoldBlock>(Quantum.GoldBlock.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Goomba>(Quantum.Goomba.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Holdable>(Quantum.Holdable.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.IceBlock>(Quantum.IceBlock.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Interactable>(Quantum.Interactable.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.InteractionInitiator>(Quantum.InteractionInitiator.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.InvisibleBlock>(Quantum.InvisibleBlock.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Koopa>(Quantum.Koopa.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Liquid>(Quantum.Liquid.Serialize, Quantum.Liquid.OnAdded, Quantum.Liquid.OnRemoved, ComponentFlags.None)
+        .Add<Quantum.MarioBrosPlatform>(Quantum.MarioBrosPlatform.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.MarioPlayer>(Quantum.MarioPlayer.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.MovingPlatform>(Quantum.MovingPlatform.Serialize, Quantum.MovingPlatform.OnAdded, Quantum.MovingPlatform.OnRemoved, ComponentFlags.None)
+        .Add<Quantum.ObjectiveCoin>(Quantum.ObjectiveCoin.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.PhysicsObject>(Quantum.PhysicsObject.Serialize, Quantum.PhysicsObject.OnAdded, Quantum.PhysicsObject.OnRemoved, ComponentFlags.None)
+        .Add<Quantum.PiranhaPlant>(Quantum.PiranhaPlant.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.PlayerData>(Quantum.PlayerData.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Powerup>(Quantum.Powerup.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Projectile>(Quantum.Projectile.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Spinner>(Quantum.Spinner.Serialize, Quantum.Spinner.OnAdded, Quantum.Spinner.OnRemoved, ComponentFlags.None)
+        .Add<Quantum.StarCoin>(Quantum.StarCoin.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.WrappingObject>(Quantum.WrappingObject.Serialize, null, null, ComponentFlags.None)
+        .Finish();
     }
-    static partial void EnsureNotStrippedGen() {
+    [Preserve()]
+    public static void EnsureNotStrippedGen() {
       FramePrinter.EnsureNotStripped();
       FramePrinter.EnsurePrimitiveNotStripped<CallbackFlags>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.CoinType>();

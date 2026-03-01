@@ -192,7 +192,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Snow/SnowGround|SnowGroundStageTile
     Guid:
-      Value: 404600007952925462
+      Value: 2779073759792859074
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

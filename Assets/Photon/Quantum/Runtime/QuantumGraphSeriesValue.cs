@@ -1,5 +1,4 @@
 namespace Quantum.Profiling {
-#if !QUANTUM_DISABLE_GRAPHPROFILER
   using System;
   using System.Globalization;
   using UnityEngine;
@@ -9,7 +8,7 @@ namespace Quantum.Profiling {
   /// The series value graph is used format, average values add graphical features to the graph rendering.
   /// </summary>
   public sealed class QuantumGraphSeriesValue : QuantumGraphSeries {
-    private const string SHADER_PROPERTY_COLOR_NORMAL = "_BaseColor";
+    private const string SHADER_PROPERTY_COLOR_NORMAL = "_NormalColor";
     private const string SHADER_PROPERTY_COLOR_AVERAGE = "_AverageColor";
     private const string SHADER_PROPERTY_COLOR_THRESHOLD_1 = "_Threshold1Color";
     private const string SHADER_PROPERTY_COLOR_THRESHOLD_2 = "_Threshold2Color";
@@ -108,16 +107,9 @@ namespace Quantum.Profiling {
     }
 
     /// <inheritdoc/>
-    public override void SetValues(float[][] values, int offset, int samples) {
-      if (values == null || values.Length != _valueDimensions) {
+    public override void SetValues(float[] values, int offset, int samples) {
+      if (_values == null || values == null || _values.Length != values.Length)
         return;
-      }
-
-      for (int i = 0; i < _valueDimensions; ++i) {
-        if (values[i] == null || values[i].Length != _samples) {
-          return;
-        }
-      }
 
       float minValue = float.MaxValue;
       float maxValue = float.MinValue;
@@ -125,14 +117,8 @@ namespace Quantum.Profiling {
       int averageCount = 0;
 
       if (_ignoreZeroValuesInAverage == true) {
-        for (int j = 0; j < values[0].Length; ++j) {
-
-          float value = 0.0f;
-          for (int i = 0; i < _valueDimensions; ++i) {
-            if (IsValueDimensionEnabled(i)) {
-              value += values[i][j];
-            }
-          }
+        for (int i = 0; i < values.Length; ++i) {
+          float value = values[i];
 
           if (value != 0.0f) {
             averageValue += value;
@@ -149,13 +135,8 @@ namespace Quantum.Profiling {
 
         averageCount = Mathf.Clamp(Mathf.Min(samples, averageCount), 1, _samples);
       } else {
-        for (int j = 0; j < values[0].Length; ++j) {
-          float value = 0.0f;
-          for (int i = 0; i < _valueDimensions; ++i) {
-            if (IsValueDimensionEnabled(i)) {
-              value += values[i][j];
-            }
-          }
+        for (int i = 0; i < values.Length; ++i) {
+          float value = values[i];
 
           averageValue += value;
 
@@ -184,16 +165,9 @@ namespace Quantum.Profiling {
     /// <param name="minValue">Min value </param>
     /// <param name="maxValue">Max value</param>
     /// <param name="averageValue">Average value</param>
-    public void SetValues(float[][] values, int offset, float minValue, float maxValue, float averageValue) {
-      if (_values == null || values == null || _values.Length != values.Length || _values.Length != _valueDimensions || values.Length != _valueDimensions) {
+    public void SetValues(float[] values, int offset, float minValue, float maxValue, float averageValue) {
+      if (_values == null || values == null || _values.Length != values.Length)
         return;
-      }
-
-      for (int i = 0; i < _valueDimensions; ++i) {
-        if (_values[i] == null || values[i] == null || _values[i].Length < values[i].Length) {
-          return;
-        }
-      }
 
       _minValue = minValue;
       _maxValue = maxValue;
@@ -210,20 +184,14 @@ namespace Quantum.Profiling {
       _maxRenderValue = Mathf.Max(0.000001f, _maxRenderValue);
 
       float invertedMaxValue = 1.0f / _maxRenderValue;
-      
-      for (int i = 0; i < _valueDimensions; ++i) {
-        for (int j = 0; j < _samples; ++j, ++offset) {
-          offset %= _samples;
-          if (IsValueDimensionEnabled(i)) {
-            _values[i][j] = values[i][offset] * invertedMaxValue;
-          } else {
-            _values[i][j] = 0f;
-          }
-        }
+      for (int i = 0; i < _samples; ++i, ++offset) {
+        offset %= _samples;
 
-        _material.SetFloat(_averageShaderPropertyID, _averageValue / _maxRenderValue);
-        _material.SetFloatArray(_valuesShaderPropertyID[i], _values[i]);
+        _values[i] = values[offset] * invertedMaxValue;
       }
+
+      _material.SetFloat(_averageShaderPropertyID, _averageValue / _maxRenderValue);
+      _material.SetFloatArray(_valuesShaderPropertyID, _values);
 
       OnSetValues();
     }
@@ -319,7 +287,6 @@ namespace Quantum.Profiling {
 
     private void UpdateThresholdPosition(Text text, float threshold, float thresholdNormalized) {
       try {
-        text.gameObject.SetActive(thresholdNormalized <= 1f);
         Vector3 position = text.rectTransform.anchoredPosition3D;
         position.y = _targetImage.rectTransform.offsetMin.y + _targetImage.rectTransform.rect.height * thresholdNormalized;
         text.rectTransform.anchoredPosition3D = position;
@@ -655,5 +622,4 @@ namespace Quantum.Profiling {
       new string[] { "0.99ms","1.99ms","2.99ms","3.99ms","4.99ms","5.99ms","6.99ms","7.99ms","8.99ms","9.99ms",    "10.99ms","11.99ms","12.99ms","13.99ms","14.99ms","15.99ms","16.99ms","17.99ms","18.99ms","19.99ms",    "20.99ms","21.99ms","22.99ms","23.99ms","24.99ms","25.99ms","26.99ms","27.99ms","28.99ms","29.99ms",    "30.99ms","31.99ms","32.99ms","33.99ms","34.99ms","35.99ms","36.99ms","37.99ms","38.99ms","39.99ms",    "40.99ms","41.99ms","42.99ms","43.99ms","44.99ms","45.99ms","46.99ms","47.99ms","48.99ms","49.99ms",    "50.99ms","51.99ms","52.99ms","53.99ms","54.99ms","55.99ms","56.99ms","57.99ms","58.99ms","59.99ms",    "60.99ms","61.99ms","62.99ms","63.99ms","64.99ms","65.99ms","66.99ms","67.99ms","68.99ms","69.99ms",    "70.99ms","71.99ms","72.99ms","73.99ms","74.99ms","75.99ms","76.99ms","77.99ms","78.99ms","79.99ms",    "80.99ms","81.99ms","82.99ms","83.99ms","84.99ms","85.99ms","86.99ms","87.99ms","88.99ms","89.99ms",    "90.99ms","91.99ms","92.99ms","93.99ms","94.99ms","95.99ms","96.99ms","97.99ms","98.99ms","99.99ms", },
     };
   }
-#endif
 }

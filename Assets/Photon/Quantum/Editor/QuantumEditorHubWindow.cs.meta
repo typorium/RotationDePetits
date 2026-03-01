@@ -9,7 +9,6 @@ MonoImporter:
   - ProductLogo: {fileID: 2800000, guid: fa1021bbe0ab3d94ea3dd3cb52c3b793, type: 3}
   - CorrectIcon: {fileID: 2800000, guid: 8958b450dee843f41a091a734ed43ccd, type: 3}
   - MissingIcon: {fileID: 2800000, guid: 8491ac03603357649a00077468789d52, type: 3}
-  - DocumentationIcon: {fileID: 2800000, guid: ac3bb1641dbebe441be81b7b3af3606c, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

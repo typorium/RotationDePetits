@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Sky/sky-mushroom_38|sky-mushroom_38StageTile
     Guid:
-      Value: 288735638719960798
+      Value: 4506601897273585493
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0

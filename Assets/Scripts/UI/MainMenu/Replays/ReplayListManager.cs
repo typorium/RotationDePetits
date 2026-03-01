@@ -54,7 +54,6 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         //---Private Variables
         private readonly List<TMP_Text> headers = new();
         private readonly List<ReplayListEntry> replays = new();
-        private readonly HashSet<string> loadedReplayPaths = new();
         private readonly SortedSet<ReplayListEntry> temporaryReplays = new(new ReplayDateComparer());
         private bool sortAscending;
         private int sortIndex;
@@ -311,17 +310,19 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                     languageChangedSinceLastOpen = false;
                 }
 
-                await Awaitable.BackgroundThreadAsync();
+                //await Awaitable.BackgroundThreadAsync();
 
                 List<BinaryReplayFile> newReplays = new();
                 foreach (var filepath in Directory.EnumerateFiles(ReplayDirectory, "*.mvlreplay", SearchOption.AllDirectories)) {
-                    if (loadedReplayPaths.Contains(filepath)) {
+                    if (newReplays.Any(brf => brf.FilePath == filepath)) {
                         continue;
                     }
 
-                    if (BinaryReplayFile.TryLoadNewFromFile(filepath, false, out BinaryReplayFile replay) == ReplayParseResult.Success) {
+                    var parseResult = BinaryReplayFile.TryLoadNewFromFile(filepath, false, out BinaryReplayFile replay);
+                    if (parseResult == ReplayParseResult.Success) {
                         newReplays.Add(replay);
-                        loadedReplayPaths.Add(filepath);
+                    } else {
+                        Debug.Log("parsing " + filepath + " failed: " + parseResult);
                     }
                 }
 

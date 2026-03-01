@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using Quantum.Collections;
+using Quantum.Profiling;
 using System;
 
 namespace Quantum {
@@ -51,10 +52,16 @@ namespace Quantum {
                 return;
             }
 
+#if QUANTUM_3_1
             foreach (var _ in f.GetPlayerCommands<CommandSpawnReserveItem>(player)) {
                 SpawnReserveItem(f, ref filter);
                 break;
             }
+#else
+            if (f.GetPlayerCommand(player) is CommandSpawnReserveItem) {
+                SpawnReserveItem(f, ref filter);
+            }
+#endif
 
             if (HandleMegaMushroom(f, ref filter, physics, stage)) {
                 HandleHitbox(f, ref filter, physics);

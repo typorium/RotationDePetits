@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/Volcano/Yellow/YellowHardBlock|YellowHardBlockStageTile
     Guid:
-      Value: 498471512992116307
+      Value: 3142821069186826319
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1

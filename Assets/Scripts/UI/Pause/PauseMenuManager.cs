@@ -234,7 +234,7 @@ namespace NSMB.UI.Pause {
                 PlayerRef host = f.Global->Host;
 
                 if (game.PlayerIsLocal(host)) {
-                    game.AddCommand(game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)], new CommandHostEndGame());
+                    game.SendCommand(game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)], new CommandHostEndGame());
                 }
             }
             Unpause(false);

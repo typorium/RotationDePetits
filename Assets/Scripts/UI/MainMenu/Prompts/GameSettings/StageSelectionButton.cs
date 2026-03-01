@@ -47,7 +47,7 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
             QuantumGame game = QuantumRunner.DefaultGame;
             PlayerRef host = game.Frames.Predicted.Global->Host;
             if (game.PlayerIsLocal(host)) {
-                game.AddCommand(game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)], cmd);
+                game.SendCommand(game.GetLocalPlayerSlots()[game.GetLocalPlayers().IndexOf(host)], cmd);
                 canvas.PlayConfirmSound();
             } else {
                 canvas.PlaySound(SoundEffect.UI_Error);

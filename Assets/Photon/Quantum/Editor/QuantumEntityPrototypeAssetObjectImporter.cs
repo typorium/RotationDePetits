@@ -55,16 +55,10 @@ namespace Quantum.Editor {
       
       QuantumUnityDBUtilities.AddAssetGuidOverridesDependency(ctx);
       
-      if (QuantumUnityDBUtilities.IsAssetIgnored(prefabPath)) {
-        QuantumEditorLog.TraceImport(ctx.assetPath, $"Not importing, prefab {prefabGuid} is ignored");
-        return;
-      }
-      
       if (!prefab.TryGetComponent(out QuantumEntityPrototype component)) {
         QuantumEditorLog.TraceImport(ctx.assetPath, $"Not importing, prefab {prefabGuid} does not have a {nameof(QuantumEntityPrototype)} component");
         return;
       }
-      
 
       // create root object
       var selfViewAsset = AssetDatabase.LoadAssetAtPath<Quantum.EntityView>(prefabPath);

@@ -81,7 +81,6 @@ MonoBehaviour:
       Z:
         RawValue: 0
     SolverType: 1
-    WarmStart: 1
     SolverIterations: 4
     PositionSolverIterations: 2
     UseJoints: 0
@@ -113,6 +112,7 @@ MonoBehaviour:
     AngularSleepToleranceInRad:
       RawValue: 2288
     AllowCCD: 0
+    InvokeSpeculativeCallbacks: 1
     CCDLinearVelocityThreshold:
       RawValue: 196608
     CCDAngularVelocityThreshold:
@@ -190,29 +190,19 @@ MonoBehaviour:
     MaxAvoidanceCandidates: 64
     VelocityObstacleTruncationFactor:
       RawValue: 72090
-  Heap:
-    TrackingMode: 0
-    Management: 2
-    PageSize: 3
-    SegmentSize: 4
-    SegmentCapacity: 32
-    PageShift: 15
-    PageCount: 512
-    ExtraHeapCount: 1
-  HeapTrackingMode: 0
-  HeapPageShift: 0
-  HeapPageCount: 0
-  HeapExtraCount: 0
-  HeapSettingsMigrated: 0
   AutoLoadSceneFromMap: 0
   DeltaTimeType: 0
   ThreadCount: 4
   ChecksumSnapshotHistoryLengthSeconds:
-    RawValue: 196608
+    RawValue: 65536
   ChecksumErrorDumpOptions: 0
+  HeapTrackingMode: 0
+  HeapPageShift: 15
+  HeapPageCount: 256
+  HeapExtraCount: 1
   InvisibleSolidTile:
     Id:
-      Value: 282924479522535788
+      Value: 4423967472839712564
   AllGamemodes:
   - Id:
       Value: 326486899682662279
@@ -265,8 +255,6 @@ MonoBehaviour:
       Value: 2370489195152201878
   UpdateInterval: 1
   PathQuality: 1
-  HeuristicWeight:
-    RawValue: 65536
   CachedWaypointCount: 6
   MaxRepathTimeout:
     RawValue: 327680
@@ -274,6 +262,7 @@ MonoBehaviour:
   DynamicLineOfSight: 0
   DynamicLineOfSightWaypointRange:
     RawValue: 0
+  AutomaticTargetCorrection: 1
   AutomaticTargetCorrectionRadius:
     RawValue: 65536
   EnableWaypointDetectionAxis: 0

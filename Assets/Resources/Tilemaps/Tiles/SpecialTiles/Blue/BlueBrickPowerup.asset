@@ -54,7 +54,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/SpecialTiles/Blue/BlueBrickPowerup|BluePowerupStageTile
     Guid:
-      Value: 300455806277301968
+      Value: 3653227243655197285
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 1
@@ -80,7 +80,7 @@ MonoBehaviour:
   resultTile:
     Tile:
       Id:
-        Value: 407138680637916208
+        Value: 370399813846575532
     Rotation: 0
     Flags: 0
   smallPowerup:

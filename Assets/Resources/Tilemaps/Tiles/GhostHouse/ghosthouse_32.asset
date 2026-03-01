@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: Resources/Tilemaps/Tiles/GhostHouse/ghosthouse_32|ghosthouse_32StageTile
     Guid:
-      Value: 344175927342219308
+      Value: 3677873628020166395
   Tile: {fileID: 11400000}
   CollisionData:
     IsFullTile: 0
