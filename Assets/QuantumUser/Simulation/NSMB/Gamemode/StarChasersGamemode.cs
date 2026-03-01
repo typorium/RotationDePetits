@@ -113,17 +113,20 @@ namespace Quantum {
 
             int starBand = starsFirstPlace - starsLastPlace;
 
+            FP normLeader = (FP)starsFirstPlace / starsToWin;
+            FP normStarAvg = starsAvg / starsToWin;
+
             // item ranking formulas which is used for determining which items spawn
-            FP itemRank = avgDiff - (FP)diffLeader / 5 * starBand / starsToWin;
+            FP itemRank = avgDiff - diffLeader / 5 * starBand / starsToWin * (normLeader * starsToWin / 4);
             FP bonus;
 
             // being above the average means you get different formula
-            if (avgDiff > 0) {
-                FP magni = (FP)starBand / starsToWin;
-                bonus = item.AboveAverageBonus * FPMath.Log(itemRank + 1, FP.E) * magni;
+            if (itemRank > 0) {
+                FP magni = (starBand + normStarAvg * starsToWin) / starsToWin;
+                bonus = item.AboveAverageBonus * FPMath.Log(FPMath.Abs(itemRank) + 1, FP.E) * magni;
             } else {
-                FP magni = (starsAvg + (FP)starsFirstPlace * FP._5) / starsToWin;
-                bonus = item.BelowAverageBonus * FPMath.Log(itemRank + 1, FP.E) * magni;
+                FP magni = (starsAvg + starsFirstPlace * FP._5) / starsToWin;
+                bonus = item.BelowAverageBonus * FPMath.Log(FPMath.Abs(itemRank) + 1, FP.E) * magni;
             }
             return FPMath.Max(0, item.SpawnChance + bonus);
         }
