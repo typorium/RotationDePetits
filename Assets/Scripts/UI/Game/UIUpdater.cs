@@ -235,10 +235,8 @@ namespace NSMB.UI.Game {
             }
 
             // do bowser death anim -> set sprite to character's silhouette -> do respawn anim
-            GlobalController.Instance.fader.Fade(AnimatedFader.FadeStyle.Respawn, AnimatedFader.FadeStyle.Respawn, () =>
-            {
-                GlobalController.Instance.fader.SetRespawnStyleSilhouetteSprite
-                (
+            GlobalController.Instance.fader.Fade(AnimatedFader.FadeStyle.Respawn, AnimatedFader.FadeStyle.Respawn, () => {
+                GlobalController.Instance.fader.SetRespawnStyleSilhouetteSprite(
                     e.Game.Frames.Predicted.Unsafe.TryGetPointer(Target, out MarioPlayer* mario) &&
                     QuantumUnityDB.TryGetGlobalAsset(mario->CharacterAsset, out CharacterAsset character)
                         ? character.SilhouetteSprite

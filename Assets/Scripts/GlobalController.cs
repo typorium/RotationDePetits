@@ -9,13 +9,12 @@ using Quantum;
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using NSMB.UI.Game;
 using NSMB.Sound;
-
+using NSMB.UI;
 
 #if UNITY_STANDALONE
 using NSMB.UI.MainMenu.Submenus.Replays;
