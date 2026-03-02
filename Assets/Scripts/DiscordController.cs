@@ -92,7 +92,7 @@ namespace NSMB {
             }
 
             if (!Settings.Instance.GeneralDiscordIntegration) {
-                activityManager.ClearActivity(null);
+                activityManager.ClearActivity(_ => { });
                 return;
             }
 
@@ -153,7 +153,7 @@ namespace NSMB {
                 activity.Assets = new() { LargeImage = "mainmenu" };
             }
 
-            activityManager.UpdateActivity(activity, null);
+            activityManager.UpdateActivity(activity, _ => { });
         }
 
         private void OnLanguageChanged(TranslationManager tm) {

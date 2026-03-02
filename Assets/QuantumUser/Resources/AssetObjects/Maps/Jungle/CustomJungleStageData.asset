@@ -67,7 +67,9 @@ MonoBehaviour:
     B: 44
     A: 255
   HidePlayersOnMinimap: 0
-  BannedCoinItems: []
+  BannedCoinItems:
+  - Id:
+      Value: 481353246829238635
   SfxOverrides: []
   MainMusic:
   - Id:
