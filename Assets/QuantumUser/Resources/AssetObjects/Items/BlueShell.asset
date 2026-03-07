@@ -76,5 +76,5 @@ MonoBehaviour:
     Keys: []
   StatePriority: 2
   ItemPriority: 2
-  EnterReserveIfOverridden: 0
+  EnterReserveIfOverridden: 1
   SfxOverrides: []

@@ -1,7 +1,7 @@
 using Photon.Deterministic;
 
 namespace Quantum {
-    public unsafe class BulletBillLauncherSystem : SystemMainThreadEntityFilter<BulletBill, BulletBillLauncherSystem.Filter>, ISignalOnComponentRemoved<BulletBill> {
+    public unsafe class BulletBillLauncherSystem : SystemMainThreadEntityFilter<BulletBillLauncher, BulletBillLauncherSystem.Filter>, ISignalOnComponentRemoved<BulletBill> {
         public struct Filter {
             public EntityRef Entity;
             public BulletBillLauncher* Launcher;
