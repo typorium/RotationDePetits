@@ -15,6 +15,7 @@ public class MiscParticles : QuantumSceneViewComponent {
         QuantumEvent.Subscribe<EventProjectileDestroyed>(this, OnProjectileDestroyed, FilterOutReplayFastForward);
         QuantumEvent.Subscribe<EventCollectableDespawned>(this, OnCollectableDespawned, FilterOutReplayFastForward);
         QuantumEvent.Subscribe<EventEnemyKicked>(this, OnEnemyKicked, FilterOutReplayFastForward);
+        QuantumEvent.Subscribe<EventEnemySufferedOffscreen>(this, OnEnemySufferedOffscreen, FilterOutReplayFastForward);
         Instance = this;
     }
 
@@ -53,6 +54,10 @@ public class MiscParticles : QuantumSceneViewComponent {
                 view.transform.position + (Vector3.back * 5) + (Vector3.up * 0.1f),
                 Quaternion.identity);
         }
+    }
+
+    private unsafe void OnEnemySufferedOffscreen(EventEnemySufferedOffscreen e) {
+        Play(ParticleEffect.Puff, e.Position.ToUnityVector3());
     }
 
     [Serializable]

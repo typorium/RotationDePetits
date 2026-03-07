@@ -20,7 +20,7 @@ MonoBehaviour:
     Id:
       Value: 1268531089014898302
   SpawnChance:
-    RawValue: 98304
+    RawValue: 57344
   AboveAverageBonus:
     RawValue: 65536
   BelowAverageBonus:

@@ -125,7 +125,7 @@ namespace Quantum {
                 FP magni = (starBand + normStarAvg * starsToWin) / starsToWin;
                 bonus = item.AboveAverageBonus * FPMath.Log(FPMath.Abs(itemRank) + 1, FP.E) * magni;
             } else {
-                FP magni = (starsAvg + starsFirstPlace * FP._5) / starsToWin;
+                FP magni = (starsAvg + starsFirstPlace * FP._0_50) / starsToWin;
                 bonus = item.BelowAverageBonus * FPMath.Log(FPMath.Abs(itemRank) + 1, FP.E) * magni;
             }
             return FPMath.Max(0, item.SpawnChance + bonus);
