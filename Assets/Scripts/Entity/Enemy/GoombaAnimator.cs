@@ -30,7 +30,7 @@ namespace NSMB.Entities.Enemies {
             QuantumEvent.Subscribe<EventPlayComboSound>(this, OnPlayComboSound, FilterOutReplayFastForward);
             QuantumEvent.Subscribe<EventEnemyRespawnSparkles>(this, OnEnemyRespawnSparkles, FilterOutReplayFastForward);
             QuantumEvent.Subscribe<EventEnemyAfterDelayedRespawn>(this, OnEnemyAfterDelayedRespawn, FilterOutReplayFastForward);
-
+            QuantumEvent.Subscribe<EventEnemySufferedOffscreen>(this, OnEnemySufferedOffscreen, FilterOutReplayFastForward);
         }
 
         public override unsafe void OnUpdateView() {
@@ -109,6 +109,18 @@ namespace NSMB.Entities.Enemies {
             }
 
             sfx.PlayOneShot(SoundEffect.Player_Sound_Respawn);
+        }
+
+        private void OnEnemySufferedOffscreen(EventEnemySufferedOffscreen e) {
+            if (e.Entity != EntityRef) {
+                return;
+            }
+
+            Frame f = PredictedFrame;
+
+            var enemy = f.Unsafe.GetPointer<Enemy>(EntityRef);
+
+            Instantiate(Enums.PrefabParticle.Enemy_Puff.GetGameObject(), enemy->Spawnpoint.ToUnityVector3() + (Vector3.up * 0.25f), Quaternion.identity);
         }
     }
 }

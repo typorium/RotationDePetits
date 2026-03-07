@@ -34,8 +34,8 @@ namespace Quantum {
          * <summary>
          * Sets the respawn data for the enemy
          * </summary>
-         * <param name="waitTime">How long to wait until the enemy respawns in seconds.</param>
-         * <param name="sparklesTime">When the sparkles will spawn (based off time remaining) also in seconds.</param>
+         * <param name="waitTime">How long to wait until the enemy respawns in frames.</param>
+         * <param name="sparklesTime">When the sparkles will spawn (based off time remaining) also in frames.</param>
          */
         public void SetDelayedRespawn(int waitTime = 420, int sparklesTime = 80) {
             RespawnTimer = waitTime;
@@ -47,6 +47,7 @@ namespace Quantum {
 
             IsActive = true;
             IsDead = false;
+            LeftHome = false;
             SetDelayedRespawn(0, 0);
             transform->Teleport(f, Spawnpoint);
 

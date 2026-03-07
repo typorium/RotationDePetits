@@ -533,7 +533,7 @@ namespace Quantum {
         }
 
         public void OnEnemyAfterDelayedRespawn(Frame f, EntityRef entity) {
-            if (f.Unsafe.TryGetPointer(entity, out Koopa* koopa) && koopa->IsInShell) {
+            if (f.Unsafe.TryGetPointer(entity, out Koopa* koopa)) {
                 koopa->Respawn(f, entity);
             }
         }

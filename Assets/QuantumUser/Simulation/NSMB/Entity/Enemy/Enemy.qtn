@@ -1,5 +1,5 @@
 #define EnemyHomeBoxWidth 8
-#define EnemyHomeBoxBuffer 10
+#define EnemyHomeBoxBuffer 8
 #define EnemyHomeBoxLeaveWidth 3
 
 component Enemy {
@@ -11,6 +11,7 @@ component Enemy {
 	[ExcludeFromPrototype] bool IsActive;
 	[ExcludeFromPrototype] bool IsDead;
 	[ExcludeFromPrototype] bool FacingRight;
+	[ExcludeFromPrototype] bool LeftHome;
 	[ExcludeFromPrototype] int RespawnTimer;
 	[ExcludeFromPrototype] int RespawnSparklesTimer;
 }
@@ -54,6 +55,11 @@ event PlayBumpSound {
 event EnemyKicked {
 	EntityRef Entity;
 	bool Groundpounded;
+}
+
+event EnemySufferedOffscreen {
+	EntityRef Entity;
+	nothashed FPVector2 Position;
 }
 
 event EnemyRespawnSparkles {

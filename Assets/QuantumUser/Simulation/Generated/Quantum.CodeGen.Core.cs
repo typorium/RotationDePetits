@@ -2071,15 +2071,15 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct Enemy : Quantum.IComponent {
-    public const Int32 SIZE = 48;
+    public const Int32 SIZE = 56;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(32)]
+    [FieldOffset(40)]
     public FPVector2 Spawnpoint;
     [FieldOffset(16)]
     public QBoolean IgnorePlayerWhenRespawning;
     [FieldOffset(8)]
     public QBoolean DisableRespawning;
-    [FieldOffset(28)]
+    [FieldOffset(32)]
     public QBoolean StayAtHomeWhenOffscreen;
     [FieldOffset(20)]
     [ExcludeFromPrototype()]
@@ -2090,6 +2090,9 @@ namespace Quantum {
     [FieldOffset(12)]
     [ExcludeFromPrototype()]
     public QBoolean FacingRight;
+    [FieldOffset(28)]
+    [ExcludeFromPrototype()]
+    public QBoolean LeftHome;
     [FieldOffset(4)]
     [ExcludeFromPrototype()]
     public Int32 RespawnTimer;
@@ -2106,6 +2109,7 @@ namespace Quantum {
         hash = hash * 31 + IsActive.GetHashCode();
         hash = hash * 31 + IsDead.GetHashCode();
         hash = hash * 31 + FacingRight.GetHashCode();
+        hash = hash * 31 + LeftHome.GetHashCode();
         hash = hash * 31 + RespawnTimer.GetHashCode();
         hash = hash * 31 + RespawnSparklesTimer.GetHashCode();
         return hash;
@@ -2120,6 +2124,7 @@ namespace Quantum {
         QBoolean.Serialize(&p->IgnorePlayerWhenRespawning, serializer);
         QBoolean.Serialize(&p->IsActive, serializer);
         QBoolean.Serialize(&p->IsDead, serializer);
+        QBoolean.Serialize(&p->LeftHome, serializer);
         QBoolean.Serialize(&p->StayAtHomeWhenOffscreen, serializer);
         FPVector2.Serialize(&p->Spawnpoint, serializer);
     }
@@ -3502,7 +3507,7 @@ namespace Quantum {
   public static unsafe partial class Constants {
     public const Int32 MaxStarSpawns = 64;
     public const Int32 EnemyHomeBoxWidth = 8;
-    public const Int32 EnemyHomeBoxBuffer = 10;
+    public const Int32 EnemyHomeBoxBuffer = 8;
     public const Int32 EnemyHomeBoxLeaveWidth = 3;
     public const Int32 MaxPlayers = 10;
     /// <summary>8.5</summary>

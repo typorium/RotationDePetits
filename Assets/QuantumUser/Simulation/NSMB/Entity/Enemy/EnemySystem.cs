@@ -158,6 +158,7 @@ namespace Quantum {
             if (QuantumUtils.Decrement(ref enemy->RespawnTimer)) {
                 enemy->Respawn(f, filter.Entity, false);
                 f.Events.EnemyAfterDelayedRespawn(filter.Entity);
+                f.Signals.OnEnemyAfterDelayedRespawn(filter.Entity);
             }
 
             if (enemy->RespawnTimer == enemy->RespawnSparklesTimer && enemy->RespawnSparklesTimer != 0) {
@@ -175,24 +176,38 @@ namespace Quantum {
 
             // check if any Mario is near the enemy
             while (allPlayersFilter.NextUnsafe(out _, out _, out Transform2D* marioTransform)) {
+                // despawn if out of view of Mario
                 QuantumUtils.WrappedDistance(stage, transform->Position, marioTransform->Position, out FP distanceToMario);
                 if (FPMath.Abs(distanceToMario) < Constants.EnemyHomeBoxWidth) {
                     return;
                 }
 
-                QuantumUtils.WrappedDistance(stage, enemy->Spawnpoint, marioTransform->Position, out FP marioDistanceToSpawnpoint);
-                if (FPMath.Abs(marioDistanceToSpawnpoint) < Constants.EnemyHomeBoxBuffer) {
+                // check if a Mario is in the spawnpoint
+                QuantumUtils.WrappedDistance(stage, enemy->Spawnpoint, marioTransform->Position, out FP marioDistToSpawnpoint);
+                if (FPMath.Abs(marioDistToSpawnpoint) < Constants.EnemyHomeBoxBuffer) {
                     marioInSpawnpoint = true;
+                    break;
                 }
             }
 
-            if (marioInSpawnpoint) {
-                // just teleport if the enemy didn't leave its home
-                if (f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject)) {
-                    if (physicsObject->IsFrozen) return;
-                    physicsObject->Velocity = FPVector2.Zero;
-                }
+            bool foundPhysicsObj;
 
+            // freeze check! Do not teleport frozen enemies.
+            if (foundPhysicsObj=f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject)) {
+                if (physicsObject->IsFrozen) return;
+            }
+
+            // check if the enemy left its home
+            if (!enemy->LeftHome) {
+                QuantumUtils.WrappedDistance(stage, enemy->Spawnpoint, transform->Position, out FP enemyDistToSpawnpoint);
+                if (FPMath.Abs(enemyDistToSpawnpoint) > Constants.EnemyHomeBoxLeaveWidth) {
+                    enemy->LeftHome = true;
+                }
+            }
+
+            if (!marioInSpawnpoint &! enemy->LeftHome) {
+                // set to 0
+                if (foundPhysicsObj) physicsObject->Velocity = FPVector2.Zero;
                 // turn to face the player while in the shadows
                 var shouldFaceRight = false;
                 var closestMario = enemy->FindClosestPlayer(f, entity);
@@ -211,7 +226,8 @@ namespace Quantum {
                 // "kill" the enemy if a Mario is in its spawnpoint
                 enemy->IsActive = false;
                 enemy->IsDead = true;
-                enemy->SetDelayedRespawn();
+                enemy->SetDelayedRespawn(300); // lower respawn time
+                f.Events.EnemySufferedOffscreen(entity, f.Unsafe.GetPointer<Transform2D>(entity)->Position);
             }
         }
 
