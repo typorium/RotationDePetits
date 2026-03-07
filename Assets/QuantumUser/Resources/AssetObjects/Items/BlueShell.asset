@@ -22,7 +22,7 @@ MonoBehaviour:
   SpawnChance:
     RawValue: 131072
   AboveAverageBonus:
-    RawValue: 16384
+    RawValue: -49152
   BelowAverageBonus:
     RawValue: 8192
   BlockSpawnSoundEffect: 69
