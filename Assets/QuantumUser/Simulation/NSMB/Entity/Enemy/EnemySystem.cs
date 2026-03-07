@@ -156,9 +156,9 @@ namespace Quantum {
         public void HandleDelayedRespawn(Frame f, Filter filter, VersusStageData stage) {
             var enemy = filter.Enemy;
             if (QuantumUtils.Decrement(ref enemy->RespawnTimer)) {
-                enemy->Respawn(f, filter.Entity, false);
+                enemy->Respawn(f, filter.Entity);
                 f.Events.EnemyAfterDelayedRespawn(filter.Entity);
-                f.Signals.OnEnemyAfterDelayedRespawn(filter.Entity);
+                f.Signals.OnEnemyRespawned(filter.Entity);
             }
 
             if (enemy->RespawnTimer == enemy->RespawnSparklesTimer && enemy->RespawnSparklesTimer != 0) {
@@ -228,10 +228,12 @@ namespace Quantum {
                 enemy->IsDead = true;
                 enemy->SetDelayedRespawn(300); // lower respawn time
                 f.Events.EnemySufferedOffscreen(entity, f.Unsafe.GetPointer<Transform2D>(entity)->Position);
+                f.Signals.OnEnemyDespawned(entity);
             }
         }
 
         public void OnStageReset(Frame f, QBoolean full) {
+            if (!full) return; // ignore non-full resets
             var filter = f.Filter<Enemy, Transform2D>();
 
             while (filter.NextUnsafe(out EntityRef entity, out Enemy* enemy, out Transform2D* transform)) {
@@ -261,7 +263,7 @@ namespace Quantum {
                         }
                     }
 
-                    enemy->Respawn(f, entity, true);
+                    enemy->Respawn(f, entity);
                     f.Signals.OnEnemyRespawned(entity);
                 }
             }

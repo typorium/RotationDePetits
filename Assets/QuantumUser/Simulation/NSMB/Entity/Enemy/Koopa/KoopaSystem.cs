@@ -4,7 +4,7 @@ using Quantum.Collections;
 namespace Quantum {
     public unsafe class KoopaSystem : SystemMainThreadEntityFilter<Koopa, KoopaSystem.Filter>, ISignalOnThrowHoldable, ISignalOnEnemyRespawned, ISignalOnEntityBumped,
         ISignalOnBobombExplodeEntity, ISignalOnIceBlockBroken, ISignalOnEnemyKilledByStageReset, ISignalOnEnemyTurnaround, ISignalOnEntityCrushed,
-        ISignalOnMarioPlayerBecameInvincible, ISignalOnEnemyReturnedHome, ISignalOnEnemyAfterDelayedRespawn {
+        ISignalOnMarioPlayerBecameInvincible, ISignalOnEnemyReturnedHome {
        
         public struct Filter {
             public EntityRef Entity;
@@ -528,12 +528,6 @@ namespace Quantum {
 
         public void OnEnemyReturnedHome(Frame f, EntityRef entity) {
             if (f.Unsafe.TryGetPointer(entity, out Koopa* koopa) && koopa->IsInShell) {
-                koopa->Respawn(f, entity);
-            }
-        }
-
-        public void OnEnemyAfterDelayedRespawn(Frame f, EntityRef entity) {
-            if (f.Unsafe.TryGetPointer(entity, out Koopa* koopa)) {
                 koopa->Respawn(f, entity);
             }
         }

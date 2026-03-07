@@ -23,7 +23,6 @@ signal OnEnemyKilledByStageReset(EntityRef entity);
 signal OnEnemyTurnaround(EntityRef entity);
 signal OnEnemyReturnedHome(EntityRef entity);
 signal OnEnemyRespawnSparkles(EntityRef entity);
-signal OnEnemyAfterDelayedRespawn(EntityRef entity);
 
 enum EnemyKillReason : Byte {
 	Normal,

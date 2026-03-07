@@ -3432,9 +3432,6 @@ namespace Quantum {
   public unsafe partial interface ISignalOnEnemyRespawnSparkles : ISignal {
     void OnEnemyRespawnSparkles(Frame f, EntityRef entity);
   }
-  public unsafe partial interface ISignalOnEnemyAfterDelayedRespawn : ISignal {
-    void OnEnemyAfterDelayedRespawn(Frame f, EntityRef entity);
-  }
   public unsafe partial interface ISignalOnEntityFreeze : ISignal {
     void OnEntityFreeze(Frame f, EntityRef entity, EntityRef iceBlock);
   }
@@ -3808,7 +3805,6 @@ namespace Quantum {
     private ISignalOnEnemyTurnaround[] _ISignalOnEnemyTurnaroundSystems;
     private ISignalOnEnemyReturnedHome[] _ISignalOnEnemyReturnedHomeSystems;
     private ISignalOnEnemyRespawnSparkles[] _ISignalOnEnemyRespawnSparklesSystems;
-    private ISignalOnEnemyAfterDelayedRespawn[] _ISignalOnEnemyAfterDelayedRespawnSystems;
     private ISignalOnEntityFreeze[] _ISignalOnEntityFreezeSystems;
     private ISignalOnLoadingComplete[] _ISignalOnLoadingCompleteSystems;
     private ISignalOnGameStarting[] _ISignalOnGameStartingSystems;
@@ -3856,7 +3852,6 @@ namespace Quantum {
       _ISignalOnEnemyTurnaroundSystems = BuildSignalsArray<ISignalOnEnemyTurnaround>();
       _ISignalOnEnemyReturnedHomeSystems = BuildSignalsArray<ISignalOnEnemyReturnedHome>();
       _ISignalOnEnemyRespawnSparklesSystems = BuildSignalsArray<ISignalOnEnemyRespawnSparkles>();
-      _ISignalOnEnemyAfterDelayedRespawnSystems = BuildSignalsArray<ISignalOnEnemyAfterDelayedRespawn>();
       _ISignalOnEntityFreezeSystems = BuildSignalsArray<ISignalOnEntityFreeze>();
       _ISignalOnLoadingCompleteSystems = BuildSignalsArray<ISignalOnLoadingComplete>();
       _ISignalOnGameStartingSystems = BuildSignalsArray<ISignalOnGameStarting>();
@@ -4139,15 +4134,6 @@ namespace Quantum {
           var s = array[i];
           if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
             s.OnEnemyRespawnSparkles(_f, entity);
-          }
-        }
-      }
-      public void OnEnemyAfterDelayedRespawn(EntityRef entity) {
-        var array = _f._ISignalOnEnemyAfterDelayedRespawnSystems;
-        for (Int32 i = 0; i < array.Length; ++i) {
-          var s = array[i];
-          if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
-            s.OnEnemyAfterDelayedRespawn(_f, entity);
           }
         }
       }

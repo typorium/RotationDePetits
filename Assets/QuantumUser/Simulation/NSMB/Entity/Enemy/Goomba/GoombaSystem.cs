@@ -2,7 +2,7 @@ using Photon.Deterministic;
 
 namespace Quantum {
     public unsafe class GoombaSystem : SystemMainThreadEntityFilter<Goomba, GoombaSystem.Filter>, ISignalOnEntityBumped, ISignalOnBobombExplodeEntity,
-        ISignalOnIceBlockBroken, ISignalOnEnemyKilledByStageReset, ISignalOnEntityCrushed, ISignalOnEnemyRespawned, ISignalOnEnemyAfterDelayedRespawn {
+        ISignalOnIceBlockBroken, ISignalOnEnemyKilledByStageReset, ISignalOnEntityCrushed, ISignalOnEnemyRespawned {
 
         public struct Filter {
 			public EntityRef Entity;
@@ -170,12 +170,6 @@ namespace Quantum {
         }
 
         public void OnEnemyRespawned(Frame f, EntityRef entity) {
-            if (f.Unsafe.TryGetPointer(entity, out Goomba* goomba)) {
-                goomba->Respawn(f, entity);
-            }
-        }
-
-        public void OnEnemyAfterDelayedRespawn(Frame f, EntityRef entity) {
             if (f.Unsafe.TryGetPointer(entity, out Goomba* goomba)) {
                 goomba->Respawn(f, entity);
             }

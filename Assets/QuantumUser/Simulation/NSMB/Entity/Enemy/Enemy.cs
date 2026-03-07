@@ -42,7 +42,7 @@ namespace Quantum {
             RespawnSparklesTimer = sparklesTime;
         }
 
-        public void Respawn(Frame f, EntityRef entity, bool fromStar) {
+        public void Respawn(Frame f, EntityRef entity) {
             var transform = f.Unsafe.GetPointer<Transform2D>(entity);
 
             IsActive = true;
