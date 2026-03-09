@@ -2,7 +2,6 @@ using Photon.Deterministic;
 using Quantum.Collections;
 using Quantum.Profiling;
 using System;
-using System.Diagnostics.Eventing.Reader;
 
 namespace Quantum {
     public unsafe class MarioPlayerSystem : SystemMainThreadEntityFilter<MarioPlayer, MarioPlayerSystem.Filter>, ISignalOnComponentRemoved<Projectile>,
@@ -2146,6 +2145,7 @@ namespace Quantum {
                         }
                     }
                 } else if (marioAMega) {
+                    // only one player is Mega case
                     if (dropStars) {
                         marioB->Powerdown(f, marioBEntity, false, marioAEntity);
                     } else {
@@ -2197,6 +2197,7 @@ namespace Quantum {
                 // Blue shell cases
                 bool marioAShell = marioA->IsInShell;
                 bool marioBShell = marioB->IsInShell;
+                // both players hit each other while spinning
                 if (marioAShell && marioBShell) {
                     bool damaged = false;
                     damaged |= marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, KnockbackStrength.CollisionBump, marioBEntity);
@@ -2206,25 +2207,28 @@ namespace Quantum {
                     }
                     return;
                 } else if (marioAShell) {
+                    // only marioA is spinning in blue shell
                     if (!marioBAbove) {
                         // Hit them, powerdown them
                         marioB->FacingRight = !fromRight;
-                        marioB->DoKnockback(f, marioBEntity, !fromRight, 0, KnockbackStrength.Normal, marioAEntity);
+                        // powerdown must come before doknockback or it will not occur
                         if (dropStars) {
                             marioB->Powerdown(f, marioBEntity, false, marioAEntity);
                         }
+                        marioB->DoKnockback(f, marioBEntity, !fromRight, 0, KnockbackStrength.Normal, marioAEntity);
                         marioA->FacingRight = !marioA->FacingRight;
                         f.Events.PlayBumpSound(marioAEntity);
                         return;
                     }
                 } else if (marioBShell) {
+                    // only marioB is spinning in blue shell
                     if (!marioAAbove) {
                         // Hit them, powerdown them
                         marioA->FacingRight = fromRight;
-                        marioA->DoKnockback(f, marioAEntity, fromRight, 0, KnockbackStrength.Normal, marioBEntity);
                         if (dropStars) {
                             marioA->Powerdown(f, marioAEntity, false, marioBEntity);
                         }
+                        marioA->DoKnockback(f, marioAEntity, fromRight, 0, KnockbackStrength.Normal, marioBEntity);
                         marioB->FacingRight = !marioB->FacingRight;
                         f.Events.PlayBumpSound(marioBEntity);
                         return;
@@ -2254,14 +2258,14 @@ namespace Quantum {
                 bool marioBMini = marioB->CurrentPowerupState == PowerupState.MiniMushroom;
                 if (!marioA->IsInKnockback && !marioB->IsInKnockback && marioAMini ^ marioBMini) {
                     // Minis
-                    bool damaged = false;
+                    bool dealtKnockback = false;
                     if (marioAMini) {
-                        damaged = marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioBEntity);
+                        dealtKnockback = marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioBEntity);
                     }
                     if (marioBMini) {
-                        damaged = marioB->DoKnockback(f, marioBEntity, !fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioAEntity);
+                        dealtKnockback = marioB->DoKnockback(f, marioBEntity, !fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioAEntity);
                     }
-                    if (damaged) {
+                    if (dealtKnockback) {
                         f.Events.PlayKnockbackEffect(marioAEntity, marioBEntity, KnockbackStrength.Normal, avgPosition);
                     }
                     return;
@@ -2271,6 +2275,7 @@ namespace Quantum {
             if ((marioA->DamageInvincibilityFrames <= 0 || marioA->CurrentKnockback != KnockbackStrength.None || marioA->KnockbackGetupFrames > 0) && (!marioA->IsInKnockback || marioAPhysics->IsTouchingGround)
                 && (marioB->DamageInvincibilityFrames <= 0 || marioB->CurrentKnockback != KnockbackStrength.None || marioB->KnockbackGetupFrames > 0) && (!marioB->IsInKnockback || marioBPhysics->IsTouchingGround)) {
 
+                // if neither of the players are in Blue Shell...
                 if (!marioA->IsInShell && !marioB->IsInShell) {
                     var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
                     var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
