@@ -331,7 +331,7 @@ namespace Quantum {
             UsedPropellerThisJump = false;
 
             if (!IsDead) {
-                DamageInvincibilityFrames = 2 * 60;
+                DamageInvincibilityFrames = Constants.DamageInvincibilityFrames;
                 f.Events.MarioPlayerTookDamage(entity);
             }
             return true;
@@ -395,7 +395,7 @@ namespace Quantum {
 
             IsDead = false;
             IsRespawning = false;
-            DamageInvincibilityFrames = 120;
+            DamageInvincibilityFrames = Constants.DamageInvincibilityFrames;
             CoyoteTimeFrames = 0;
             ForceJumpTimer = 0;
 
@@ -440,10 +440,10 @@ namespace Quantum {
             }
 
             // Don't go into walls
+            /*
             var transform = f.Unsafe.GetPointer<Transform2D>(entity);
             var collider = f.Unsafe.GetPointer<PhysicsCollider2D>(entity);
 
-            /*
             if (strength > KnockbackStrength.Bump && PhysicsObjectSystem.Raycast((FrameThreadSafe) f, null, transform->Position + collider->Shape.Centroid, fromRight ? FPVector2.Left : FPVector2.Right, FP._0_33, out _)) {
                 fromRight = !fromRight;
             }
@@ -523,7 +523,7 @@ namespace Quantum {
 
         public void ResetKnockback() {
             KnockbackGetupFrames = 0;
-            DamageInvincibilityFrames = 90;
+            DamageInvincibilityFrames = 90; // Exception: knockback does 90f instead of the usual 120f
             CurrentKnockback = KnockbackStrength.None;
             IsInWeakKnockback = false;
             FacingRight = KnockbackWasOriginallyFacingRight;

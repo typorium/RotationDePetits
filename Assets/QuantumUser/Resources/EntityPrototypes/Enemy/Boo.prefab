@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5623453289331559766}
   - component: {fileID: 583447005726554375}
   - component: {fileID: 4429105053950663285}
+  - component: {fileID: 5326142779769165119}
   - component: {fileID: -6652070002619640731}
   - component: {fileID: 9168676210325572332}
   - component: {fileID: 8808035629059796204}
@@ -408,6 +409,22 @@ MonoBehaviour:
   sfx: {fileID: 5544689233293992646}
   sinSpeed: 1
   sinAmplitude: 0.0875
+--- !u!114 &5326142779769165119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3813481168314615756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b22d938fa9712a4d8a0658557dd8fae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NSMB.Entities.Enemies.EnemyRespawnAnimator
+  sfx: {fileID: 3241501505551194881}
+  respawnParticle: {fileID: 5191653714546004373, guid: 82fd7a7a1d84c6e4aa4334f5ac629ebf,
+    type: 3}
+  respawnColor: {r: 0.9725491, g: 0.9725491, b: 0.9725491, a: 1}
 --- !u!114 &-6652070002619640731
 MonoBehaviour:
   m_ObjectHideFlags: 0

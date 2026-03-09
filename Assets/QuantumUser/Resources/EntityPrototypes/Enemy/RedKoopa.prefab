@@ -8,6 +8,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -9017915444845116649, guid: 4f50cb5e806289d43bf820de1f1347bb,
+        type: 3}
+      propertyPath: respawnColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -9017915444845116649, guid: 4f50cb5e806289d43bf820de1f1347bb,
+        type: 3}
+      propertyPath: respawnColor.g
+      value: 0.16078432
+      objectReference: {fileID: 0}
+    - target: {fileID: -9017915444845116649, guid: 4f50cb5e806289d43bf820de1f1347bb,
+        type: 3}
+      propertyPath: respawnColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -8304985406365087950, guid: 4f50cb5e806289d43bf820de1f1347bb,
         type: 3}
       propertyPath: sceneViewId

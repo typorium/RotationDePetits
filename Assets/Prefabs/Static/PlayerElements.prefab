@@ -13879,7 +13879,6 @@ MonoBehaviour:
   uiCountdown: {fileID: 1444130183035966282}
   itemReserve: {fileID: 126180832892781181}
   itemColor: {fileID: 2133906945429794286}
-  deathFade: {fileID: 4930218725579375668}
   boos: {fileID: 6223832221889303903}
   reserveItemBox: {fileID: 4064374408395516847}
   reserveAnimation: {fileID: 1691672296026432118}
@@ -14702,6 +14701,10 @@ MonoBehaviour:
     Entity:
       Id:
         Value: 1304675416483732058
+  - Key: 49
+    Entity:
+      Id:
+        Value: 1458876430339653767
   playerElements: {fileID: 2058053739306675502}
 --- !u!114 &8557534404386945108
 MonoBehaviour:

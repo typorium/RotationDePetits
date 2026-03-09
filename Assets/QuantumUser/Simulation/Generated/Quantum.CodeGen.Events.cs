@@ -83,8 +83,8 @@ namespace Quantum {
           case EventPlayComboSound.ID: result = typeof(EventPlayComboSound); return;
           case EventPlayBumpSound.ID: result = typeof(EventPlayBumpSound); return;
           case EventEnemyKicked.ID: result = typeof(EventEnemyKicked); return;
-          case EventEnemySufferedOffscreen.ID: result = typeof(EventEnemySufferedOffscreen); return;
-          case EventEnemyRespawnSparkles.ID: result = typeof(EventEnemyRespawnSparkles); return;
+          case EventEnemyDespawnedOffscreen.ID: result = typeof(EventEnemyDespawnedOffscreen); return;
+          case EventEnemyPreRespawned.ID: result = typeof(EventEnemyPreRespawned); return;
           case EventEnemyAfterDelayedRespawn.ID: result = typeof(EventEnemyAfterDelayedRespawn); return;
           case EventGameStateChanged.ID: result = typeof(EventGameStateChanged); return;
           case EventPlayerAdded.ID: result = typeof(EventPlayerAdded); return;
@@ -311,15 +311,15 @@ namespace Quantum {
         _f.AddEvent(ev);
         return ev;
       }
-      public EventEnemySufferedOffscreen EnemySufferedOffscreen(EntityRef Entity, FPVector2 Position) {
-        var ev = _f.Context.AcquireEvent<EventEnemySufferedOffscreen>(EventEnemySufferedOffscreen.ID);
+      public EventEnemyDespawnedOffscreen EnemyDespawnedOffscreen(EntityRef Entity, FPVector2 Position) {
+        var ev = _f.Context.AcquireEvent<EventEnemyDespawnedOffscreen>(EventEnemyDespawnedOffscreen.ID);
         ev.Entity = Entity;
         ev.Position = Position;
         _f.AddEvent(ev);
         return ev;
       }
-      public EventEnemyRespawnSparkles EnemyRespawnSparkles(EntityRef Entity) {
-        var ev = _f.Context.AcquireEvent<EventEnemyRespawnSparkles>(EventEnemyRespawnSparkles.ID);
+      public EventEnemyPreRespawned EnemyPreRespawned(EntityRef Entity) {
+        var ev = _f.Context.AcquireEvent<EventEnemyPreRespawned>(EventEnemyPreRespawned.ID);
         ev.Entity = Entity;
         _f.AddEvent(ev);
         return ev;
@@ -1361,14 +1361,14 @@ namespace Quantum {
       }
     }
   }
-  public unsafe partial class EventEnemySufferedOffscreen : EventBase {
+  public unsafe partial class EventEnemyDespawnedOffscreen : EventBase {
     public new const Int32 ID = 23;
     public EntityRef Entity;
     public FPVector2 Position;
-    protected EventEnemySufferedOffscreen(Int32 id, EventFlags flags) : 
+    protected EventEnemyDespawnedOffscreen(Int32 id, EventFlags flags) : 
         base(id, flags) {
     }
-    public EventEnemySufferedOffscreen() : 
+    public EventEnemyDespawnedOffscreen() : 
         base(23, EventFlags.Server|EventFlags.Client) {
     }
     public new QuantumGame Game {
@@ -1387,13 +1387,13 @@ namespace Quantum {
       }
     }
   }
-  public unsafe partial class EventEnemyRespawnSparkles : EventBase {
+  public unsafe partial class EventEnemyPreRespawned : EventBase {
     public new const Int32 ID = 24;
     public EntityRef Entity;
-    protected EventEnemyRespawnSparkles(Int32 id, EventFlags flags) : 
+    protected EventEnemyPreRespawned(Int32 id, EventFlags flags) : 
         base(id, flags) {
     }
-    public EventEnemyRespawnSparkles() : 
+    public EventEnemyPreRespawned() : 
         base(24, EventFlags.Server|EventFlags.Client) {
     }
     public new QuantumGame Game {

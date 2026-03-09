@@ -43,6 +43,21 @@ PrefabInstance:
       propertyPath: floorAndRoofCutoff
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 2263134126362582639, guid: 8cf8f49ac0882ed44953ea53ff901f11,
+        type: 3}
+      propertyPath: respawnColor.b
+      value: 0.9725491
+      objectReference: {fileID: 0}
+    - target: {fileID: 2263134126362582639, guid: 8cf8f49ac0882ed44953ea53ff901f11,
+        type: 3}
+      propertyPath: respawnColor.g
+      value: 0.5647059
+      objectReference: {fileID: 0}
+    - target: {fileID: 2263134126362582639, guid: 8cf8f49ac0882ed44953ea53ff901f11,
+        type: 3}
+      propertyPath: respawnColor.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2331939488413250953, guid: 8cf8f49ac0882ed44953ea53ff901f11,
         type: 3}
       propertyPath: Flags

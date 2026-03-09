@@ -18,11 +18,9 @@ namespace NSMB.Entities.Enemies {
         [SerializeField] private SpriteRenderer sRenderer;
         [SerializeField] private Animator animator;
         [SerializeField] private GameObject explosionPrefab;
-        [SerializeField] private GameObject respawnParticle;
 
         //---Private Variables
         private MaterialPropertyBlock mpb;
-        private GameObject activeRespawnParticle;
 
         public void OnValidate() {
             this.SetIfNull(ref sRenderer, UnityExtensions.GetComponentType.Children);
@@ -34,7 +32,6 @@ namespace NSMB.Entities.Enemies {
             QuantumEvent.Subscribe<EventBobombExploded>(this, OnBobombExploded, FilterOutReplayFastForward);
             QuantumEvent.Subscribe<EventBobombLit>(this, OnBobombLit, FilterOutReplayFastForward);
             QuantumEvent.Subscribe<EventPlayComboSound>(this, OnPlayComboSound, FilterOutReplayFastForward);
-            QuantumEvent.Subscribe<EventEnemyRespawnSparkles>(this, OnEnemyRespawnSparkles, FilterOutReplayFastForward);
             QuantumEvent.Subscribe<EventGameEnded>(this, OnGameEnded);
         }
 
@@ -126,22 +123,6 @@ namespace NSMB.Entities.Enemies {
             }
 
             sfx.Play(SoundEffect.Enemy_Bobomb_Fuse);
-        }
-
-        private void OnEnemyRespawnSparkles(EventEnemyRespawnSparkles e) {
-            if (e.Entity != EntityRef) {
-                return;
-            }
-            Frame f = PredictedFrame;
-
-            var enemy = f.Unsafe.GetPointer<Enemy>(EntityRef);
-            activeRespawnParticle = Instantiate(respawnParticle, enemy->Spawnpoint.ToUnityVector3() + (Vector3.up * 0.25f), Quaternion.identity);
-            foreach (ParticleSystem particle in activeRespawnParticle.GetComponentsInChildren<ParticleSystem>()) {
-                var main = particle.main;
-                main.startColor = Color.darkGray;
-            }
-
-            sfx.PlayOneShot(SoundEffect.Player_Sound_Respawn);
         }
     }
 }
