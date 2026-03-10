@@ -48,6 +48,12 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         protected override void OnDisable() {
             base.OnDisable();
+#if UNITY_EDITOR
+            // Fix random error message in the editor.
+            if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode && Application.isPlaying) {
+                return;
+            }
+#endif
             OnDeselect(null);
         }
 

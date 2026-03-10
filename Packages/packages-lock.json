@@ -24,11 +24,11 @@
       "hash": "2dae176e2f55626785e1dbcedd20a8b4e208acf7"
     },
     "com.unity.2d.animation": {
-      "version": "13.0.2",
+      "version": "13.0.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.2d.common": "12.0.1",
+        "com.unity.2d.common": "12.0.2",
         "com.unity.2d.sprite": "1.0.0",
         "com.unity.collections": "2.4.3",
         "com.unity.modules.animation": "1.0.0",
@@ -37,7 +37,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.2d.common": {
-      "version": "12.0.1",
+      "version": "12.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -87,7 +87,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.27",
+      "version": "1.8.28",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -139,7 +139,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.17.0",
+      "version": "1.18.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -155,7 +155,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.memoryprofiler": {
-      "version": "1.1.9",
+      "version": "1.1.11",
       "depth": 0,
       "source": "registry",
       "dependencies": {

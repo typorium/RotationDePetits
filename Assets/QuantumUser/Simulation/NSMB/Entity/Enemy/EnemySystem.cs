@@ -59,7 +59,6 @@ namespace Quantum {
 
         public static void EnemyBumpTurnaround(Frame f, EntityRef entityA, EntityRef entityB, bool turnBoth) {
             var enemyA = f.Unsafe.GetPointer<Enemy>(entityA);
-            var enemyB = f.Unsafe.GetPointer<Enemy>(entityB);
             var transformA = f.Unsafe.GetPointer<Transform2D>(entityA);
             var transformB = f.Unsafe.GetPointer<Transform2D>(entityB);
 
@@ -69,7 +68,9 @@ namespace Quantum {
                 right = ourPos.Y < theirPos.Y;
             }
             enemyA->ChangeFacingRight(f, entityA, right);
+
             if (turnBoth) {
+                var enemyB = f.Unsafe.GetPointer<Enemy>(entityB);
                 enemyB->ChangeFacingRight(f, entityB, !right);
             }
         }
@@ -83,6 +84,7 @@ namespace Quantum {
             }
 
             if (enemy->RespawnTimer == enemy->RespawnSparklesTimer && enemy->RespawnSparklesTimer != 0) {
+                filter.Transform->Teleport(f, enemy->Spawnpoint);
                 f.Events.EnemyPreRespawned(filter.Entity);
             }
         }
