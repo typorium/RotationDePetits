@@ -439,17 +439,16 @@ namespace Quantum {
                 starsToDrop = Math.Min(1, starsToDrop);
             }
 
-            // Don't go into walls
             /*
+            // Don't go into walls
             var transform = f.Unsafe.GetPointer<Transform2D>(entity);
             var collider = f.Unsafe.GetPointer<PhysicsCollider2D>(entity);
 
-            if (strength > KnockbackStrength.Bump && PhysicsObjectSystem.Raycast((FrameThreadSafe) f, null, transform->Position + collider->Shape.Centroid, fromRight ? FPVector2.Left : FPVector2.Right, FP._0_33, out _)) {
+            if (!IsInWeakKnockback && PhysicsObjectSystem.Raycast(f, null, transform->Position + collider->Shape.Centroid, fromRight ? FPVector2.Left : FPVector2.Right, FP._0_33, out _)) {
                 fromRight = !fromRight;
             }
             */
 
-            var physics = f.FindAsset(PhysicsAsset);
             FPVector2 knockbackVelocity = strength switch {
                 KnockbackStrength.Groundpound => new(Constants._8_25 / 2, Constants._3_50),
                 KnockbackStrength.FireballBump => new(Constants._3_75 / 2, 0),
@@ -461,6 +460,7 @@ namespace Quantum {
             }
             knockbackVelocity.X *= fromRight ? -1 : 1;
             if (CurrentPowerupState == PowerupState.MiniMushroom) {
+                var physics = f.FindAsset(PhysicsAsset);
                 knockbackVelocity.X *= physics.KnockbackMiniMultiplier.X;
                 knockbackVelocity.Y *= physics.KnockbackMiniMultiplier.Y;
             }
@@ -496,7 +496,8 @@ namespace Quantum {
             IsSliding = false;
             IsDrilling = false;
             WallslideLeft = WallslideRight = false;
-            
+            LastAttacker = attacker;
+
             f.Signals.OnMarioPlayerDropObjective(entity, starsToDrop, attacker);
             return true;
         }
@@ -527,6 +528,7 @@ namespace Quantum {
             CurrentKnockback = KnockbackStrength.None;
             IsInWeakKnockback = false;
             FacingRight = KnockbackWasOriginallyFacingRight;
+            LastAttacker = EntityRef.None;
         }
 
         public void EnterPipe(Frame f, EntityRef mario, EntityRef pipe) {

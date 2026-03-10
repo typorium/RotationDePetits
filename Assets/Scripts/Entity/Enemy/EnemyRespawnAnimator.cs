@@ -39,7 +39,7 @@ namespace NSMB.Entities.Enemies {
                 main.startColor = respawnColor;
             }
 
-            sfx.PlayOneShot(SoundEffect.Player_Sound_Respawn, volume: 0.2f);
+            sfx.PlayOneShot(SoundEffect.Player_Sound_Respawn, volume: 0.4f);
         }
     }
 }
