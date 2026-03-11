@@ -2315,6 +2315,31 @@ namespace Quantum {
                 if (!marioA->IsInShell && !marioB->IsInShell) {
                     var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
                     var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
+                    // Blue Shell is weird, when crouching and Xspeed > 0 then do "hip drop knockback".
+                    //! this can potentially be OP, playtests are needed...
+                    /*if (marioA->IsCrouchedInShell && FPMath.Abs(marioAPhysics->Velocity.X) > 0 && !marioAPhysics->IsTouchingGround && !marioB->IsCrouchedInShell) {
+                        // teammates do softer knockback
+                        KnockbackStrength strength = dropStars ? KnockbackStrength.Normal : KnockbackStrength.Groundpound;
+                        marioB->DoKnockback(f, marioBEntity, fromRight, dropStars ? 1 : 0, strength, marioAEntity);
+                    }
+                    if (marioB->IsCrouchedInShell && FPMath.Abs(marioBPhysics->Velocity.X) > 0 && !marioBPhysics->IsTouchingGround && !marioA->IsCrouchedInShell) {
+                        // teammates do softer knockback
+                        KnockbackStrength strength = dropStars ? KnockbackStrength.Normal : KnockbackStrength.Groundpound;
+                        marioB->DoKnockback(f, marioBEntity, fromRight, dropStars ? 1 : 0, strength, marioAEntity);
+                    }*/
+
+                    // make Blue Shell fly when touched
+                    if (marioA->IsCrouchedInShell && (FPMath.Abs(marioAPhysics->Velocity.X) > 0 || FPMath.Abs(marioBPhysics->Velocity.X) > 0)) {
+                        marioA->FacingRight = !fromRight;
+                        marioAPhysics->Velocity.X= marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
+                        return; // do not allow Blue Shell to bump
+                    }
+                    if (marioB->IsCrouchedInShell && (FPMath.Abs(marioBPhysics->Velocity.X) > 0 || FPMath.Abs(marioAPhysics->Velocity.X) > 0)) {
+                        marioB->FacingRight = !fromRight;
+                        marioBPhysics->Velocity.X= marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
+                        return;
+                    }
+
                     if (FPMath.Abs(marioAPhysics->Velocity.X) > marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.WalkSpeedStage]
                         || FPMath.Abs(marioBPhysics->Velocity.X) > marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.WalkSpeedStage]) {
                         // Bump
