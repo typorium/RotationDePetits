@@ -1,4 +1,5 @@
 using NSMB.Entities.Player;
+using NSMB.Particles;
 using NSMB.UI.Game;
 using NSMB.Utilities.Extensions;
 using Quantum;

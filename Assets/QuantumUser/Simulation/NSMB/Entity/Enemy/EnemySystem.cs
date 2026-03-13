@@ -1,90 +1,6 @@
-//#define MULTITHREADED
-
 using Photon.Deterministic;
-using Quantum.Task;
 
 namespace Quantum {
-#if MULTITHREADED
-    using System.Collections.Generic;
-    public unsafe class EnemySystem : SystemThreadedFilter<EnemySystem.Filter>, ISignalOnStageReset, ISignalOnTryLiquidSplash, ISignalOnBeforeInteraction,
-        ISignalOnEnemyDespawned, ISignalOnEnemyRespawned, ISignalOnMarioPlayerMegaMushroomFootstep {
-
-        public struct Filter {
-            public EntityRef Entity;
-            public Transform2D* Transform;
-            public Enemy* Enemy;
-            public PhysicsCollider2D* Collider;
-        }
-
-        private static readonly EntityRefComparer entityRefComparer = new();
-        private readonly List<EntityRef> despawningEntities = new();
-        private TaskDelegateHandle sendSignalsTaskHandle;
-
-        protected override void OnInitUser(Frame f) {
-            f.Context.PlayerOnlyMask = f.Layers.GetLayerMask("Player");
-            f.Context.CircleRadiusTwo = Shape2D.CreateCircle(2);
-        }
-
-        protected override TaskHandle Schedule(Frame f, TaskHandle taskHandle) {
-            if (f.ComponentCount<Enemy>() <= 0) {
-                return taskHandle;
-            }
-            if (!sendSignalsTaskHandle.IsValid) {
-                f.Context.TaskContext.RegisterDelegate(SendSignalsTask, ProfilerName, ref sendSignalsTaskHandle);
-            }
-
-            var updateTask = base.Schedule(f, taskHandle);
-            var sendSignalsTask = f.Context.TaskContext.AddMainThreadTask(sendSignalsTaskHandle, null, updateTask);
-            return sendSignalsTask;
-        }
-
-        public override void Update(FrameThreadSafe f, ref Filter filter) {
-            var enemy = filter.Enemy;
-
-            // handle respawning
-            if (enemy->RespawnTimer > 0 &! enemy->DisableRespawning) HandleDelayedRespawn(f, filter, stage);
-            if (!enemy->IsActive) {
-                return;
-            }
-
-            var transform = filter.Transform;
-            var collider = filter.Collider;
-
-            // Despawn off bottom of stage
-            if (transform->Position.Y + collider->Shape.Box.Extents.Y + collider->Shape.Centroid.Y < stage.StageWorldMin.Y) {
-                enemy->IsActive = false;
-                enemy->IsDead = true;
-                if (!enemy->DisableRespawning) enemy->SetDelayedRespawn();
-                if (f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject)) {
-                    physicsObject->IsFrozen = true;
-                }
-
-                f.Signals.OnEnemyDespawned(filter.Entity);
-                return;
-            }
-
-            if (enemy->StayAtHomeWhenOffscreen) OffscreenCheck(f, filter, stage);
-        }
-
-        public void SendSignalsTask(FrameThreadSafe f, int start, int count, void* arg) {
-            using var _profiler = HostProfiler.Start("EnemySystem.SendSignalsTask");
-
-            despawningEntities.Sort(entityRefComparer);
-            foreach (var entity in despawningEntities) {
-                ((Frame) f).Signals.OnEnemyDespawned(entity);
-            }
-            despawningEntities.Clear();
-        }
-
-        public class EntityRefComparer : IComparer<EntityRef> {
-            public int Compare(EntityRef x, EntityRef y) {
-                if (x.Index == y.Index) {
-                    return x.Version - y.Version;
-                }
-                return x.Index - y.Index;
-            }
-        }
-#else
     public unsafe class EnemySystem : SystemMainThreadEntityFilter<Enemy, EnemySystem.Filter>, ISignalOnStageReset, ISignalOnTryLiquidSplash, ISignalOnBeforeInteraction,
         ISignalOnEnemyDespawned, ISignalOnEnemyRespawned, ISignalOnMarioPlayerMegaMushroomFootstep {
         public struct Filter {
@@ -103,7 +19,9 @@ namespace Quantum {
             var enemy = filter.Enemy;
 
             // handle respawning
-            if (enemy->RespawnTimer > 0 &! enemy->DisableRespawning) HandleDelayedRespawn(f, filter, stage);
+            if (enemy->RespawnTimer > 0 && !enemy->DisableRespawning) {
+                HandleDelayedRespawn(f, ref filter, stage);
+            }
             if (!enemy->IsActive) {
                 return;
             }
@@ -115,7 +33,9 @@ namespace Quantum {
             if (transform->Position.Y + collider->Shape.Box.Extents.Y + collider->Shape.Centroid.Y < stage.StageWorldMin.Y) {
                 enemy->IsActive = false;
                 enemy->IsDead = true;
-                if (!enemy->DisableRespawning) enemy->SetDelayedRespawn();
+                if (!enemy->DisableRespawning) {
+                    enemy->SetDelayedRespawn();
+                }
                 if (f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject)) {
                     physicsObject->IsFrozen = true;
                 }
@@ -124,10 +44,11 @@ namespace Quantum {
                 return;
             }
 
-            if (enemy->StayAtHomeWhenOffscreen) OffscreenCheck(f, filter, stage);
+            if (enemy->StayAtHomeWhenOffscreen) {
+                OffscreenCheck(f, ref filter, stage);
+            }
         }
 
-#endif
         public static void EnemyBumpTurnaround(Frame f, EntityRef entityA, EntityRef entityB) {
             EnemyBumpTurnaround(f, entityA, entityB, true);
         }
@@ -138,7 +59,6 @@ namespace Quantum {
 
         public static void EnemyBumpTurnaround(Frame f, EntityRef entityA, EntityRef entityB, bool turnBoth) {
             var enemyA = f.Unsafe.GetPointer<Enemy>(entityA);
-            var enemyB = f.Unsafe.GetPointer<Enemy>(entityB);
             var transformA = f.Unsafe.GetPointer<Transform2D>(entityA);
             var transformB = f.Unsafe.GetPointer<Transform2D>(entityB);
 
@@ -148,12 +68,14 @@ namespace Quantum {
                 right = ourPos.Y < theirPos.Y;
             }
             enemyA->ChangeFacingRight(f, entityA, right);
+
             if (turnBoth) {
+                var enemyB = f.Unsafe.GetPointer<Enemy>(entityB);
                 enemyB->ChangeFacingRight(f, entityB, !right);
             }
         }
 
-        public void HandleDelayedRespawn(Frame f, Filter filter, VersusStageData stage) {
+        public void HandleDelayedRespawn(Frame f, ref Filter filter, VersusStageData stage) {
             var enemy = filter.Enemy;
             if (QuantumUtils.Decrement(ref enemy->RespawnTimer)) {
                 enemy->Respawn(f, filter.Entity);
@@ -162,11 +84,12 @@ namespace Quantum {
             }
 
             if (enemy->RespawnTimer == enemy->RespawnSparklesTimer && enemy->RespawnSparklesTimer != 0) {
-                f.Events.EnemyRespawnSparkles(filter.Entity);
+                filter.Transform->Teleport(f, enemy->Spawnpoint);
+                f.Events.EnemyPreRespawned(filter.Entity);
             }
         }
 
-        public void OffscreenCheck(Frame f, Filter filter, VersusStageData stage) {
+        public void OffscreenCheck(Frame f, ref Filter filter, VersusStageData stage) {
             var enemy = filter.Enemy;
             var allPlayersFilter = f.Filter<MarioPlayer, Transform2D>();
             var transform = filter.Transform;
@@ -190,11 +113,11 @@ namespace Quantum {
                 }
             }
 
-            bool foundPhysicsObj;
+            bool foundPhysicsObj = f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject);
 
             // freeze check! Do not teleport frozen enemies.
-            if (foundPhysicsObj=f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject)) {
-                if (physicsObject->IsFrozen) return;
+            if (foundPhysicsObj && physicsObject->IsFrozen) {
+                return;
             }
 
             // check if the enemy left its home
@@ -205,12 +128,15 @@ namespace Quantum {
                 }
             }
 
-            if (!marioInSpawnpoint &! enemy->LeftHome) {
+            if (!marioInSpawnpoint && !enemy->LeftHome) {
                 // set to 0
-                if (foundPhysicsObj) physicsObject->Velocity = FPVector2.Zero;
+                if (foundPhysicsObj) {
+                    physicsObject->Velocity = FPVector2.Zero;
+                }
+
                 // turn to face the player while in the shadows
                 var shouldFaceRight = false;
-                var closestMario = enemy->FindClosestPlayer(f, entity);
+                var closestMario = enemy->FindClosestPlayerToSpawnpoint(f, entity);
 
                 // use closest player and face them
                 if (f.Unsafe.TryGetPointer(closestMario, out Transform2D* closestMarioTransform)) {
@@ -227,15 +153,18 @@ namespace Quantum {
                 enemy->IsActive = false;
                 enemy->IsDead = true;
                 enemy->SetDelayedRespawn(300); // lower respawn time
-                f.Events.EnemySufferedOffscreen(entity, f.Unsafe.GetPointer<Transform2D>(entity)->Position);
+                f.Events.EnemyDespawnedOffscreen(entity, filter.Transform->Position);
                 f.Signals.OnEnemyDespawned(entity);
             }
         }
 
         public void OnStageReset(Frame f, QBoolean full) {
-            if (!full) return; // ignore non-full resets
-            var filter = f.Filter<Enemy, Transform2D>();
+            if (!full) {
+                // ignore non-full resets
+                return;
+            }
 
+            var filter = f.Filter<Enemy, Transform2D>();
             while (filter.NextUnsafe(out EntityRef entity, out Enemy* enemy, out Transform2D* transform)) {
                 if (enemy->IsActive) {
                     // Check for respawning blocks killing us
@@ -264,7 +193,7 @@ namespace Quantum {
                     }
 
                     enemy->Respawn(f, entity);
-                    f.Signals.OnEnemyRespawned(entity);
+                    f.Signals.OnEnemyRespawned(entity); 
                 }
             }
         }

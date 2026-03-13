@@ -159,7 +159,7 @@ namespace Quantum {
             foreach ((var goldBlockEntity, var goldBlock) in f.Unsafe.GetComponentBlockIterator<GoldBlock>()) {
                 if (goldBlock->AttachedTo == entity) {
                     keepDamage = false;
-                    f.Unsafe.GetPointer<MarioPlayer>(entity)->DamageInvincibilityFrames = 90;
+                    f.Unsafe.GetPointer<MarioPlayer>(entity)->DamageInvincibilityFrames = Constants.DamageInvincibilityFrames;
                     f.Events.GoldBlockLostViaDamage(goldBlockEntity);
                     f.Destroy(goldBlockEntity);
                     return;

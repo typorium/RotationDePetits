@@ -56,12 +56,12 @@ event EnemyKicked {
 	bool Groundpounded;
 }
 
-event EnemySufferedOffscreen {
+event EnemyDespawnedOffscreen {
 	EntityRef Entity;
 	nothashed FPVector2 Position;
 }
 
-event EnemyRespawnSparkles {
+event EnemyPreRespawned {
 	EntityRef Entity;
 }
 

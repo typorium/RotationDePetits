@@ -1,12 +1,10 @@
 using Photon.Deterministic;
-using UnityEngine.Diagnostics;
-using UnityEngine.UIElements;
 
 namespace Quantum {
     public unsafe partial struct Enemy {
         public readonly bool IsAlive => !IsDead && IsActive;
 
-        public EntityRef FindClosestPlayer(Frame f, EntityRef entity, VersusStageData stage = null) {
+        public readonly EntityRef FindClosestPlayerToSpawnpoint(Frame f, EntityRef entity, VersusStageData stage = null) {
             var allPlayers = f.Filter<MarioPlayer, Transform2D>();
             allPlayers.UseCulling = false;
 
@@ -59,7 +57,7 @@ namespace Quantum {
 
             // face left by default
             var shouldFaceRight = false;
-            var closestMario = FindClosestPlayer(f, entity);
+            var closestMario = FindClosestPlayerToSpawnpoint(f, entity);
 
             // use closest player and face them
             if (f.Unsafe.TryGetPointer(closestMario, out Transform2D* marioTransform)) {

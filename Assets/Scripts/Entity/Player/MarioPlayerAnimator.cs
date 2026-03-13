@@ -216,14 +216,13 @@ namespace NSMB.Entities.Player {
             var mario = f.Unsafe.GetPointer<MarioPlayer>(EntityRef);
 
             var playerData = QuantumUtils.GetPlayerData(f, mario->PlayerRef);
-            if (f.TryFindAsset(playerData->Palette, out var palette)) {
+            if (playerData != null && f.TryFindAsset(playerData->Palette, out var palette)) {
                 skin = palette.GetPaletteForCharacter(character);
             }
             GlowColor = Utils.GetPlayerColor(f, mario->PlayerRef);
 
             if (Game.PlayerIsLocal(mario->PlayerRef)) {
                 MasterCanvas masterCanvas = FindFirstObjectByType<MasterCanvas>();
-                // Use Resources.Load here instead of a serialized variable to the prefab to avoid referencing all the font stuff into addon scenes
                 PlayerElements elements = Instantiate(masterCanvas.playerElementsPrefab, masterCanvas.transform);
                 elements.Initialize(Game, f, EntityRef, mario->PlayerRef);
             }
