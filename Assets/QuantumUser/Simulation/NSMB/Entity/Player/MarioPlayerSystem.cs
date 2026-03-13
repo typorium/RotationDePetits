@@ -2315,31 +2315,30 @@ namespace Quantum {
                     return;
                 }
 
-
-                // make Blue Shell fly when touched
-                if (marioA->IsCrouchedInShell && (FPMath.Abs(marioAPhysics->Velocity.X) > 0 || FPMath.Abs(marioBPhysics->Velocity.X) > 0)) {
-                    var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
-                    var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
-                    marioA->FacingRight = !fromRight;
-                    marioAPhysics->Velocity.X = marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
-                    marioBPhysics->Velocity.X = 0;
-                    return; // do not allow Blue Shell to bump
-                }
-                if (marioB->IsCrouchedInShell && (FPMath.Abs(marioBPhysics->Velocity.X) > 0 || FPMath.Abs(marioAPhysics->Velocity.X) > 0)) {
-                    var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
-                    var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
-                    marioB->FacingRight = !fromRight;
-                    marioBPhysics->Velocity.X= marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
-                    marioAPhysics->Velocity.X = 0;
-                    return;
-                }
-
                 // Normal stomps
                 if (marioAAbove && marioA->LastAttacker != marioBEntity && (marioAPhysics->Velocity.Y <= 0 || marioBPhysics->Velocity.Y > 0)) {
                     MarioMarioStomp(f, marioAEntity, marioBEntity, fromRight, dropStars, avgPosition);
                     return;
                 } else if (marioBAbove && marioB->LastAttacker != marioAEntity && (marioBPhysics->Velocity.Y <= 0 || marioAPhysics->Velocity.Y > 0)) {
                     MarioMarioStomp(f, marioBEntity, marioAEntity, !fromRight, dropStars, avgPosition);
+                    return;
+                }
+
+                // make Blue Shell fly when touched
+                if (marioA->IsCrouchedInShell && (FPMath.Abs(marioAPhysics->Velocity.X) > 0 || FPMath.Abs(marioBPhysics->Velocity.X) > 0)) {
+                    var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
+                    var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
+                    marioBPhysics->Velocity.X = marioAPhysics->Velocity.X * FP._0_50;
+                    marioA->FacingRight = !fromRight;
+                    marioAPhysics->Velocity.X = marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
+                    return; // do not allow Blue Shell to bump
+                }
+                if (marioB->IsCrouchedInShell && (FPMath.Abs(marioBPhysics->Velocity.X) > 0 || FPMath.Abs(marioAPhysics->Velocity.X) > 0)) {
+                    var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
+                    var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
+                    marioAPhysics->Velocity.X = marioBPhysics->Velocity.X * FP._0_50;
+                    marioB->FacingRight = !fromRight;
+                    marioBPhysics->Velocity.X = marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
                     return;
                 }
 
