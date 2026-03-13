@@ -374,27 +374,6 @@ public static unsafe class QuantumUtils {
         return WrapWorld(stage, lerped, out _);
     }
 
-    public static unsafe bool TryFindClosestEntity<T>(Frame f, FPVector2 position, VersusStageData stage, out EntityRef closest) where T : unmanaged, IComponent {
-        closest = EntityRef.None;
-        FP? closestDistance = null;
-
-        var filter = f.Filter<T, Transform2D>();
-        filter.UseCulling = false;
-        while (filter.NextUnsafe(out var entity, out _, out var transform)) {
-            if (closestDistance == null) {
-                closest = entity;
-                continue;
-            }
-
-            FP distance = WrappedDistanceSquared(stage, position, transform->Position);
-            if (distance < closestDistance) {
-                closest = entity;
-            }
-        }
-
-        return closestDistance.HasValue;
-    }
-
     public static PowerupAsset FindPowerupAsset(Frame f, PowerupState state) {
         if (state == PowerupState.NoPowerup) {
             return null;
