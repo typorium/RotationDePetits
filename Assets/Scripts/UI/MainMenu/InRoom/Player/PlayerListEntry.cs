@@ -158,12 +158,13 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 builder.Append("<sprite name=room_host>");
             }
 
-            var character = QuantumViewUtils.FindAssetOrDefault(playerData->Character, GlobalController.Instance.defaultCharacter);
+            var character = QuantumViewUtils.FindAssetOrDefault(playerData->Character);
             builder.Append(character.UiString);
 
             if (Settings.Instance.GraphicsColorblind && !playerData->ManualSpectator) {
                 if (f.Global->Rules.TeamsEnabled) {
-                    TeamAsset team = f.FindAsset(f.SimulationConfig.Teams[playerData->RequestedTeam]);
+                    var teams = f.Context.GetAllAssets<TeamAsset>();
+                    TeamAsset team = teams[playerData->RequestedTeam % teams.Count];
                     builder.Append(team.textSpriteColorblindBig);
                 } else {
                     builder.Append(Utils.GetPlayerIcon(f, player));
@@ -346,7 +347,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 game.SendCommand(hostSlot, new CommandAssignTeam {
                     Target = player,
                     Team = (byte) selector.TeamIndex,
-                    Clear = selector.TeamIndex >= f.SimulationConfig.Teams.Length,
+                    Clear = selector.TeamIndex >= f.Context.GetAllAssets<TeamAsset>().Count,
                 });
             }
 

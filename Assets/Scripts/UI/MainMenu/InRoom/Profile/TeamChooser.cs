@@ -1,3 +1,4 @@
+using NSMB.Utilities;
 using Quantum;
 using UnityEngine;
 using UnityEngine.UI;
@@ -71,8 +72,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
             Close(false);
 
-            Frame f = game.Frames.Predicted;
-            TeamAsset teamScriptable = f.FindAsset(game.Configurations.Simulation.Teams[selected]);
+            var teams = AssetRepository<TeamAsset>.AllAssets;
+            TeamAsset teamScriptable = teams[selected % teams.Count];
             flag.sprite = Settings.Instance.GraphicsColorblind ? teamScriptable.spriteColorblind : teamScriptable.spriteNormal;
             canvas.PlayConfirmSound();
             canvas.EventSystem.SetSelectedGameObject(button.gameObject);
@@ -83,7 +84,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             Frame f = game.Frames.Predicted;
             var playerData = QuantumUtils.GetPlayerData(f, game.GetLocalPlayers()[0]);
 
-            int selected = Mathf.Clamp(playerData->RequestedTeam, 0, f.SimulationConfig.Teams.Length);
+            int selected = Mathf.Clamp(playerData->RequestedTeam, 0, AssetRepository<TeamAsset>.AllAssetRefs.Count);
 
             blockerInstance = Instantiate(blockerTemplate, canvas.transform);
             blockerInstance.SetActive(true);
@@ -111,7 +112,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             Frame f = game.Frames.Predicted;
 
             if (f.Global->Rules.TeamsEnabled) {
-                TeamAsset team = f.FindAsset(f.SimulationConfig.Teams[selected % f.SimulationConfig.Teams.Length]);
+                var teams = f.Context.GetAllAssets<TeamAsset>();
+                TeamAsset team = teams[selected % teams.Count];
                 flag.sprite = Settings.Instance.GraphicsColorblind ? team.spriteColorblind : team.spriteNormal;
 
                 var playerData = QuantumUtils.GetPlayerData(f, game.GetLocalPlayers()[0]);
@@ -137,7 +139,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
             Frame f = game.Frames.Predicted;
             if (f.Global->Rules.TeamsEnabled) {
-                TeamAsset team = f.FindAsset(f.SimulationConfig.Teams[selected]);
+                var teams = f.Context.GetAllAssets<TeamAsset>();
+                TeamAsset team = teams[selected % teams.Count];
                 flag.sprite = Settings.Instance.GraphicsColorblind ? team.spriteColorblind : team.spriteNormal;
             }
         }
@@ -166,7 +169,8 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             selected = playerData->RequestedTeam;
 
             if (f.Global->Rules.TeamsEnabled) {
-                TeamAsset team = f.FindAsset(f.SimulationConfig.Teams[selected % f.SimulationConfig.Teams.Length]);
+                var teams = f.Context.GetAllAssets<TeamAsset>();
+                TeamAsset team = teams[selected % teams.Count];
                 flag.sprite = Settings.Instance.GraphicsColorblind ? team.spriteColorblind : team.spriteNormal;
             }
         }

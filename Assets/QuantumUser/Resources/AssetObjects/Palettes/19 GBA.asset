@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/19 GBA
     Guid:
       Value: 421237760296031664
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 44
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.gba
-  order: -820
+  TranslationKey: skin.gba
+  Order: 2000
+  IsLegacy: 1

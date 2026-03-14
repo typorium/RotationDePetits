@@ -121,8 +121,8 @@ namespace NSMB.UI.Game {
 
             if (Settings.Instance.GraphicsColorblind) {
                 if (f.Global->Rules.TeamsEnabled && mario->GetTeam(f) is byte teamIndex) {
-                    var teams = f.SimulationConfig.Teams;
-                    TeamAsset team = f.FindAsset(teams[teamIndex % teams.Length]);
+                    var teams = f.Context.GetAllAssets<TeamAsset>();
+                    TeamAsset team = teams[teamIndex % teams.Count];
                     stringBuilder.Append(team.textSpriteColorblindBig);
                 } else {
                     stringBuilder.Append(Utils.GetPlayerIcon(f, mario->PlayerRef));

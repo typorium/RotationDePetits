@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/20 Strawberry
     Guid:
       Value: 482111089418591160
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 0
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.strawberry
-  order: -810
+  TranslationKey: skin.strawberry
+  Order: 2100
+  IsLegacy: 1

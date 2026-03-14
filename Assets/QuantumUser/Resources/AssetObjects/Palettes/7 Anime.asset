@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/7 Anime
     Guid:
       Value: 524740824993114785
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 174
       A: 255
     HatUsesOverallsColor: 1
-  translationKey: skin.anime
-  order: -940
+  TranslationKey: skin.anime
+  Order: 800
+  IsLegacy: 1

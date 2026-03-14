@@ -1,5 +1,6 @@
 using NSMB.Networking;
 using NSMB.Replay;
+using NSMB.Utilities.Extensions;
 using Photon.Client;
 using Photon.Deterministic;
 using Photon.Realtime;

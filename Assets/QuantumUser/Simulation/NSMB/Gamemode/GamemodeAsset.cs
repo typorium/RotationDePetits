@@ -3,13 +3,16 @@ using Quantum.Prototypes;
 using System;
 
 namespace Quantum {
-    public abstract unsafe class GamemodeAsset : AssetObject {
+    public abstract unsafe class GamemodeAsset : AssetObject, IOrderedAsset {
+
+        int IOrderedAsset.Order => Order;
 
         public string NamePrefix, TranslationKey, DescriptionTranslationKey, DiscordRpcKey;
         public string ObjectiveSymbolPrefix;
         public AssetRef<CoinItemAsset>[] AllCoinItems;
         public AssetRef<CoinItemAsset> FallbackCoinItem;
         public AssetRef<EntityPrototype> LooseCoinPrototype;
+        public int Order;
 
         public GameRulesPrototype DefaultRules;
 

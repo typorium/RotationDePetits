@@ -1,7 +1,7 @@
 using NSMB.UI.MainMenu.Submenus.InRoom;
+using NSMB.Utilities;
 using Quantum;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Scripting;
@@ -21,8 +21,7 @@ namespace NSMB.UI.Elements {
         public int TeamIndex {
             get => _teamIndex;
             set {
-                var game = QuantumRunner.DefaultGame;
-                int entries = game.Configurations.Simulation.Teams.Length;
+                int entries = AssetRepository<TeamAsset>.AllAssetRefs.Count;
                 if (isTeamLocked) {
                     entries++;
                 }
@@ -106,10 +105,9 @@ namespace NSMB.UI.Elements {
             var tm = GlobalController.Instance.translationManager;
             string text;
 
-            Frame f = QuantumRunner.DefaultGame.Frames.Predicted;
-            var teams = f.SimulationConfig.Teams;
-            if (TeamIndex < teams.Length) {
-                var team = f.FindAsset(teams[TeamIndex]);
+            var teams = AssetRepository<TeamAsset>.AllAssets;
+            if (TeamIndex < teams.Count) {
+                var team = teams[TeamIndex];
                 string teamName = tm.GetTranslation(team.nameTranslationKey);
                 text = tm.GetTranslationWithReplacements("ui.inroom.player.changeteam",
                     "team", (Settings.Instance.GraphicsColorblind ? team.textSpriteColorblind : team.textSpriteNormal) + teamName);

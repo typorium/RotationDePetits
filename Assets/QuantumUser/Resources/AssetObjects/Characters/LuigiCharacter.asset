@@ -33,6 +33,8 @@ MonoBehaviour:
   SelectionOrder: -1000
   SmallOverrides: {fileID: 22100000, guid: a1854453357bb034e89ec419b0f57906, type: 2}
   LargeOverrides: {fileID: 22100000, guid: 671e2adc5dbd26a45abdf5c18398a86e, type: 2}
+  Order: 1
+  IsLegacy: 1
   SfxOverrides:
   - SoundEffect: 33
     Mode: 0

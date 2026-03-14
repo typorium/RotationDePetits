@@ -4,11 +4,30 @@ using UnityEngine.UI;
 
 namespace NSMB.Utilities {
     public class InvertedImageMask : Image {
+
+        private Material newMaterial;
+
         public override Material materialForRendering {
             get {
-                var mat = base.materialForRendering;
-                mat.SetInt("_StencilComp", (int) CompareFunction.NotEqual);
-                return mat;
+                if (!newMaterial) {
+                    newMaterial = new(base.materialForRendering);
+                    newMaterial.SetInt("_StencilComp", (int) CompareFunction.NotEqual);
+                }
+                return newMaterial;
+            }
+        }
+
+        protected override void OnDestroy() {
+            base.OnDestroy();
+            if (newMaterial) {
+                Destroy(newMaterial);
+            }
+        }
+
+        ~InvertedImageMask() {
+            if (newMaterial) {
+                Debug.LogError("InvertedImageMask destructor called without freeing newMaterial. This should never happen?");
+                Destroy(newMaterial);
             }
         }
     }

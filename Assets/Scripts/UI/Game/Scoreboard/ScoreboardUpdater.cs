@@ -81,8 +81,7 @@ namespace NSMB.UI.Game.Scoreboard {
                 ref PlayerInformation info = ref f.Global->PlayerInfo[i];
 
                 EntityRef entity = default;
-                var filter = f.Filter<MarioPlayer>();
-                while (filter.NextUnsafe(out EntityRef marioEntity, out MarioPlayer* mario)) {
+                foreach ((var marioEntity, var mario) in f.Unsafe.GetComponentBlockIterator<MarioPlayer>()) { 
                     if (mario->PlayerRef == info.PlayerRef) {
                         entity = marioEntity;
                         break;
@@ -146,7 +145,7 @@ namespace NSMB.UI.Game.Scoreboard {
                 return;
             }
 
-            AssetRef<TeamAsset>[] teamAssets = f.SimulationConfig.Teams;
+            var teams = f.Context.GetAllAssets<TeamAsset>();
             StringBuilder result = new();
 
             var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
@@ -164,7 +163,7 @@ namespace NSMB.UI.Game.Scoreboard {
                 if (objectiveCount < 0) {
                     objectiveCount = 0;
                 }
-                TeamAsset team = f.FindAsset(teamAssets[i]);
+                TeamAsset team = teams[i];
                 result.Append(Settings.Instance.GraphicsColorblind ? team.textSpriteColorblind : team.textSpriteNormal);
                 result.Append(Utils.GetSymbolString("x" + objectiveCount));
             }
@@ -174,8 +173,8 @@ namespace NSMB.UI.Game.Scoreboard {
 
         public unsafe void UpdateSpectatorCount(Frame f) {
             int spectators = 0;
-            var playerDataFilter = f.Filter<PlayerData>();
-            while (playerDataFilter.NextUnsafe(out _, out PlayerData* playerData)) {
+
+            foreach ((_, var playerData) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) {
                 if (playerData->IsSpectator) {
                     spectators++;
                 }

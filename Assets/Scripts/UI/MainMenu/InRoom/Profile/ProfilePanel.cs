@@ -59,18 +59,15 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             menu.Canvas.PlayConfirmSound();
         }
 
-        private void SetCharacterButtonState(Frame f, AssetRef<CharacterAsset> characterRef, bool sound) {
+        private void SetCharacterButtonState(Frame f, AssetRef<CharacterAsset> characterRef, bool save) {
             bool changed = currentCharacter != characterRef;
 
             currentCharacter = characterRef;
             characterChooser.ChangeCharacterButton(characterRef);
             paletteChooser.ChangeCharacter(characterRef);
 
-            if (changed) {
-                Settings.Instance.generalCharacter = characterRef;
-                Settings.Instance.SaveSettings();
-
-                if (sound && f.TryFindAsset(characterRef, out var character)) {
+            if (save) {
+                if (changed && f.TryFindAsset(characterRef, out var character)) {
                     menu.Canvas.PlaySound(SoundEffect.Player_Voice_Selected, new[] { character });
                 }
             }

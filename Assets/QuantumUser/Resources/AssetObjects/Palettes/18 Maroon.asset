@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/18 Maroon
     Guid:
       Value: 448831233412633846
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 171
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.maroon
-  order: -830
+  TranslationKey: skin.maroon
+  Order: 1900
+  IsLegacy: 1

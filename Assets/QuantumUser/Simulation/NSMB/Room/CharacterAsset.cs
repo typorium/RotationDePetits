@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterAsset : AssetObject, ISoundOverrideProvider {
+public class CharacterAsset : AssetObject, ISoundOverrideProvider, IOrderedAsset {
+
+    int IOrderedAsset.Order => Order;
 
     public AssetRef<EntityPrototype> Prototype;
 
@@ -25,9 +27,12 @@ public class CharacterAsset : AssetObject, ISoundOverrideProvider {
     public RuntimeAnimatorController LargeOverrides;
 #endif
 
+    public int Order;
+
     public SoundEffectOverride[] SfxOverrides;
 
     [NonSerialized] private Dictionary<SoundEffect, SoundEffectOverride> overridesDict;
+
     public override void Loaded(IResourceManager resourceManager, Native.Allocator allocator) {
         overridesDict = new();
         if (SfxOverrides != null) {

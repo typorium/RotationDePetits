@@ -14,21 +14,37 @@ namespace NSMB.Utilities {
         private static List<AssetRef<T>> _allAssetRefs;
         public static List<AssetRef<T>> AllAssetRefs {
             get {
-                return _allAssetRefs ??=
-                    QuantumUnityDB.Global.FindAssetGuids(new AssetObjectQuery { Type = typeof(T) })
-                        .Select(ag => new AssetRef<T>(ag))
-                        .ToList();
+                if (_allAssetRefs == null) {
+                    Load();
+                }
+
+                return _allAssetRefs;
             }
         }
 
         private static List<T> _allAssets;
         public static IReadOnlyList<T> AllAssets {
             get {
-                return _allAssets ??=
-                    AllAssetRefs
-                        .Select(ar => QuantumUnityDB.GetGlobalAsset(ar))
-                        .ToList();
+                if (_allAssets == null) {
+                    Load();
+                }
+
+                return _allAssets;
             }
+        }
+
+        public static void Load() {
+            var query = 
+                QuantumUnityDB.Global.FindAssetGuids(new AssetObjectQuery { Type = typeof(T) })
+                    .Select(ag => new AssetRef<T>(ag))
+                    .Select(QuantumUnityDB.GetGlobalAsset);
+
+            if (typeof(IOrderedAsset).IsAssignableFrom(typeof(T))) {
+                query = query.OrderBy(asset => ((IOrderedAsset) asset).Order);
+            }
+
+            _allAssets = query.ToList();
+            _allAssetRefs = query.Select(asset => (AssetRef<T>) asset).ToList();
         }
 
         public static void Invalidate() {

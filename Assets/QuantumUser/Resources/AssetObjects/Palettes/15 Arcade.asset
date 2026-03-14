@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/15 Arcade
     Guid:
       Value: 318461744176949519
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 532063855470386108
@@ -45,5 +45,6 @@ MonoBehaviour:
       B: 40
       A: 255
     HatUsesOverallsColor: 1
-  translationKey: skin.arcade
-  order: -860
+  TranslationKey: skin.arcade
+  Order: 1600
+  IsLegacy: 1

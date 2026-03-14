@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/21 OrangeGreen
     Guid:
       Value: 408521781682520198
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 112
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.orange
-  order: -800
+  TranslationKey: skin.orange
+  Order: 2200
+  IsLegacy: 1

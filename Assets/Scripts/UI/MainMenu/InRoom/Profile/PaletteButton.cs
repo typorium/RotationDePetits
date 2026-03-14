@@ -39,7 +39,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         }
 
         private void UpdateLabel() {
-            colorNameString.text = GlobalController.Instance.translationManager.GetTranslation(palette ? palette.translationKey : "skin.default");
+            colorNameString.text = GlobalController.Instance.translationManager.GetTranslation(palette ? palette.TranslationKey : "skin.default");
         }
     }
 }

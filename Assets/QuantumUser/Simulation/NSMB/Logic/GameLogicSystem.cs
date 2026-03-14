@@ -8,12 +8,11 @@ namespace Quantum {
         ISignalOnLoadingComplete, ISignalOnReturnToRoom, ISignalOnComponentRemoved<MarioPlayer> {
 
         public override void OnInit(Frame f) {
-            var config = f.RuntimeConfig;
-            var gamemode = f.FindAsset(f.SimulationConfig.DefaultGamemode);
+            var gamemode = f.Context.GetAllAssets<GamemodeAsset>()[0];
             gamemode.DefaultRules.Materialize(f, ref f.Global->Rules);
 
             // Support booting in the editor.
-            if (!config.IsRealGame) {
+            if (!f.RuntimeConfig.IsRealGame) {
                 f.Global->GameState = GameState.WaitingForPlayers;
                 f.Global->PlayerLoadFrames = (ushort) (20 * f.UpdateRate);
             } else {
@@ -107,22 +106,21 @@ namespace Quantum {
                     f.Global->GameState = GameState.Playing;
                     f.Events.GameStateChanged(GameState.Playing);
 
-                    var playerDatas = f.Filter<PlayerData>();
-                    while (playerDatas.NextUnsafe(out _, out PlayerData* data)) {
+                    foreach ((_, var data) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) {
                         data->IsLoaded = false;
                         data->IsReady = false;
                     }
 
                 } else if (f.Global->GameStartFrames == 79) {
                     f.Events.RecordingStarted();
-                    
-                } if (f.Global->GameStartFrames == 78) {
+
+                } else if (f.Global->GameStartFrames == 78) {
                     // Respawn all players and enable systems
                     f.Global->StartFrame = f.Number;
                     f.SystemEnable<StartDisabledSystemGroup>();
 
-                    foreach (var otherGamemodes in f.SimulationConfig.AllGamemodes) {
-                        f.FindAsset(otherGamemodes).DisableGamemode(f);
+                    foreach (var otherGamemode in f.Context.GetAllAssets<GamemodeAsset>()) {
+                        otherGamemode.DisableGamemode(f);
                     }
 
                     var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
@@ -249,7 +247,7 @@ namespace Quantum {
             newData->RealTeam = 255;
 
             // Get team counts
-            int teams = f.SimulationConfig.Teams.Length;
+            int teams = f.Context.GetAllAssets<TeamAsset>().Count;
             Span<byte> teamCounts = stackalloc byte[teams];
             var playerDatas = f.ResolveDictionary(f.Global->PlayerDatas);
             foreach ((PlayerRef otherPlayer, EntityRef otherEntity) in playerDatas) {
@@ -389,8 +387,7 @@ namespace Quantum {
                 }
 
                 if (!f.TryFindAsset(data->Character, out var character)) {
-                    // TODO: Define mario as the strict fallback character.
-                    character = f.Context.CharacterDatas[0];
+                    character = f.Context.GetAllAssets<CharacterAsset>()[0];
                 }
 
                 EntityRef newPlayer = f.Create(character.Prototype);
