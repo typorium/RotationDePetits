@@ -48,6 +48,7 @@ MonoBehaviour:
   LooseCoinPrototype:
     Id:
       Value: 1464681621458001613
+  Order: 100
   DefaultRules:
     Stage:
       Id:

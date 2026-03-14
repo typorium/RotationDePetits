@@ -39,16 +39,13 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             }
             paletteButtons.Clear();
 
-            List<PaletteSet> palettes = AssetRepository<PaletteSet>.AllAssets
-                .OrderBy(ps => ps ? ps.order : int.MinValue)
-                .ToList();
-            palettes.Insert(0, null);
+            var palettes = AssetRepository<PaletteSet>.AllAssets;
 
             int palettesPerRow = Mathf.Max(4, palettes.Count / 7);
             template.transform.parent.GetComponent<GridLayoutGroup>().constraintCount = palettesPerRow;
 
-            for (int i = 0; i < palettes.Count; i++) {
-                PaletteSet palette = palettes[i];
+            for (int i = -1; i < palettes.Count; i++) {
+                PaletteSet palette = (i >= 0) ? palettes[i] : null; // Add one null entry
 
                 GameObject newButton = Instantiate(template, template.transform.parent);
                 PaletteButton cb = newButton.GetComponent<PaletteButton>();

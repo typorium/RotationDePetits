@@ -92,10 +92,10 @@ namespace NSMB.UI.Game.Scoreboard {
 
             if (Settings.Instance.GraphicsColorblind) {
                 if (f.Global->Rules.TeamsEnabled) {
-                    var teams = f.SimulationConfig.Teams;
-                    if (info.Team < teams.Length) {
+                    var teams = f.Context.GetAllAssets<TeamAsset>();
+                    if (info.Team < teams.Count) {
                         var team = teams[info.Team];
-                        teamSprite.sprite = f.FindAsset(team).spriteColorblind;
+                        teamSprite.sprite = team.spriteColorblind;
                     } else {
                         teamSprite.sprite = null;
                     }
@@ -112,7 +112,7 @@ namespace NSMB.UI.Game.Scoreboard {
                 teamSprite.gameObject.SetActive(false);
             }
 
-            var character = QuantumViewUtils.FindAssetOrDefault(info.Character, GlobalController.Instance.defaultCharacter);
+            var character = QuantumViewUtils.FindAssetOrDefault(info.Character);
             int objective = 0;
             int lives = 0;
             if (f.Unsafe.TryGetPointer(Target, out MarioPlayer* mario)) {

@@ -2,6 +2,7 @@ using NSMB.Networking;
 using NSMB.UI.MainMenu.Submenus.InRoom;
 using NSMB.UI.Translation;
 using NSMB.Utilities;
+using NSMB.Utilities.Extensions;
 using Photon.Client;
 using Photon.Realtime;
 using Quantum;

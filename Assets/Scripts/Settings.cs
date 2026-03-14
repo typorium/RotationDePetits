@@ -3,6 +3,7 @@ using NSMB.Utilities;
 using Quantum;
 using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -326,8 +327,8 @@ namespace NSMB {
             generalScoreboardAlways = PlayerPrefs.GetInt("ScoreboardAlwaysVisible", 1) != 0;
             GeneralDisableChat = false;
             generalChatFiltering = PlayerPrefs.GetInt("ChatFilter", 1) != 0;
-            generalCharacter = Utils.IndexIntoOrFirstElement(AssetRepository<CharacterAsset>.AllAssetRefs, PlayerPrefs.GetInt("Character", 0));
-            generalPalette = Utils.IndexIntoOrFirstElement(AssetRepository<PaletteSet>.AllAssetRefs, PlayerPrefs.GetInt("Skin", 0));
+            generalCharacter = Utils.IndexIntoOrDefault(AssetRepository<CharacterAsset>.AllAssetRefs, PlayerPrefs.GetInt("Character", 0), AssetRepository<CharacterAsset>.AllAssetRefs[0]);
+            generalPalette = Utils.IndexIntoOrDefault(AssetRepository<PaletteSet>.AllAssets.Where(ps => ps.IsLegacy).ToList(), PlayerPrefs.GetInt("Skin", 0) - 1, default);
             GeneralLocale = "en-US";
             generalUseNicknameColor = true;
             GeneralReplaysEnabled = true;
@@ -382,11 +383,11 @@ namespace NSMB {
             TryGetSetting("General_ChatFilter", ref generalChatFiltering);
             int generalCharacterOld = 0;
             if (TryGetSetting("General_Character", ref generalCharacterOld)) {
-                generalCharacter = Utils.IndexIntoOrFirstElement(AssetRepository<CharacterAsset>.AllAssetRefs, generalCharacterOld);
+                generalCharacter = Utils.IndexIntoOrDefault(AssetRepository<CharacterAsset>.AllAssetRefs, generalCharacterOld, AssetRepository<CharacterAsset>.AllAssetRefs[0]);
             }
             int generalPaletteOld = 0;
             if (TryGetSetting("General_Palette", ref generalPaletteOld)) {
-                generalPalette = Utils.IndexIntoOrFirstElement(AssetRepository<PaletteSet>.AllAssetRefs, generalPaletteOld);
+                generalPalette = Utils.IndexIntoOrDefault(AssetRepository<PaletteSet>.AllAssets.Where(ps => ps.IsLegacy).ToList(), generalPaletteOld - 1, default);
             }
             TryGetSetting<string>("General_Locale", nameof(GeneralLocale));
             TryGetSetting("General_UseNicknameColor", ref generalUseNicknameColor);
@@ -433,53 +434,8 @@ namespace NSMB {
 
         private void LoadFromVersion2() {
             // Generic
-            TryGetSetting("General_Nickname", ref generalNickname);
-            TryGetSetting("General_ScoreboardAlwaysVisible", ref generalScoreboardAlways);
-            TryGetSetting<bool>("General_DisableChat", nameof(GeneralDisableChat));
-            TryGetSetting("General_ChatFilter", ref generalChatFiltering);
             TryGetSetting("General_Character", ref generalCharacter);
             TryGetSetting("General_Palette", ref generalPalette);
-            TryGetSetting<string>("General_Locale", nameof(GeneralLocale));
-            TryGetSetting("General_UseNicknameColor", ref generalUseNicknameColor);
-            TryGetSetting<bool>("General_ReplaysEnabled", nameof(GeneralReplaysEnabled));
-            TryGetSetting("General_MaxTempReplays", ref generalMaxTempReplays);
-            TryGetSetting<bool>("General_DiscordIntegration", nameof(GeneralDiscordIntegration));
-
-            // Graphics
-            TryGetSetting<int>("Graphics_FullscreenMode", nameof(GraphicsFullscreenMode));
-            TryGetSetting<string>("Graphics_FullscreenResolution", nameof(GraphicsFullscreenResolution));
-            TryGetSetting<bool>("Graphics_NDS_Enabled", nameof(GraphicsNdsEnabled));
-            TryGetSetting<bool>("Graphics_NDS_ForceAspect", nameof(GraphicsNdsForceAspect));
-            TryGetSetting<bool>("Graphics_NDS_PixelPerfect", nameof(GraphicsNdsPixelPerfect));
-            TryGetSetting<int>("Graphics_MaxFPS", nameof(GraphicsMaxFps));
-            TryGetSetting<bool>("Graphics_VSync", nameof(GraphicsVsync));
-            TryGetSetting<bool>("Graphics_PlayerOutlines", nameof(GraphicsPlayerOutlines));
-            TryGetSetting<bool>("Graphics_PlayerNametags", nameof(GraphicsPlayerNametags));
-            TryGetSetting<bool>("Graphics_Colorblind", nameof(GraphicsColorblind));
-            TryGetSetting<bool>("Graphics_InputDisplay", nameof(GraphicsInputDisplay));
-
-            // Audio
-            TryGetSetting<float>("Audio_MasterVolume", nameof(AudioMasterVolume));
-            TryGetSetting<float>("Audio_MusicVolume", nameof(AudioMusicVolume));
-            TryGetSetting<float>("Audio_SFXVolume", nameof(AudioSFXVolume));
-            TryGetSetting("Audio_MuteMusicOnUnfocus", ref audioMuteMusicOnUnfocus);
-            TryGetSetting("Audio_MuteSFXOnUnfocus", ref audioMuteSFXOnUnfocus);
-            TryGetSetting("Audio_Panning", ref audioPanning);
-            TryGetSetting("Audio_RestartMusicOnDeath", ref audioRestartMusicOnDeath);
-            TryGetSetting("Audio_SpecialPowerupMusic", ref audioSpecialPowerupMusic);
-
-            // Controls
-            TryGetSetting("Controls_FireballFromSprint", ref controlsFireballSprint);
-            TryGetSetting("Controls_AutoSprint", ref controlsAutoSprint);
-            TryGetSetting("Controls_PropellerJump", ref controlsPropellerJump);
-            TryGetSetting("Controls_AllowGroundpoundWithLeftRight", ref controlsAllowGroundpoundWithLeftRight);
-            TryGetSetting("Controls_Rumble", ref controlsRumble);
-            TryGetSetting<string>("Controls_Bindings", nameof(ControlsBindings));
-
-            // Misc
-            TryGetSetting("Misc_FilterFullRooms", ref miscFilterFullRooms);
-            TryGetSetting("Misc_FilterInProgressRooms", ref miscFilterInProgressRooms);
-            TryGetSetting("Misc_FilterAddons", ref miscFilterAddons);
         }
 
         private bool TryGetSetting<T>(string key, string propertyName) {
@@ -564,7 +520,7 @@ namespace NSMB {
                 return false;
             }
 
-            if (!AssetGuid.TryParse(PlayerPrefs.GetString(key), out var guid, false)) {
+            if (!AssetGuid.TryParse(PlayerPrefs.GetString(key), out var guid, true)) {
                 return false;
             }
 

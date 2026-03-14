@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/3 Blue
     Guid:
       Value: 454459291395690797
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 255
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.blue
-  order: -980
+  TranslationKey: skin.blue
+  Order: 200
+  IsLegacy: 1

@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/23 Cubby Leafy
     Guid:
       Value: 484478936524730291
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 532063855470386108
@@ -45,5 +45,6 @@ MonoBehaviour:
       B: 85
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.cubbyleafy
-  order: -780
+  TranslationKey: skin.cubbyleafy
+  Order: 2400
+  IsLegacy: 1

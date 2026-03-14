@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/24 Yellow
     Guid:
       Value: 438340492681313369
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 38
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.yellow
-  order: -979
+  TranslationKey: skin.yellow
+  Order: 300
+  IsLegacy: 0

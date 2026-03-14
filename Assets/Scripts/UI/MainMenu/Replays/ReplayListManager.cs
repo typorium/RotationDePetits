@@ -191,8 +191,8 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 // Color and width
                 builder.Append("<width=85%>");
                 if (header.Rules.TeamsEnabled) {
-                    var allTeams = GlobalController.Instance.config.Teams;
-                    TeamAsset team = QuantumUnityDB.GetGlobalAsset(allTeams[info.Team % allTeams.Length]);
+                    var allTeams = AssetRepository<TeamAsset>.AllAssets;
+                    TeamAsset team = allTeams[info.Team % allTeams.Count];
                     builder.Append("<nobr>");
                     builder.Append("<color=#").Append(Utils.ColorToHex(team.color, false)).Append(">").Append(Settings.Instance.GraphicsColorblind ? team.textSpriteColorblind : team.textSpriteNormal);
                 } else {

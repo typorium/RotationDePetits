@@ -35,9 +35,16 @@ namespace NSMB.Utilities {
             return PlayerElements.AllPlayerElements.Any(pe => pe.Entity == entity);
         }
 
-        public static T FindAssetOrDefault<T>(AssetRef<T> assetRef, AssetRef<T> def) where T : AssetObject {
+        public static T FindAssetOrDefault<T>(AssetRef<T> assetRef, AssetRef<T>? def = null) where T : AssetObject {
             if (!QuantumUnityDB.TryGetGlobalAsset(assetRef, out T result)) {
-                QuantumUnityDB.TryGetGlobalAsset(def, out result);
+                if (def.HasValue) {
+                    QuantumUnityDB.TryGetGlobalAsset(def.Value, out result);
+                } else {
+                    var assets = AssetRepository<T>.AllAssets;
+                    if (assets.Count > 0) {
+                        result = assets[0];
+                    }
+                }
             }
             return result;
         }

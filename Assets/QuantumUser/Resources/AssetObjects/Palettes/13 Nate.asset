@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/13 Nate
     Guid:
       Value: 388220319941842390
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 186
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.nate
-  order: -880
+  TranslationKey: skin.nate
+  Order: 1400
+  IsLegacy: 1

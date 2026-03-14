@@ -9,9 +9,9 @@ using UnityEngine;
 namespace NSMB.Utilities {
     public class Utils {
 
-        public static T IndexIntoOrFirstElement<T>(IList<T> list, int index) {
+        public static T IndexIntoOrDefault<T>(IList<T> list, int index, T def) {
             if (index < 0 || index >= list.Count) {
-                return list[0];
+                return def;
             }
             return list[index];
         }
@@ -256,12 +256,12 @@ namespace NSMB.Utilities {
         }
 
         public static Color GetTeamColor(Frame f, int team, float s = 1, float v = 1) {
-            var teams = f.SimulationConfig.Teams;
-            if (team < 0 || team >= teams.Length) {
+            var teams = f.Context.GetAllAssets<TeamAsset>();
+            if (team < 0 || team >= teams.Count) {
                 return spectatorColor;
             }
 
-            Color color = f.FindAsset(teams[team]).color;
+            Color color = teams[team].color;
             Color.RGBToHSV(color, out float hue, out float saturation, out float value);
             return Color.HSVToRGB(hue, saturation * s, value * v);
         }

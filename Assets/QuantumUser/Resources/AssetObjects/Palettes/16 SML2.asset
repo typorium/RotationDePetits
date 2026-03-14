@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/16 SML2
     Guid:
       Value: 398166620170367761
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 46
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.marioland
-  order: -850
+  TranslationKey: skin.marioland
+  Order: 1700
+  IsLegacy: 1

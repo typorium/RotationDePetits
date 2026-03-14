@@ -2,15 +2,18 @@ using Quantum;
 using System;
 using UnityEngine.Serialization;
 
-public class PaletteSet : AssetObject {
+public class PaletteSet : AssetObject, IOrderedAsset {
 
-    public CharacterSpecificPalette[] colors = { new() };
-    public string translationKey;
-    public int order;
+    int IOrderedAsset.Order => Order;
+
+    [FormerlySerializedAs("colors")] public CharacterSpecificPalette[] Colors = { new() };
+    [FormerlySerializedAs("translationKey")] public string TranslationKey;
+    [FormerlySerializedAs("order")] public int Order;
+    public bool IsLegacy;
 
     public CharacterSpecificPalette GetPaletteForCharacter(AssetRef<CharacterAsset> player) {
         CharacterSpecificPalette nullPlayer = null;
-        foreach (CharacterSpecificPalette color in colors) {
+        foreach (CharacterSpecificPalette color in Colors) {
             if (player.Equals(color.Character)) {
                 return color;
             }
@@ -19,7 +22,7 @@ public class PaletteSet : AssetObject {
                 nullPlayer = color;
             }
         }
-        return nullPlayer ?? colors[0];
+        return nullPlayer ?? Colors[0];
     }
 }
 

@@ -3,6 +3,7 @@ using NSMB.UI.Elements;
 using NSMB.UI.MainMenu.Submenus.Prompts;
 using NSMB.UI.Translation;
 using NSMB.Utilities;
+using NSMB.Utilities.Extensions;
 using Photon.Realtime;
 using Quantum;
 using System;
@@ -75,7 +76,7 @@ namespace NSMB.UI.MainMenu.Submenus.RoomList {
                 UnityEngine.Random.InitState((int) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
                 Settings.Instance.generalNickname = "Player" + UnityEngine.Random.Range(1000, 10000);
             }
-            usernameField.text = Settings.Instance.generalNickname;
+            usernameField.SetTextWithoutNotify(Settings.Instance.generalNickname);
 
             if (kickedFromPreviousGame) {
                 errorSubmenu.OpenWithString("ui.error.kicked", false);

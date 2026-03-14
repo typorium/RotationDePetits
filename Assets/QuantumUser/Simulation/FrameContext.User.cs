@@ -1,4 +1,5 @@
 ﻿using Photon.Deterministic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Quantum.InteractionSystem;
@@ -6,10 +7,21 @@ using static Quantum.InteractionSystem;
 namespace Quantum {
     public partial class FrameContextUser {
 
-        //---Static Assets
-        private CharacterAsset[] _characterDatas;
-        public CharacterAsset[] CharacterDatas => _characterDatas ??= ResourceManager.GetAssets(new AssetObjectQuery { Type = typeof(CharacterAsset) }).Cast<CharacterAsset>().ToArray();
-        
+        //---Assets
+        private readonly Dictionary<Type, object> allAssets = new();
+
+        public List<T> GetAllAssets<T>() where T : AssetObject {
+            if (!allAssets.ContainsKey(typeof(T))) {
+                var query = ResourceManager.GetAssets(new AssetObjectQuery { Type = typeof(T) }).Cast<T>();
+                if (typeof(IOrderedAsset).IsAssignableFrom(typeof(T))) {
+                    query = query.OrderBy(asset => ((IOrderedAsset) asset).Order);
+                }
+                allAssets[typeof(T)] = query.Cast<T>().ToList();
+            }
+
+            return (List<T>) allAssets[typeof(T)];
+        }
+
         //---Physics
         public LayerMask ExcludeEntityAndPlayerMask, PlayerOnlyMask;
         public Shape2D CircleRadiusTwo;

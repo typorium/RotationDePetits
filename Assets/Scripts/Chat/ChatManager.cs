@@ -199,9 +199,9 @@ namespace NSMB.Chat {
         private void OnPlayerTeamChangedByHost(EventPlayerTeamChangedByHost e) {
             if (e.Game.PlayerIsLocal(e.Player)) {
                 Frame f = e.Game.Frames.Predicted;
-                var teams = f.SimulationConfig.Teams;
-                if (e.Team < teams.Length) {
-                    AddSystemMessage("ui.inroom.chat.player.changeteam", Blue, "team", f.FindAsset(teams[e.Team]).nameTranslationKey);
+                var teams = f.Context.GetAllAssets<TeamAsset>();
+                if (e.Team < teams.Count) {
+                    AddSystemMessage("ui.inroom.chat.player.changeteam", Blue, "team", teams[e.Team].nameTranslationKey);
                 } else {
                     AddSystemMessage("ui.inroom.chat.player.changeteam.unlocked", Blue);
                 }

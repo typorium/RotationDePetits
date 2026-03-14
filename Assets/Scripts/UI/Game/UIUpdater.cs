@@ -281,7 +281,7 @@ namespace NSMB.UI.Game {
                     int teamObjective = Mathf.Max(0, gamemode.GetTeamObjectiveCount(f, teamIndex));
                     if (cachedTeamObjective != teamObjective) {
                         cachedTeamObjective = teamObjective;
-                        TeamAsset team = f.FindAsset(f.SimulationConfig.Teams[teamIndex]);
+                        TeamAsset team = f.Context.GetAllAssets<TeamAsset>()[teamIndex];
                         string objectiveString = "x" + cachedTeamObjective;
                         if (gamemode is StarChasersGamemode) {
                             objectiveString += "/" + rules.StarsToWin;
@@ -444,8 +444,8 @@ namespace NSMB.UI.Game {
             } else if (hasWinner) {
                 if (teamMode) {
                     // Winning team
-                    var teams = f.SimulationConfig.Teams;
-                    winner = tm.GetTranslation(f.FindAsset(teams[e.WinningTeam % teams.Length]).nameTranslationKey);
+                    var teams = f.Context.GetAllAssets<TeamAsset>();
+                    winner = tm.GetTranslation(teams[e.WinningTeam].nameTranslationKey);
                     resultText = tm.GetTranslationWithReplacements("ui.result.teamwin", "team", winner);
                     ChatManager.Instance.AddSystemMessage("ui.inroom.chat.server.ended.team", color: ChatManager.Red, "team", winner);
                 } else {

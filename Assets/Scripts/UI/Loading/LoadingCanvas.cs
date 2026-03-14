@@ -67,7 +67,7 @@ namespace NSMB.UI.Loading {
                 characterRef = Settings.Instance.generalCharacter;
             }
 
-            CharacterAsset character = FindAssetOrDefault(characterRef, GlobalController.Instance.defaultCharacter);
+            CharacterAsset character = QuantumViewUtils.FindAssetOrDefault(characterRef);
 
             mario.Initialize(character);
             readyImage.sprite = character.ReadySprite;

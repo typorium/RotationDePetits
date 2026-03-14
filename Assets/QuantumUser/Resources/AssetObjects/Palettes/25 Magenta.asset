@@ -16,7 +16,7 @@ MonoBehaviour:
     Path: QuantumUser/Resources/AssetObjects/Palettes/25 Magenta
     Guid:
       Value: 450812137399066317
-  colors:
+  Colors:
   - Character:
       Id:
         Value: 0
@@ -31,5 +31,6 @@ MonoBehaviour:
       B: 212
       A: 255
     HatUsesOverallsColor: 0
-  translationKey: skin.magenta
-  order: -978
+  TranslationKey: skin.magenta
+  Order: 400
+  IsLegacy: 0

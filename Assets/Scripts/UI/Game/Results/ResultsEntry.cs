@@ -43,7 +43,7 @@ namespace NSMB.UI.Game.Results {
                 usernameText.text = info.Value.Nickname.ToString().ToValidNickname(f, player);
                 nicknameColor = NicknameColor.Parse(info.Value.NicknameColor.ToString());
                 usernameText.color = nicknameColor.Sample();
-                characterIcon.sprite = QuantumViewUtils.FindAssetOrDefault(info.Value.Character, GlobalController.Instance.defaultCharacter).ReadySprite;
+                characterIcon.sprite = QuantumViewUtils.FindAssetOrDefault(info.Value.Character).ReadySprite;
                 OnColorblindModeChanged();
                 
                 if (stars < 0) {
@@ -93,10 +93,10 @@ namespace NSMB.UI.Game.Results {
                 if (Settings.Instance.GraphicsColorblind) {
                     Frame f = QuantumRunner.DefaultGame.Frames.Predicted;
                     if (f.Global->Rules.TeamsEnabled) {
-                        var teams = f.SimulationConfig.Teams;
-                        if (info.Team < teams.Length) {
+                        var teams = f.Context.GetAllAssets<TeamAsset>();
+                        if (info.Team < teams.Count) {
                             var team = teams[info.Team];
-                            teamSprite.sprite = f.FindAsset(team).spriteColorblind;
+                            teamSprite.sprite = team.spriteColorblind;
                         } else {
                             teamSprite.sprite = null;
                         }
