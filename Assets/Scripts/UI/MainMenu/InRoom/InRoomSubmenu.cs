@@ -179,7 +179,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             bool isHost = game.PlayerIsLocal(f.Global->Host);
             seconds ??= Mathf.RoundToInt(f.Global->GameStartFrames / 60f);
 
-            if (seconds <= 0) {
+            if (seconds <= 0 && f.Global->GameState == GameState.PreGameRoom) {
                 // Cancelled
                 startGameButton.interactable = !isHost || QuantumUtils.IsGameStartable(f);
                 if (isHost) {
@@ -210,7 +210,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 startGameButtonText.text = tm.GetTranslationWithReplacements("ui.inroom.buttons.starting", "countdown", seconds.ToString());
                 startGameButtonText.horizontalAlignment = tm.RightToLeft ? HorizontalAlignmentOptions.Right : HorizontalAlignmentOptions.Left;
 
-                if (seconds == 1) {
+                if (seconds <= 1 && fadeMusicCoroutine == null) {
                     // Start fade
                     fadeMusicCoroutine = StartCoroutine(FadeMusic());
                 }
@@ -307,13 +307,15 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         }
 
         private void OnGameStateChanged(EventGameStateChanged e) {
-            UpdateStartButton(e.Game, e.Game.Frames.Predicted);
+            if (e.NewState == GameState.PreGameRoom) {
+                UpdateStartButton(e.Game, e.Game.Frames.Predicted);
 
-            if (fadeMusicCoroutine != null) {
-                StopCoroutine(fadeMusicCoroutine);
-                fadeMusicCoroutine = null;
+                if (fadeMusicCoroutine != null) {
+                    StopCoroutine(fadeMusicCoroutine);
+                    fadeMusicCoroutine = null;
+                }
+                musicSource.volume = 1;
             }
-            musicSource.volume = 1;
         }
 
         private void OnHostChanged(EventHostChanged e) {
