@@ -108,6 +108,7 @@ component MarioPlayer {
 	[ExcludeFromPrototype] byte CurrentProjectiles;
 	[ExcludeFromPrototype] byte CurrentVolley;
 
+	[ExcludeFromPrototype] byte ShellSpeedStage;
     [ExcludeFromPrototype] byte ShellSlowdownFrames;
 
 	[ExcludeFromPrototype] byte PropellerLaunchFrames;

@@ -130,7 +130,10 @@ namespace Quantum {
             } else {
                 // Side
                 bool rightContact = contact.Normal.X > 0;
-                if ((iceBlock->IsSliding && iceBlock->FacingRight == rightContact) || mario->IsInShell) {
+                if (mario->IsInShell) {
+                    Destroy(f, iceBlockEntity, IceBlockBreakReason.HitWall);
+                    return false;
+                } else if (iceBlock->IsSliding && iceBlock->FacingRight == rightContact) {
                     var holdable = f.Unsafe.GetPointer<Holdable>(iceBlockEntity);
                     bool dropStars = !f.Unsafe.TryGetPointer(holdable->PreviousHolder, out MarioPlayer* holderMario) || mario->GetTeam(f) != holderMario->GetTeam(f);
                     bool damaged = mario->DoKnockback(f, marioEntity, contact.Normal.X < 0, dropStars ? 1 : 0, KnockbackStrength.FireballBump, iceBlockEntity);

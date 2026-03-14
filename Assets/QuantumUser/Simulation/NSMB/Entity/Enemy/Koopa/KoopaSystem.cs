@@ -232,8 +232,24 @@ namespace Quantum {
             if (isSpiny) {
                 // Do damage
                 if (mario->IsCrouchedInShell) {
-                    mario->FacingRight = damageDirection.X < 0;
-                    marioPhysicsObject->Velocity.X = 0;
+                    // hip drops
+                    if (groundpounded) {
+                        // Kick
+                        koopa->IsInShell = true;
+                        koopa->IsKicked = false;
+                        koopaEnemy->ChangeFacingRight(f, koopaEntity, ourPos.X > theirPos.X);
+                        koopa->EnterShell(f, koopaEntity, marioEntity, false, true);
+                        koopa->Kick(f, koopaEntity, marioEntity, 3);
+                        koopaPhysicsObject->Velocity.Y = 2;
+                    } else {
+                        if (!koopa->IsInShell && FPMath.Abs(ourPos.X - theirPos.X) > FP._0_33) {
+                            marioPhysicsObject->Velocity.X = 0;
+                            koopaEnemy->ChangeFacingRight(f, koopaEntity, ourPos.X > theirPos.X);
+                        } else if (koopa->IsInShell) {
+                            // spinies in shells are killed
+                            koopa->Kill(f, koopaEntity, marioEntity, EnemyKillReason.Normal);
+                        }
+                    }
 
                 } else if (mario->IsDamageable) {
                     mario->Powerdown(f, marioEntity, false, koopaEntity);
@@ -293,11 +309,14 @@ namespace Quantum {
                     koopaHoldable->PreviousHolder = marioEntity;
                     koopaHoldable->IgnoreOwnerFrames = 5;
                 } else {
-                    // Damage
+                    // Damage?
                     if (mario->IsCrouchedInShell) {
-                        //mario->FacingRight = damageDirection.X < 0;
-                        //marioPhysicsObject->Velocity.X = 0;
-                        koopa->Kill(f, koopaEntity, marioEntity, EnemyKillReason.Special);
+                        if (koopa->IsInShell) {
+                            koopa->Kill(f, koopaEntity, marioEntity, EnemyKillReason.Special);
+                        } else {
+                            marioPhysicsObject->Velocity.X = 0;
+                            koopaEnemy->ChangeFacingRight(f, koopaEntity, ourPos.X > theirPos.X);
+                        }
 
                     } else if (mario->IsDamageable) {
                         mario->Powerdown(f, marioEntity, false, koopaEntity);

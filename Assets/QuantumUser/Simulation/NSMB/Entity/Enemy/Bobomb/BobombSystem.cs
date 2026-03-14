@@ -211,7 +211,7 @@ namespace Quantum {
                 } else if (mario->IsCrouchedInShell) {
                     // Bounce off blue shell crouched player
                     var bobombEnemy = f.Unsafe.GetPointer<Enemy>(bobombEntity);
-                    bobombEnemy->ChangeFacingRight(f, bobombEntity, damageDirection.X < 0);
+                    bobombEnemy->ChangeFacingRight(f, bobombEntity, ourPos.X > theirPos.X);
                     marioPhysicsObject->Velocity.X = 0;
                     return;
 

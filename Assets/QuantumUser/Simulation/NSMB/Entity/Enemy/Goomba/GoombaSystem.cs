@@ -92,8 +92,8 @@ namespace Quantum {
                 mario->IsDrilling = false;
 
             } else if (mario->IsCrouchedInShell) {
-                mario->FacingRight = damageDirection.X < 0;
                 marioPhysicsObject->Velocity.X = 0;
+                goombaEnemy->ChangeFacingRight(f, goombaEntity, ourPos.X > theirPos.X);
 
             } else if (mario->IsDamageable) {
                 mario->Powerdown(f, marioEntity, false, goombaEntity);
