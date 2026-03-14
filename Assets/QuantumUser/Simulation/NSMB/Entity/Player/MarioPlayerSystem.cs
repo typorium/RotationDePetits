@@ -812,7 +812,8 @@ namespace Quantum {
             var physicsObject = filter.PhysicsObject;
 
             if (mario->IsCrouching && physicsObject->WasTouchingGround && !physicsObject->IsTouchingGround && physicsObject->Velocity.Y < FP._0_10) {
-                physicsObject->Velocity.Y = mario->IsCrouching ? physics.CrouchOffEdgeVelocity : 0;
+                // BLUEEEEEEE SHEEEEEEEEEEEEELLLLLLLLLL >:(
+                physicsObject->Velocity.Y = (mario->IsCrouching && !mario->IsSliding && !mario->IsGroundpounding) ? physics.CrouchOffEdgeVelocity : 0;
                 physicsObject->HoverFrames = 0;
             }
 

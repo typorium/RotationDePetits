@@ -242,8 +242,8 @@ namespace Quantum {
                         koopa->Kick(f, koopaEntity, marioEntity, 3);
                         koopaPhysicsObject->Velocity.Y = 2;
                     } else {
-                        marioPhysicsObject->Velocity.X = 0;
                         if (!koopa->IsInShell && FPMath.Abs(ourPos.X - theirPos.X) > FP._0_33) {
+                            marioPhysicsObject->Velocity.X = 0;
                             koopaEnemy->ChangeFacingRight(f, koopaEntity, ourPos.X > theirPos.X);
                         } else if (koopa->IsInShell) {
                             // spinies in shells are killed
@@ -314,6 +314,7 @@ namespace Quantum {
                         if (koopa->IsInShell) {
                             koopa->Kill(f, koopaEntity, marioEntity, EnemyKillReason.Special);
                         } else {
+                            marioPhysicsObject->Velocity.X = 0;
                             koopaEnemy->ChangeFacingRight(f, koopaEntity, ourPos.X > theirPos.X);
                         }
 
