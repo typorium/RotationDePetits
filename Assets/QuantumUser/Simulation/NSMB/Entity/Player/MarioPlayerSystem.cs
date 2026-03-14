@@ -2457,11 +2457,11 @@ namespace Quantum {
                 if (dropStars) {
                     defenderMario->Powerdown(f, defender, false, attacker);
                 } else {
-                    knockbacked = defenderMario->DoKnockback(f, defender, !fromRight, 0, KnockbackStrength.CollisionBump, attacker);
+                    dealtKnockback = defenderMario->DoKnockback(f, defender, !fromRight, 0, KnockbackStrength.CollisionBump, attacker);
                 }
             }
 
-            if (knockbacked) {
+            if (dealtKnockback) {
                 FPVector2 avgPosition = (f.Unsafe.GetPointer<Transform2D>(attacker)->Position + f.Unsafe.GetPointer<Transform2D>(defender)->Position) / 2;
                 f.Events.PlayKnockbackEffect(attacker, defender, KnockbackStrength.CollisionBump, avgPosition);
             }
