@@ -29,7 +29,7 @@ namespace NSMB.Cameras {
 
         //---Private Variables
         private Vector3 truePosition, tweenStartPosition, tweenedTargetPosition;
-        float tweenTime;
+        float tweenTime = 1.5f;
         private VersusStageData stage;
         private float screenshakeTimer;
         private Vector2 previousPointer;

@@ -229,8 +229,7 @@ namespace NSMB.UI.Pause {
             if (isInConfirmationForQuitting)
             {
                 GlobalController.Instance.fader.FadeBehindUi = false;
-                GlobalController.Instance.fader.Fade(AnimatedFader.FadeStyle.Circle, AnimatedFader.FadeStyle.Dissolve,
-                    () => QuantumRunner.Default.Shutdown());
+                QuantumRunner.Default.Shutdown();
             } else {
                 var game = QuantumRunner.DefaultGame;
                 Frame f = game.Frames.Predicted;
