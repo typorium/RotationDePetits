@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NSMB.UI.Game.PlayerSlotInfo
   Color: {r: 0.5660378, g: 0.3312112, b: 0, a: 1}
   Sprite: {fileID: 180310867, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
-  Icon: <sprite name=playernumber_9>
+  Icon: <sprite name=playernumber_8>

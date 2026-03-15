@@ -215,7 +215,7 @@ namespace Quantum {
                     marioPhysicsObject->Velocity.X = 0;
                     return;
 
-                } else if (mario->IsDamageable && QuantumUtils.Decrement(ref bobombEnemy->IntangibilityFrames)) {
+                } else if (mario->IsDamageable && bobombEnemy->IntangibilityFrames == 0) {
                     // Damage
                     mario->Powerdown(f, marioEntity, false, bobombEntity);
                     bobombEnemy->ChangeFacingRight(f, bobombEntity, damageDirection.X > 0);
@@ -329,7 +329,7 @@ namespace Quantum {
             }
         }
 
-        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason) {
+        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason, EntityRef attacker) {
             var iceBlock = f.Unsafe.GetPointer<IceBlock>(brokenIceBlock);
             if (f.Unsafe.TryGetPointer(iceBlock->Entity, out Bobomb* bobomb)) {
                 bobomb->Kill(f, iceBlock->Entity, brokenIceBlock, EnemyKillReason.Special);

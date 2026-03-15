@@ -289,7 +289,7 @@ namespace Quantum {
                         }
                     }
 
-                } else if (mario->IsDamageable && (QuantumUtils.Decrement(ref koopaEnemy->IntangibilityFrames) || koopa->IsInShell)) {
+                } else if (mario->IsDamageable && (koopaEnemy->IntangibilityFrames == 0 || koopa->IsInShell)) {
                     mario->Powerdown(f, marioEntity, false, koopaEntity);
                     if (!koopa->IsInShell) {
                         koopaEnemy->ChangeFacingRight(f, koopaEntity, damageDirection.X > 0);
@@ -358,7 +358,7 @@ namespace Quantum {
                             koopaEnemy->ChangeFacingRight(f, koopaEntity, ourPos.X > theirPos.X);
                         }
 
-                    } else if (mario->IsDamageable && (QuantumUtils.Decrement(ref koopaEnemy->IntangibilityFrames) || koopa->IsKicked)) {
+                    } else if (mario->IsDamageable && (koopaEnemy->IntangibilityFrames == 0 || koopa->IsKicked)) {
                         mario->Powerdown(f, marioEntity, false, koopaEntity);
                         if (!koopa->IsInShell) {
                             koopaEnemy->ChangeFacingRight(f, koopaEntity, damageDirection.X > 0);
@@ -388,7 +388,7 @@ namespace Quantum {
             }
 
             if (koopa->IsInShell && koopa->IsKicked) {
-                IceBlockSystem.Destroy(f, iceBlockEntity, IceBlockBreakReason.Other);
+                IceBlockSystem.Destroy(f, iceBlockEntity, IceBlockBreakReason.Other, koopaEntity);
             }
             return false;
         }
@@ -551,7 +551,7 @@ namespace Quantum {
             }
         }
 
-        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason) {
+        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason, EntityRef attacker) {
             var iceBlock = f.Unsafe.GetPointer<IceBlock>(brokenIceBlock);
             if (f.Unsafe.TryGetPointer(iceBlock->Entity, out Koopa* koopa)) {
                 koopa->Kill(f, iceBlock->Entity, brokenIceBlock, EnemyKillReason.Special);

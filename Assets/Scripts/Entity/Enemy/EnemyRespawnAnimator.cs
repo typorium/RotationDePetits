@@ -33,7 +33,8 @@ namespace NSMB.Entities.Enemies {
 
             Frame f = PredictedFrame;
             var enemy = f.Unsafe.GetPointer<Enemy>(EntityRef);
-            activeRespawnParticle = Instantiate(respawnParticle, enemy->Spawnpoint.ToUnityVector3() + (Vector3.up * 0.25f), Quaternion.identity);
+            var collider2d = f.Unsafe.GetPointer<PhysicsCollider2D>(EntityRef);
+            activeRespawnParticle = Instantiate(respawnParticle, enemy->Spawnpoint.ToUnityVector3() + collider2d->Shape.Centroid.ToUnityVector3(), Quaternion.identity);
             foreach (ParticleSystem particle in activeRespawnParticle.GetComponentsInChildren<ParticleSystem>()) {
                 var main = particle.main;
                 main.startColor = respawnColor;

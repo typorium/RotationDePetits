@@ -1627,11 +1627,13 @@ namespace Quantum {
             var physicsObject = filter.PhysicsObject;
             bool validFloorAngle = FPMath.Abs(physicsObject->FloorAngle) >= physics.SlideMinimumAngle;
             bool blueShell = mario->CurrentPowerupState == PowerupState.BlueShell;
-            bool movingFastEnough = (physicsObject->Velocity.X > 0) == (FPMath.Sign(physicsObject->FloorAngle) == 1) && FPMath.Abs(physicsObject->Velocity.X) >= physics.WalkMaxVelocity[physics.RunSpeedStage] * FP._0_50; // Blue Shell top speed
+            bool movingFastEnough = (physicsObject->Velocity.X > 0) == (FPMath.Sign(physicsObject->FloorAngle) == 1) && FPMath.Abs(physicsObject->Velocity.X) >= physics.WalkMaxVelocity[physics.RunSpeedStage]; // Blue Shell top speed
 
-            if (!blueShell) mario->IsCrouching &= !mario->IsSliding;
+            if (!blueShell) {
+                mario->IsCrouching &= !mario->IsSliding;
+            }
 
-            if (physicsObject->IsOnSlideableGround
+            if ((physicsObject->IsOnSlideableGround || blueShell)
                 && validFloorAngle
                 && !mario->IsInKnockback
                 && !f.Exists(mario->HeldEntity)
@@ -2096,7 +2098,7 @@ namespace Quantum {
             bool damageable = !mario->IsInKnockback
                 && mario->CurrentPowerupState != PowerupState.MegaMushroom
                 && mario->IsDamageable
-                 && !((mario->IsCrouchedInShell || mario->IsInShell) && projectileAsset.DoesntEffectBlueShell);
+                && !((mario->IsCrouchedInShell || mario->IsInShell) && projectileAsset.DoesntEffectBlueShell);
 
             if (damageable) {
                 bool didKnockback = false;
@@ -2292,7 +2294,7 @@ namespace Quantum {
                         if (dropStars) {
                             marioB->Powerdown(f, marioBEntity, false, marioAEntity);
                         }
-                        marioB->DoKnockback(f, marioBEntity, !fromRight, 0, KnockbackStrength.Normal, marioAEntity);
+                        marioB->DoKnockback(f, marioBEntity, !fromRight, 0, KnockbackStrength.Normal, marioAEntity, bypassDamageInvincibility: true);
                         marioA->FacingRight = !marioA->FacingRight;
                         marioA->ShellSpeedStage = marioAPhysicsInfo.ShellNormalStage;
                         f.Events.PlayBumpSound(marioAEntity);
@@ -2308,7 +2310,7 @@ namespace Quantum {
                         if (dropStars) {
                             marioA->Powerdown(f, marioAEntity, false, marioBEntity);
                         }
-                        marioA->DoKnockback(f, marioAEntity, fromRight, 0, KnockbackStrength.Normal, marioBEntity);
+                        marioA->DoKnockback(f, marioAEntity, fromRight, 0, KnockbackStrength.Normal, marioBEntity, bypassDamageInvincibility: true);
                         marioB->FacingRight = !marioB->FacingRight;
                         marioB->ShellSpeedStage = marioBPhysicsInfo.ShellNormalStage;
                         f.Events.PlayBumpSound(marioBEntity);
@@ -2670,7 +2672,7 @@ namespace Quantum {
             }
         }
 
-        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason) {
+        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason, EntityRef attacker) {
             var iceBlock = f.Unsafe.GetPointer<IceBlock>(brokenIceBlock);
             EntityRef entity = iceBlock->Entity;
             if (!f.Unsafe.TryGetPointer(entity, out MarioPlayer* mario)
@@ -2700,6 +2702,13 @@ namespace Quantum {
                     mario->FacingRight = true;
                 } else if (iceBlockPhysicsObject->IsTouchingRightWall) {
                     mario->FacingRight = false;
+                }
+            } else {
+                if (f.Unsafe.TryGetPointer(attacker, out Transform2D* attackerTransform)) {
+                    var marioTransform = f.Unsafe.GetPointer<Transform2D>(entity);
+                    QuantumUtils.UnwrapWorldLocations(f, marioTransform->Position, attackerTransform->Position, out FPVector2 ourPos, out FPVector2 theirPos);
+                    Debug.Log(attacker + " -> " + ourPos + " and " + theirPos);
+                    mario->FacingRight = ourPos.X < theirPos.X;
                 }
             }
 

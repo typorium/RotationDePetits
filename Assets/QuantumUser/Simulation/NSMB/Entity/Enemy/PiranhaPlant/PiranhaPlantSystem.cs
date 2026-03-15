@@ -137,7 +137,7 @@ namespace Quantum {
         }
 
 
-        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason) {
+        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason, EntityRef attacker) {
             var iceBlock = f.Unsafe.GetPointer<IceBlock>(brokenIceBlock);
             if (f.Unsafe.TryGetPointer(iceBlock->Entity, out PiranhaPlant* piranhaPlant)) {
                 piranhaPlant->Kill(f, iceBlock->Entity, brokenIceBlock, EnemyKillReason.Special);

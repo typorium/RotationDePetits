@@ -124,8 +124,11 @@ namespace Quantum {
             if (mario->InstakillsEnemies(marioPhysicsObject, false)) {
                 var boo = f.Unsafe.GetPointer<Boo>(booEntity);
                 boo->Kill(f, booEntity, marioEntity, EnemyKillReason.Special);
-            } else if (!mario->IsCrouchedInShell && QuantumUtils.Decrement(ref f.Unsafe.GetPointer<Enemy>(booEntity)->IntangibilityFrames)) {
-                mario->Powerdown(f, marioEntity, false, booEntity);
+            } else {
+                var booEnemy = f.Unsafe.GetPointer<Enemy>(booEntity);
+                if (!mario->IsCrouchedInShell && booEnemy->IntangibilityFrames == 0) {
+                    mario->Powerdown(f, marioEntity, false, booEntity);
+                }
             }
         }
 

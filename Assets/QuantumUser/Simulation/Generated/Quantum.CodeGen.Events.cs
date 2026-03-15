@@ -193,7 +193,6 @@ namespace Quantum {
         return ev;
       }
       public EventBreakableObjectBroken BreakableObjectBroken(EntityRef Entity, EntityRef Cause, FPVector2 LaunchDirection, FP Height) {
-        if (_f.IsPredicted) return null;
         var ev = _f.Context.AcquireEvent<EventBreakableObjectBroken>(EventBreakableObjectBroken.ID);
         ev.Entity = Entity;
         ev.Cause = Cause;
@@ -935,7 +934,7 @@ namespace Quantum {
         base(id, flags) {
     }
     public EventBreakableObjectBroken() : 
-        base(7, EventFlags.Server|EventFlags.Client|EventFlags.Synced) {
+        base(7, EventFlags.Server|EventFlags.Client) {
     }
     public new QuantumGame Game {
       get {

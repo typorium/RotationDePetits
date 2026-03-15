@@ -22,12 +22,15 @@ namespace Quantum {
             if (enemy->RespawnTimer > 0 && !enemy->DisableRespawning) {
                 HandleDelayedRespawn(f, ref filter, stage);
             }
+
             if (!enemy->IsActive) {
                 return;
             }
 
             var transform = filter.Transform;
             var collider = filter.Collider;
+
+            QuantumUtils.Decrement(ref enemy->IntangibilityFrames);
 
             // Despawn off bottom of stage
             if (transform->Position.Y + collider->Shape.Box.Extents.Y + collider->Shape.Centroid.Y < stage.StageWorldMin.Y) {

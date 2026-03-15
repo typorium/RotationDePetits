@@ -3470,7 +3470,7 @@ namespace Quantum {
     void OnThrowHoldable(Frame f, EntityRef entity, EntityRef mario, QBoolean crouching, QBoolean dropped);
   }
   public unsafe partial interface ISignalOnIceBlockBroken : ISignal {
-    void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason);
+    void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason, EntityRef attacker);
   }
   public unsafe partial interface ISignalOnBeforeInteraction : ISignal {
     void OnBeforeInteraction(Frame f, EntityRef entity, bool* allowInteraction);
@@ -4210,12 +4210,12 @@ namespace Quantum {
           }
         }
       }
-      public void OnIceBlockBroken(EntityRef brokenIceBlock, IceBlockBreakReason breakReason) {
+      public void OnIceBlockBroken(EntityRef brokenIceBlock, IceBlockBreakReason breakReason, EntityRef attacker) {
         var array = _f._ISignalOnIceBlockBrokenSystems;
         for (Int32 i = 0; i < array.Length; ++i) {
           var s = array[i];
           if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
-            s.OnIceBlockBroken(_f, brokenIceBlock, breakReason);
+            s.OnIceBlockBroken(_f, brokenIceBlock, breakReason, attacker);
           }
         }
       }

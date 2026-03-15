@@ -324,15 +324,18 @@ namespace NSMB.Cameras {
             */
         }
 
-        private void OnMarioPlayerEnteredPipe(EventMarioPlayerEnteredPipe e)
-        {
-            if (e.Exiting) return;
-            
+        private void OnMarioPlayerEnteredPipe(EventMarioPlayerEnteredPipe e) {
+            if (e.Entity == Target || e.Exiting) {
+                return;
+            }
+
             QuantumGame game = e.Game;
             Frame f = game.Frames.Predicted;
             var currentPipe = f.Unsafe.GetPointer<EnterablePipe>(e.Pipe);
-            if (!currentPipe->TransitionOnlyPanning) return;
-            
+            if (!currentPipe->TransitionOnlyPanning) {
+                return;
+            }
+
             float playerHeight = f.Unsafe.GetPointer<MarioPlayer>(Target)->CurrentPowerupState switch {
                 PowerupState.MegaMushroom => 3.5f,
                 > PowerupState.Mushroom => 1f,

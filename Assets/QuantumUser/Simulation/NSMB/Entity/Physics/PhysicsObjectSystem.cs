@@ -330,7 +330,7 @@ namespace Quantum {
                     }
 
                     FP hitboxPosClosestEdge = center + boxShape->Extents.X * closerEdge;
-                    if (FPMath.Abs(hitboxPosClosestEdge - bounds) <= FPMath.Abs(raycastTranslation.X) + FP._0_50) {
+                    if (FPMath.Abs(hitboxPosClosestEdge - bounds) <= FPMath.Abs(raycastTranslation.X) + 2) {
                         // Close enough- check over the level seam.
                         FPVector2 wrappedRaycastOrigin = raycastOrigin;
                         wrappedRaycastOrigin.X += stage.TileDimensions.X * FP._0_50;
@@ -564,7 +564,7 @@ namespace Quantum {
                     }
 
                     FP hitboxPosClosestEdge = center + boxShape->Extents.X * closerEdge;
-                    if (FPMath.Abs(hitboxPosClosestEdge - bounds) <= FPMath.Abs(raycastTranslation.X) + FP._0_50) {
+                    if (FPMath.Abs(hitboxPosClosestEdge - bounds) <= FPMath.Abs(raycastTranslation.X) + 2) {
                         // Close enough- check over the level seam.
                         FPVector2 wrappedRaycastOrigin = raycastOrigin;
                         wrappedRaycastOrigin.X += stage.TileDimensions.X * FP._0_50;

@@ -133,7 +133,7 @@ namespace Quantum
                 bulletBill->Kill(f, entity, bobomb, EnemyKillReason.Special);
             }
         }
-        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason) {
+        public void OnIceBlockBroken(Frame f, EntityRef brokenIceBlock, IceBlockBreakReason breakReason, EntityRef attacker) {
             var iceBlock = f.Unsafe.GetPointer<IceBlock>(brokenIceBlock);
             if (f.Unsafe.TryGetPointer(iceBlock->Entity, out BulletBill* bulletBill)) {
                 bulletBill->Kill(f, iceBlock->Entity, brokenIceBlock, EnemyKillReason.Special);
