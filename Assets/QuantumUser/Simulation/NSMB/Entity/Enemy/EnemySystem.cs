@@ -44,7 +44,8 @@ namespace Quantum {
                 return;
             }
 
-            if (enemy->StayAtHomeWhenOffscreen) {
+            // ignore offscreen should get reset when the enemy is killed
+            if (enemy->StayAtHomeWhenOffscreen && !enemy->IgnoreOffscreen && !enemy->IsDead) {
                 OffscreenCheck(f, ref filter, stage);
             }
         }
@@ -78,6 +79,7 @@ namespace Quantum {
         public void HandleDelayedRespawn(Frame f, ref Filter filter, VersusStageData stage) {
             var enemy = filter.Enemy;
             if (QuantumUtils.Decrement(ref enemy->RespawnTimer)) {
+                enemy->IntangibilityFrames = 30; // 30 / 60 is .50 for .50 seconds
                 enemy->Respawn(f, filter.Entity);
                 f.Events.EnemyAfterDelayedRespawn(filter.Entity);
                 f.Signals.OnEnemyRespawned(filter.Entity);
@@ -120,15 +122,7 @@ namespace Quantum {
                 return;
             }
 
-            // check if the enemy left its home
-            if (!enemy->LeftHome) {
-                QuantumUtils.WrappedDistance(stage, enemy->Spawnpoint, transform->Position, out FP enemyDistToSpawnpoint);
-                if (FPMath.Abs(enemyDistToSpawnpoint) > Constants.EnemyHomeBoxLeaveWidth) {
-                    enemy->LeftHome = true;
-                }
-            }
-
-            if (!marioInSpawnpoint && !enemy->LeftHome) {
+            if (!marioInSpawnpoint) {
                 // set to 0
                 if (foundPhysicsObj) {
                     physicsObject->Velocity = FPVector2.Zero;
@@ -146,15 +140,14 @@ namespace Quantum {
 
                 enemy->FacingRight = shouldFaceRight;
 
+                // only cause the despawn fart cloud and call the event if the enemy is not at its home
+                QuantumUtils.WrappedDistance(f, transform->Position, enemy->Spawnpoint, out FP xEnemyDiffSpawnPoint);
+                if (FPMath.Abs(xEnemyDiffSpawnPoint) > FP._0_25 && FPMath.Abs(transform->Position.Y - enemy->Spawnpoint.Y) > FP._0_50) {
+                    f.Events.EnemyDespawnedOffscreen(entity, filter.Transform->Position);
+                }
+
                 transform->Teleport(f, enemy->Spawnpoint);
                 f.Signals.OnEnemyReturnedHome(entity);
-            } else {
-                // "kill" the enemy if a Mario is in its spawnpoint
-                enemy->IsActive = false;
-                enemy->IsDead = true;
-                enemy->SetDelayedRespawn(300); // lower respawn time
-                f.Events.EnemyDespawnedOffscreen(entity, filter.Transform->Position);
-                f.Signals.OnEnemyDespawned(entity);
             }
         }
 
