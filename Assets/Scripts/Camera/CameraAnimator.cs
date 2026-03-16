@@ -66,8 +66,11 @@ namespace NSMB.Cameras {
 
             switch (Mode) {
             case CameraMode.FollowPlayer:
-                if (tweenTime < 1.5f) UpdateCameraFollowPlayerTweening(e);
-                else UpdateCameraFollowPlayerMode(e);
+                if (tweenTime < 1.5f) {
+                    UpdateCameraFollowPlayerTweening(e);
+                } else {
+                    UpdateCameraFollowPlayerMode(e);
+                }
                 break;
             case CameraMode.Freecam:
                 UpdateCameraFreecamMode(e);
@@ -91,8 +94,11 @@ namespace NSMB.Cameras {
         private void UpdateCameraFollowPlayerTweening(CallbackUpdateView e)
         {
             tweenTime += Time.unscaledDeltaTime;
-            if (tweenTime < 0.5f) UpdateCameraFollowPlayerMode(e);
-            else ourCamera.transform.position = Vector3.Lerp(tweenStartPosition, tweenedTargetPosition, Mathf.Clamp01((tweenTime-0.5f)  / 1f));
+            if (tweenTime < 0.5f) {
+                UpdateCameraFollowPlayerMode(e);
+            } else {
+                ourCamera.transform.position = Vector3.Lerp(tweenStartPosition, tweenedTargetPosition, Mathf.Clamp01((tweenTime-0.5f)  / 1f));
+            }
         }
 
         private void UpdateCameraFollowPlayerMode(CallbackUpdateView e) {
@@ -317,7 +323,7 @@ namespace NSMB.Cameras {
         }
 
         private void OnMarioPlayerEnteredPipe(EventMarioPlayerEnteredPipe e) {
-            if (e.Entity == Target || e.Exiting) {
+            if (e.Entity != Target || e.Exiting) {
                 return;
             }
 
