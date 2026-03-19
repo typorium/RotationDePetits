@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://ipodtouch0218.itch.io/nsmb-mariovsluigi">
-    <img src="https://raw.githubusercontent.com/ipodtouch0218/NSMB-MarioVsLuigi/refs/heads/nightly/Assets/Sprites/UI/Menu/title-vector.svg?raw=true" alt="Mario vs Luigi Online Logo" width="650px">
+    <img src="https://raw.githubusercontent.com/ipodtouch0218/NSMB-MarioVsLuigi/refs/heads/nightly/Assets/Sprites/UI/Menu/.title-vector.svg?raw=true" alt="Mario vs Luigi Online Logo" width="650px">
   </a>
 </p>
 <p align="center"><sub><sup><i>Mario vs Luigi Online Logo by zomblebobble, BluCorDev. INFENEK GAMES Logo by TheBluePixeling</i></sup></sub></p>
@@ -36,7 +36,7 @@ Windows, Linux, and Mac Builds: https://github.com/ipodtouch0218/NSMB-MarioVsLui
 <details>
   <summary><h2>Opening in Unity Editor</h2></summary>
 
-1. Install Unity 6000.3.4f1 (or newer) via Unity Hub (Installs > Install Editor > Scroll to bottom, if you do not see the version of your choice here, switch to the "Archive" tab and open the "download archive" link)
+1. Install Unity 6000.3.10f1 (or newer) via Unity Hub (Installs > Install Editor > Scroll to bottom, if you do not see the version of your choice here, switch to the "Archive" tab and open the "download archive" link)
 2. Download and install [git](https://git-scm.com/downloads). Do NOT use the .zip download, as it will cause errors within Unity.
 3. Open Command Prompt (Windows) or Terminal (MacOS / Linux)
 4. Navigate to the folder you want the source code to be in using `cd <path>`. For example, `cd %USERPROFILE%\Documents` will save it in My Documents.
