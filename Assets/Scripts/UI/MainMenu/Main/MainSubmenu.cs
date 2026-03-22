@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 namespace NSMB.UI.MainMenu.Submenus {
@@ -27,7 +28,7 @@ namespace NSMB.UI.MainMenu.Submenus {
         }
 
         private IEnumerator QuitCorotuine() {
-            float duration = Canvas.PlaySound(SoundEffect.UI_Quit);
+            float duration = Canvas.PlaySound(SoundEffect.UI_Quit).Max(ac => ac.length);
             yield return new WaitForSecondsRealtime(duration);
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
