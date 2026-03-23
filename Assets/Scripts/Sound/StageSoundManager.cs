@@ -2,6 +2,7 @@ using NSMB.Quantum;
 using NSMB.Utilities.Extensions;
 using Photon.Deterministic;
 using Quantum;
+using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -59,9 +60,15 @@ namespace NSMB.Sound {
         }
 
         private IEnumerator HurryUpCoroutine() {
+            var playedSounds = sfx.PlayOneShot(SoundEffect.UI_HurryUp);
+            if (playedSounds.Count <= 0) {
+                // No sounds played, no need to fade out/in.
+                yield break;
+            }
+
+            float duration = playedSounds.Max(ac => ac.length);
             musicPlayer.AudioSource.volume = 0;
-            float wait = sfx.PlayOneShot(SoundEffect.UI_HurryUp).Max(ac => ac.length);
-            yield return new WaitForSecondsRealtime(wait);
+            yield return new WaitForSecondsRealtime(duration);
 
             // Fade back in
             const float fadeDuration = 0.5f;
