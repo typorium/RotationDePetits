@@ -17,18 +17,6 @@ namespace Quantum {
                     continue;
                 }
 
-                // Collide with hitboxes
-                if (f.Physics2D.TryGetQueryHits(initiator->OverlapQueryRef, out HitCollection hits)) {
-                    for (int i = 0; i < hits.Count; i++) {
-                        CollideWithHitbox(f, entity, hits[i].Entity);
-                    }
-                }
-                if (f.Physics2D.TryGetQueryHits(initiator->OverlapLevelSeamQueryRef, out hits)) {
-                    for (int i = 0; i < hits.Count; i++) {
-                        CollideWithHitbox(f, entity, hits[i].Entity);
-                    }
-                }
-
                 // Collide with physical objects
                 if (f.Unsafe.TryGetPointer(entity, out PhysicsObject* physicsObject)
                     && f.TryResolveList(physicsObject->Contacts, out QList<PhysicsContact> contacts)) {
@@ -39,6 +27,18 @@ namespace Quantum {
                         }
 
                         CollideWithPlatform(f, entity, contact.Entity, contact);
+                    }
+                }
+
+                // Collide with hitboxes
+                if (f.Physics2D.TryGetQueryHits(initiator->OverlapQueryRef, out HitCollection hits)) {
+                    for (int i = 0; i < hits.Count; i++) {
+                        CollideWithHitbox(f, entity, hits[i].Entity);
+                    }
+                }
+                if (f.Physics2D.TryGetQueryHits(initiator->OverlapLevelSeamQueryRef, out hits)) {
+                    for (int i = 0; i < hits.Count; i++) {
+                        CollideWithHitbox(f, entity, hits[i].Entity);
                     }
                 }
             }
