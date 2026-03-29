@@ -275,6 +275,7 @@ namespace Quantum {
             WallslideRight = false;
             WallslideLeft = false;
             ForceJumpTimer = 0;
+            LastAttacker = EntityRef.None;
             
             if (f.Unsafe.TryGetPointer(HeldEntity, out Holdable* holdable)) {
                 holdable->DropWithoutThrowing(f, HeldEntity);
@@ -399,6 +400,7 @@ namespace Quantum {
             DamageInvincibilityFrames = Constants.DamageInvincibilityFrames;
             CoyoteTimeFrames = 0;
             ForceJumpTimer = 0;
+            LastAttacker = EntityRef.None;
 
             physicsObject->IsFrozen = false;
             physicsObject->DisableCollision = false;

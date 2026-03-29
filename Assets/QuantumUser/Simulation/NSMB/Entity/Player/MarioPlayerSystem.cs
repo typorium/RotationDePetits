@@ -2331,10 +2331,10 @@ namespace Quantum {
                 }
 
                 // Normal stomps
-                if (marioAAbove && marioB->LastAttacker != marioBEntity && (marioAPhysics->Velocity.Y <= 0 || marioBPhysics->Velocity.Y > 0)) {
+                if (marioAAbove && marioA->LastAttacker != marioBEntity && (marioAPhysics->Velocity.Y <= 0 || marioBPhysics->Velocity.Y > 0)) {
                     MarioMarioStomp(f, marioAEntity, marioBEntity, fromRight, dropStars, avgPosition);
                     return;
-                } else if (marioBAbove && marioA->LastAttacker != marioAEntity && (marioBPhysics->Velocity.Y <= 0 || marioAPhysics->Velocity.Y > 0)) {
+                } else if (marioBAbove && marioB->LastAttacker != marioAEntity && (marioBPhysics->Velocity.Y <= 0 || marioAPhysics->Velocity.Y > 0)) {
                     MarioMarioStomp(f, marioBEntity, marioAEntity, !fromRight, dropStars, avgPosition);
                     return;
                 }
