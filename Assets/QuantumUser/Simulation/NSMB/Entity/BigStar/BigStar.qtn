@@ -35,10 +35,8 @@ event CollectableDespawned {
 	bool Collected;
 }
 
-synced event BigCollectableSpawned
-{
+synced event BigCollectableAttemptedSpawn {
 	int PositionIndex;
 	FPVector2 Position;
-
-	[ExcludeFromPrototype] bool WasBlocked;
+	bool Success;
 }

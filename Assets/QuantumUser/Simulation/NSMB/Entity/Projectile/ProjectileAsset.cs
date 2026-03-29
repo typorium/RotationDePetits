@@ -37,10 +37,10 @@ public class ProjectileAsset : AssetObject, ISoundOverrideProvider {
     }
 }
 
-public enum ProjectileEffectType {
+public enum ProjectileEffectType : byte {
     Fire,
     Freeze,
     KillEnemiesAndSoftKnockbackPlayers,
 
-    None = 0xFF
+    None = 0xff,
 }

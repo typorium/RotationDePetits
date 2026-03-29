@@ -55,7 +55,7 @@ namespace Quantum {
 
                 if (hits.Count == 0) {
                     // Hit no players
-                    var gamemode = f.FindAsset(f.Global->Rules.Gamemode) as StarChasersGamemode;
+                    var gamemode = (StarChasersGamemode) f.FindAsset(f.Global->Rules.Gamemode);
                     EntityRef newEntity = f.Create(gamemode.BigStarPrototype);
                     f.Global->MainBigStar = newEntity;
                     var newStarTransform = f.Unsafe.GetPointer<Transform2D>(newEntity);
@@ -66,10 +66,10 @@ namespace Quantum {
                     newStar->IsStationary = true;
                     newStarPhysicsObject->DisableCollision = true;
                     spawnedStar = true;
-                    f.Events.BigCollectableSpawned(index, position, false);
+                    f.Events.BigCollectableAttemptedSpawn(index, position, Success: true);
                     break;
                 } else {
-                    f.Events.BigCollectableSpawned(index, position, true);
+                    f.Events.BigCollectableAttemptedSpawn(index, position, Success: false);
                 }
 
                 if (!spawnedStar) {

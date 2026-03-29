@@ -64,7 +64,7 @@ namespace Quantum {
           case EventMarioPlayerCollectedStar.ID: result = typeof(EventMarioPlayerCollectedStar); return;
           case EventMarioPlayerDroppedStar.ID: result = typeof(EventMarioPlayerDroppedStar); return;
           case EventCollectableDespawned.ID: result = typeof(EventCollectableDespawned); return;
-          case EventBigCollectableSpawned.ID: result = typeof(EventBigCollectableSpawned); return;
+          case EventBigCollectableAttemptedSpawn.ID: result = typeof(EventBigCollectableAttemptedSpawn); return;
           case EventBobombLit.ID: result = typeof(EventBobombLit); return;
           case EventBobombExploded.ID: result = typeof(EventBobombExploded); return;
           case EventBooBecomeActive.ID: result = typeof(EventBooBecomeActive); return;
@@ -177,12 +177,12 @@ namespace Quantum {
         _f.AddEvent(ev);
         return ev;
       }
-      public EventBigCollectableSpawned BigCollectableSpawned(Int32 PositionIndex, FPVector2 Position, QBoolean WasBlocked) {
+      public EventBigCollectableAttemptedSpawn BigCollectableAttemptedSpawn(Int32 PositionIndex, FPVector2 Position, QBoolean Success) {
         if (_f.IsPredicted) return null;
-        var ev = _f.Context.AcquireEvent<EventBigCollectableSpawned>(EventBigCollectableSpawned.ID);
+        var ev = _f.Context.AcquireEvent<EventBigCollectableAttemptedSpawn>(EventBigCollectableAttemptedSpawn.ID);
         ev.PositionIndex = PositionIndex;
         ev.Position = Position;
-        ev.WasBlocked = WasBlocked;
+        ev.Success = Success;
         _f.AddEvent(ev);
         return ev;
       }
@@ -884,15 +884,15 @@ namespace Quantum {
       }
     }
   }
-  public unsafe partial class EventBigCollectableSpawned : EventBase {
+  public unsafe partial class EventBigCollectableAttemptedSpawn : EventBase {
     public new const Int32 ID = 4;
     public Int32 PositionIndex;
     public FPVector2 Position;
-    public QBoolean WasBlocked;
-    protected EventBigCollectableSpawned(Int32 id, EventFlags flags) : 
+    public QBoolean Success;
+    protected EventBigCollectableAttemptedSpawn(Int32 id, EventFlags flags) : 
         base(id, flags) {
     }
-    public EventBigCollectableSpawned() : 
+    public EventBigCollectableAttemptedSpawn() : 
         base(4, EventFlags.Server|EventFlags.Client|EventFlags.Synced) {
     }
     public new QuantumGame Game {
@@ -908,7 +908,7 @@ namespace Quantum {
         var hash = 53;
         hash = hash * 31 + PositionIndex.GetHashCode();
         hash = hash * 31 + Position.GetHashCode();
-        hash = hash * 31 + WasBlocked.GetHashCode();
+        hash = hash * 31 + Success.GetHashCode();
         return hash;
       }
     }
