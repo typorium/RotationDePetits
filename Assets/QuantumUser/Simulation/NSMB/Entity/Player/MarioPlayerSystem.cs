@@ -2343,9 +2343,9 @@ namespace Quantum {
                 if ((marioA->IsCrouchedInShell || marioB->IsCrouchedInShell) && (FPMath.Abs(marioAPhysics->Velocity.X) > 0 || FPMath.Abs(marioBPhysics->Velocity.X) > 0)) {
                     var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
                     var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
-                    // push the other Mario back
+                    // push the other Mario back only if grounded otherwise do knockback
                     if (marioA->IsCrouchedInShell) {
-                        if (marioAPhysics->IsTouchingGround && FPMath.Abs(marioAPhysics->Velocity.X) > 0) {
+                        if (marioAPhysics->IsTouchingGround) {
                             marioBPhysics->Velocity.X = marioAPhysics->Velocity.X * FP._0_50;
                             marioA->FacingRight = !fromRight;
                             marioAPhysics->Velocity.X = marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
@@ -2358,7 +2358,7 @@ namespace Quantum {
                         }
                     }
                     if (marioB->IsCrouchedInShell) {
-                        if (marioBPhysics->IsTouchingGround && FPMath.Abs(marioBPhysics->Velocity.X) > 0) {
+                        if (marioBPhysics->IsTouchingGround) {
                             marioAPhysics->Velocity.X = marioBPhysics->Velocity.X * FP._0_50;
                             marioB->FacingRight = fromRight;
                             marioBPhysics->Velocity.X = marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.RunSpeedStage] * (fromRight ? 1 : -1);
