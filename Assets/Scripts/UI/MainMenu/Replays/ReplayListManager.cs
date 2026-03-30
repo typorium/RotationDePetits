@@ -673,7 +673,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             }
 
             var x = Directory.EnumerateFiles(TempDirectory, "*.mvlreplay")
-                .OrderBy(path => {
+                .OrderByDescending(path => {
                     try {
                         return File.GetLastWriteTime(path);
                     } catch {
@@ -683,7 +683,6 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 .Skip(Settings.Instance.generalMaxTempReplays)
                 .ToList();
 
-            Debug.Log("replays to delete: " + string.Join(", ", x));
             return x;
         }
 
