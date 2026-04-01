@@ -2496,7 +2496,19 @@ namespace Quantum {
 
             defenderMario->IsGroundpounding = false;
             defenderPhysicsObject->Velocity.X = defenderPhysics.WalkMaxVelocity[defenderPhysics.RunSpeedStage] * defenderPhysics.WalkBlueShellMultiplier[defenderPhysics.WalkSpeedStage] * (goLeft ? -1 : 1);
-            defenderPhysicsObject->Velocity.Y = FPMath.Min(0, defenderPhysicsObject->Velocity.Y);
+
+            // give the stomp a bit more OOMPH
+            var attackerPhysicsObject = f.Unsafe.GetPointer<PhysicsObject>(attacker);
+            defenderPhysicsObject->Velocity.Y = FPMath.Min(0, attackerPhysicsObject->Velocity.Y, defenderPhysicsObject->Velocity.Y);
+
+            // avoid overlap issues when stomping in the air
+            if (!defenderPhysicsObject->IsTouchingGround) {
+                var attackerTransform = f.Unsafe.GetPointer<Transform2D>(attacker);
+                var defenderCollider = f.Unsafe.GetPointer<PhysicsCollider2D>(defender);
+
+                // move the attacker above the defender so they don't interact
+                attackerTransform->Position.Y += defenderCollider->Shape.Box.Extents.Y;
+            }
 
             var attackerMario = f.Unsafe.GetPointer<MarioPlayer>(attacker);
             attackerMario->DoEntityBounce = true;
