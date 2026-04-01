@@ -2516,6 +2516,9 @@ namespace Quantum {
 
             var attackerMario = f.Unsafe.GetPointer<MarioPlayer>(attacker);
             attackerMario->DoEntityBounce = true;
+
+            // a very specific event just for this because EventEnemyStomp is sucky >:(
+            f.Events.MarioPlayerBlueShellStomped(defender);
         }
 
         private static void MarioMarioStomp(Frame f, EntityRef attacker, EntityRef defender, bool fromRight, bool dropStars, FPVector2 avgPosition) {
