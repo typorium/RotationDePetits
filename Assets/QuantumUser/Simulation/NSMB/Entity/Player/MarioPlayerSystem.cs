@@ -2338,17 +2338,17 @@ namespace Quantum {
                     return;
                 }
 
-                // make Blue Shell fly when touched
-                if ((marioA->IsCrouchedInShell || marioB->IsCrouchedInShell) && (FPMath.Abs(marioAPhysics->Velocity.X) > 0 || FPMath.Abs(marioBPhysics->Velocity.X) > 0)) {
+                // make Blue Shell fly when touched, conditions: mario must be below the other player, and the other player must not be bouncing off
+                if (marioA->IsCrouchedInShell || marioB->IsCrouchedInShell) {
                     var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
                     var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
                     // push the other Mario back only if grounded otherwise do knockback
                     if (marioA->IsCrouchedInShell) {
-                        if (marioAPhysics->IsTouchingGround && !marioBAbove) {
+                        if (marioAPhysics->IsTouchingGround) {
                             marioBPhysics->Velocity.X = marioAPhysics->Velocity.X * FP._0_50;
                             marioA->FacingRight = !fromRight;
                             marioAPhysics->Velocity.X = marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
-                        } else if (dropStars) {
+                        } else if (dropStars && !marioBAbove) {
                             KnockbackStrength strength = KnockbackStrength.Groundpound;
                             bool didKnockback = marioB->DoKnockback(f, marioBEntity, !fromRight, dropStars ? 1 : 0, strength, marioAEntity);
                             if (didKnockback) {
@@ -2357,11 +2357,11 @@ namespace Quantum {
                         }
                     }
                     if (marioB->IsCrouchedInShell) {
-                        if (marioBPhysics->IsTouchingGround && !marioAAbove) {
+                        if (marioBPhysics->IsTouchingGround) {
                             marioAPhysics->Velocity.X = marioBPhysics->Velocity.X * FP._0_50;
                             marioB->FacingRight = fromRight;
                             marioBPhysics->Velocity.X = marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.RunSpeedStage] * (fromRight ? 1 : -1);
-                        } else if (dropStars) {
+                        } else if (dropStars && !marioAAbove) {
                             KnockbackStrength strength = KnockbackStrength.Groundpound;
                             bool didKnockback = marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, strength, marioBEntity);
                             if (didKnockback) {
@@ -2424,7 +2424,8 @@ namespace Quantum {
                 }
             }
 
-            if (!eitherDamageInvincible && !marioA->IsInKnockback && !marioB->IsInKnockback && !marioAStarman && !marioBStarman) {
+            // handle pushing
+            if (!eitherDamageInvincible && !marioA->IsInKnockback && !marioB->IsInKnockback) {
                 // Collide
                 int directionToOtherPlayer = fromRight ? -1 : 1;
                 var marioACollider = f.Unsafe.GetPointer<PhysicsCollider2D>(marioAEntity);
