@@ -118,9 +118,11 @@ namespace NSMB.UI.Translation {
 
             if (allTranslations.TryGetValue(locale, out var sources)) {
                 for (int i = sources.Count - 1; i >= 0; i--) {
-                    // No foreach, we want backwards iteration- later loaded sources have priority.
-                    var source = sources[i];
-                    if (source.TryGetTranslation(key, out result)) {
+                    // No foreach, we want backwards iteration- list is ascending sorted by priority.
+                    if (sources[i].TryGetTranslation(key, out result)) {
+                        if (IsLocaleRTL(locale)) {
+                            result = ArabicFixerTool.FixLine(result);
+                        }
                         return true;
                     }
                 }
@@ -132,8 +134,13 @@ namespace NSMB.UI.Translation {
         }
 
         public bool IsLocaleRTL(string locale) {
-            TryGetTranslationForLocale(locale, "rtl", out string result);
-            return (result ?? "").Equals("true", StringComparison.InvariantCultureIgnoreCase);
+            if (!allTranslations.TryGetValue(locale, out var sources)) {
+                // Default to LTR
+                return false;
+            }
+
+            // Highest priority source is trusted
+            return sources[^1].IsRTL;
         }
 
         public ICollection<string> GetAllLocales() {

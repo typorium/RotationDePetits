@@ -100,7 +100,7 @@ namespace NSMB.UI.Game.Scoreboard {
                         teamSprite.sprite = null;
                     }
                 } else {
-                    var slot = Utils.GetPlayerSlotInfo(f, info.PlayerRef);
+                    var slot = Utils.GetPlayerSlotInfo(Index);
                     if (slot) {
                         teamSprite.sprite = slot.Sprite;
                     } else {
