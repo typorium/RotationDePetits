@@ -40,6 +40,8 @@ struct GameRules {
 	bool TeamsEnabled;
 	bool CustomPowerupsEnabled;
 	bool DrawOnTimeUp;
+
+	int CoinMultiplier;
 }
 
 enum GameState : Byte {

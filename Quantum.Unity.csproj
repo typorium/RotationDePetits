@@ -57,7 +57,6 @@
     <Compile Include="Assets\Photon\Quantum\Runtime\QuantumGraphProfilerVerifiedFrames.cs" />
     <Compile Include="Assets\Photon\Quantum\Runtime\QPrototypePhysicsBody2D.cs" />
     <Compile Include="Assets\Photon\Quantum\Runtime\QPrototypeTransform3D.cs" />
-    <Compile Include="Assets\QuantumUser\View\Generated\QPrototypeRDPObjectiveCoin.cs" />
     <Compile Include="Assets\QuantumUser\View\Generated\QPrototypeCoin.cs" />
     <Compile Include="Assets\Photon\Quantum\Runtime\StartUI\QuantumStartUI.cs" />
     <Compile Include="Assets\Photon\Quantum\Runtime\QPrototypeTransform2DVertical.cs" />
@@ -664,6 +663,10 @@
     </Reference>
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEditor.WebGL.Extensions">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">

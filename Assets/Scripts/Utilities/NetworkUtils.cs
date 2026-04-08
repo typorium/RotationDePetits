@@ -40,7 +40,8 @@ namespace NSMB.Utilities {
         public struct IntegerProperties {
             public static readonly IntegerProperties Default = new() {
                 CoinRequirement = 8,
-                StarRequirement = 10
+                StarRequirement = 10,
+                CoinMultiplier = 1
             };
 
             // Timer :: Value ranges from 0-99: 7 bits
@@ -49,14 +50,15 @@ namespace NSMB.Utilities {
             // StarRequirement :: Value ranges from 1-25: 5 bits
             // MaxPlayers :: Value ranges from 1-10: 4 bits
 
-            // 31....26   25.....19   18...14   13...9   8...4   3..0
-            // Unused     Timer       Lives     Coins    Stars   Unused
-            public int Timer, Lives, CoinRequirement, StarRequirement;
+            // 30....26   25.....19   18...14   13...9   8...4   3..0
+            // CoinMulti     Timer       Lives     Coins    Stars   Unused
+            public int CoinMultiplier, Timer, Lives, CoinRequirement, StarRequirement;
 
             public static implicit operator int(IntegerProperties props) {
                 int value = 0;
 
                 //value |= (props.Level & 0b111111) << 26;
+                value |= (props.CoinMultiplier & 0b111111) << 26;
                 value |= (props.Timer & 0b1111111) << 19;
                 value |= (props.Lives & 0b11111) << 14;
                 value |= (props.CoinRequirement & 0b11111) << 9;
@@ -69,6 +71,7 @@ namespace NSMB.Utilities {
             public static implicit operator IntegerProperties(int bits) {
                 IntegerProperties ret = new() {
                     //Level = (bits >> 26) & 0b111111,
+                    CoinMultiplier = (bits >> 26) & 0b1111111,
                     Timer = (bits >> 19) & 0b1111111,
                     Lives = (bits >> 14) & 0b11111,
                     CoinRequirement = (bits >> 9) & 0b11111,

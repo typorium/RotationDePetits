@@ -86,7 +86,6 @@
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Room\ILobbyCommand.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Logic\CommandEndGameContinue.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\Powerup\PowerupAsset.cs" />
-    <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\RotationDePieces-ObjectiveCoin\RDP-ObjectiveCoinSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Map\Tile\TileInteractionRelocator.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\WrappingObjectSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Room\CommandAssignTeam.cs" />
@@ -186,7 +185,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Bump\BlockBump.qtn" />
-    <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\RotationDePieces-ObjectiveCoin\RDP-ObjectiveCoin.qtn" />
     <None Include="Assets\QuantumUser\Simulation\Quantum.Simulation.asmref" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Map\GenericMover\GenericMover.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Culling\Cullable.qtn" />
@@ -709,6 +707,10 @@
     </Reference>
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEditor.WebGL.Extensions">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">

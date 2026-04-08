@@ -51,6 +51,9 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             case CommandChangeRules.Rules.TimerMinutes:
                 cmd.TimerMinutes = (int) value;
                 break;
+            case CommandChangeRules.Rules.CoinMultiplier:
+                cmd.CoinMultiplier = (int) value;
+                break;
             }
 
             QuantumGame game = QuantumRunner.DefaultGame;

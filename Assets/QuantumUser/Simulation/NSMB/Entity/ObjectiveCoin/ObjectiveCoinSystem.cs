@@ -86,15 +86,29 @@ namespace Quantum {
             }
         }
 
-        public static void SpawnObjectiveCoins(Frame f, FPVector2 origin, int amount, byte exludeTeam, bool selfDamage) {
-            if (amount <= 0) {
+        public static void SpawnObjectiveCoins(Frame f, FPVector2 origin, int oldAmount, byte exludeTeam, bool selfDamage) {
+            if (oldAmount <= 0) {
                 return;
             }
 
+            int amount = oldAmount;
+
+            GamemodeAsset gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+            if (gamemode is RotationDePiecesGamemode) {
+                amount *= f.Global->Rules.CoinMultiplier;
+            }
+
             VersusStageData stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
-            var gamemode = f.FindAsset(f.Global->Rules.Gamemode) as CoinRunnersGamemode;
             for (int i = 0; i < amount; i++) {
-                EntityRef newCoin = f.Create(gamemode.ObjectiveCoinPrototype);
+
+                EntityRef newCoin;
+                if (gamemode is RotationDePiecesGamemode) {
+                    var castedGamemode = (RotationDePiecesGamemode) gamemode;
+                    newCoin = f.Create(castedGamemode.ObjectiveCoinPrototype);
+                } else {
+                    var castedGamemode = (CoinRunnersGamemode) gamemode;
+                    newCoin = f.Create(castedGamemode.ObjectiveCoinPrototype);
+                }
                 var transform = f.Unsafe.GetPointer<Transform2D>(newCoin);
                 var physicsObject = f.Unsafe.GetPointer<PhysicsObject>(newCoin);
 

@@ -1,4 +1,0 @@
-component RDPObjectiveCoin {
-	[ExcludeFromPrototype] byte UncollectableByTeam;
-	[ExcludeFromPrototype] bool SpawnedViaSelfDamage;
-}

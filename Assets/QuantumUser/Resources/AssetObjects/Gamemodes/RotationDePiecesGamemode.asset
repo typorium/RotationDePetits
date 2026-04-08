@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b537400c7ed4a2e4eb81f6d05b729ad4, type: 3}
+  m_Script: {fileID: 11500000, guid: 0ab4bcb4ca487784d998a29ca8830d60, type: 3}
   m_Name: RotationDePiecesGamemode
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Quantum.Simulation::Quantum.RotationDePiecesGamemode
   Identifier:
     Path: QuantumUser/Resources/AssetObjects/Gamemodes/RotationDePiecesGamemode
     Guid:
-      Value: 364707689587339081
+      Value: 521802765222617575
   NamePrefix: '<sprite name=room_coins> '
   TranslationKey: gamemode.rotationdepieces
   DescriptionTranslationKey: gamemode.rotationdepieces.description
@@ -55,7 +55,7 @@ MonoBehaviour:
         Value: 438935048561577377
     Gamemode:
       Id:
-        Value: 364707689587339081
+        Value: 521802765222617575
     StarsToWin: 0
     CoinsForPowerup: 8
     Lives: 0
@@ -66,6 +66,7 @@ MonoBehaviour:
       Value: 1
     DrawOnTimeUp:
       Value: 0
+    CoinMultiplier: 1
   ObjectiveCoinPrototype:
     Id:
       Value: 1441489962698596482

@@ -4,15 +4,15 @@ using System;
 namespace Quantum {
     public unsafe class RotationDePiecesGamemode : GamemodeAsset {
 
-        public AssetRef<EntityPrototype> RDPObjectiveCoinPrototype, StarCoinPrototype;
+        public AssetRef<EntityPrototype> ObjectiveCoinPrototype, StarCoinPrototype;
 
         public override void EnableGamemode(Frame f) {
-            f.SystemEnable<RDPObjectiveCoinSystem>();
+            f.SystemEnable<ObjectiveCoinSystem>();
             f.SystemEnable<GoldBlockSystem>();
         }
 
         public override void DisableGamemode(Frame f) {
-            f.SystemDisable<RDPObjectiveCoinSystem>();
+            f.SystemDisable<ObjectiveCoinSystem>();
             f.SystemDisable<GoldBlockSystem>();
        }
 

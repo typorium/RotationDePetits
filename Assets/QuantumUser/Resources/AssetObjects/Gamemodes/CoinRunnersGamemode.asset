@@ -66,6 +66,7 @@ MonoBehaviour:
       Value: 1
     DrawOnTimeUp:
       Value: 0
+    CoinMultiplier: 1
   ObjectiveCoinPrototype:
     Id:
       Value: 1441489962698596482
