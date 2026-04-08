@@ -1768,9 +1768,12 @@ namespace Quantum {
             var collider = filter.PhysicsCollider;
 
             FP newHeight;
-            bool crouchHitbox = mario->CurrentPowerupState >= PowerupState.Mushroom && mario->CurrentPowerupState != PowerupState.MegaMushroom && !f.Exists(mario->CurrentPipe) && ((mario->IsCrouching && !mario->IsGroundpounding) || mario->IsInShell || mario->IsSliding);
+            bool blueShellHitbox = mario->IsCrouchedInShell || mario->IsInShell;
+            bool crouchHitbox = mario->CurrentPowerupState >= PowerupState.Mushroom && mario->CurrentPowerupState != PowerupState.MegaMushroom && !f.Exists(mario->CurrentPipe) && ((mario->IsCrouching && !mario->IsCrouchedInShell && !mario->IsGroundpounding) || mario->IsSliding);
             bool smallHitbox = mario->CurrentPowerupState != PowerupState.MegaMushroom && ((mario->IsStarmanInvincible && !physicsObject->IsTouchingGround && !crouchHitbox && !mario->IsSliding && !mario->IsSpinnerFlying && !mario->IsPropellerFlying) || mario->IsGroundpounding);
-            if (mario->CurrentPowerupState <= PowerupState.MiniMushroom || smallHitbox) {
+            if (blueShellHitbox) {
+                newHeight = physics.BlueShellHitboxHeight;
+            } else if (mario->CurrentPowerupState <= PowerupState.MiniMushroom || smallHitbox) {
                 newHeight = physics.SmallHitboxHeight;
             } else {
                 newHeight = physics.LargeHitboxHeight;
