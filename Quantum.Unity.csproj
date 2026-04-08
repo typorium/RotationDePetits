@@ -57,6 +57,7 @@
     <Compile Include="Assets\Photon\Quantum\Runtime\QuantumGraphProfilerVerifiedFrames.cs" />
     <Compile Include="Assets\Photon\Quantum\Runtime\QPrototypePhysicsBody2D.cs" />
     <Compile Include="Assets\Photon\Quantum\Runtime\QPrototypeTransform3D.cs" />
+    <Compile Include="Assets\QuantumUser\View\Generated\QPrototypeRDPObjectiveCoin.cs" />
     <Compile Include="Assets\QuantumUser\View\Generated\QPrototypeCoin.cs" />
     <Compile Include="Assets\Photon\Quantum\Runtime\StartUI\QuantumStartUI.cs" />
     <Compile Include="Assets\Photon\Quantum\Runtime\QPrototypeTransform2DVertical.cs" />

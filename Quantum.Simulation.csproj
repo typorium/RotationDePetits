@@ -86,6 +86,7 @@
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Room\ILobbyCommand.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Logic\CommandEndGameContinue.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\Powerup\PowerupAsset.cs" />
+    <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\RotationDePieces-ObjectiveCoin\RDP-ObjectiveCoinSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Map\Tile\TileInteractionRelocator.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\WrappingObjectSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Room\CommandAssignTeam.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Camera\CameraSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\Helpers\IAssetOverrideProvider.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\Boo\Boo.cs" />
+    <Compile Include="Assets\QuantumUser\Simulation\NSMB\Gamemode\RotationDePiecesGamemode.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\RuntimeConfig.User.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\Physics\PhysicsObjectSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\ObjectiveCoin\ObjectiveCoinSystem.cs" />
@@ -184,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Bump\BlockBump.qtn" />
+    <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\RotationDePieces-ObjectiveCoin\RDP-ObjectiveCoin.qtn" />
     <None Include="Assets\QuantumUser\Simulation\Quantum.Simulation.asmref" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Map\GenericMover\GenericMover.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Culling\Cullable.qtn" />

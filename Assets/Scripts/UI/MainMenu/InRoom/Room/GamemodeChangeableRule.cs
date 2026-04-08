@@ -11,6 +11,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             get {
                 var allGamemodes = AssetRepository<GamemodeAsset>.AllAssetRefs;
                 int currentIndex = allGamemodes.IndexOf(gm => gm == (AssetRef<GamemodeAsset>) value);
+                Debug.Log($"Number of gamemodes: {allGamemodes.Count}");
                 return currentIndex < allGamemodes.Count - 1;
             }
         }
