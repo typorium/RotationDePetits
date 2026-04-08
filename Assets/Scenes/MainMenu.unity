@@ -39895,7 +39895,7 @@ MonoBehaviour:
   rightArrow: {fileID: 567858265}
   cursorSfx: {fileID: 252585806}
   minValue: 1
-  maxValue: 20
+  maxValue: 999
   step: 1
   minimumValueIsOff: 0
 --- !u!114 &874884616
@@ -55255,7 +55255,7 @@ MonoBehaviour:
   rightArrow: {fileID: 429465074}
   cursorSfx: {fileID: 252585806}
   minValue: 1
-  maxValue: 20
+  maxValue: 999
   step: 1
   minimumValueIsOff: 0
 --- !u!114 &1213601341
@@ -55960,7 +55960,7 @@ MonoBehaviour:
   rightArrow: {fileID: 469574058}
   cursorSfx: {fileID: 252585806}
   minValue: 1
-  maxValue: 20
+  maxValue: 999
   step: 1
   minimumValueIsOff: 0
 --- !u!224 &1229974824
@@ -67309,7 +67309,7 @@ MonoBehaviour:
   rightArrow: {fileID: 1598222517}
   cursorSfx: {fileID: 252585806}
   minValue: 1
-  maxValue: 20
+  maxValue: 999
   step: 1
   minimumValueIsOff: 0
 --- !u!224 &1498831418
