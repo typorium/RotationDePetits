@@ -1768,9 +1768,12 @@ namespace Quantum {
             var collider = filter.PhysicsCollider;
 
             FP newHeight;
-            bool crouchHitbox = mario->CurrentPowerupState >= PowerupState.Mushroom && mario->CurrentPowerupState != PowerupState.MegaMushroom && !f.Exists(mario->CurrentPipe) && ((mario->IsCrouching && !mario->IsGroundpounding) || mario->IsInShell || mario->IsSliding);
+            bool blueShellHitbox = mario->IsCrouchedInShell || mario->IsInShell;
+            bool crouchHitbox = mario->CurrentPowerupState >= PowerupState.Mushroom && mario->CurrentPowerupState != PowerupState.MegaMushroom && !f.Exists(mario->CurrentPipe) && ((mario->IsCrouching && !mario->IsCrouchedInShell && !mario->IsGroundpounding) || mario->IsSliding);
             bool smallHitbox = mario->CurrentPowerupState != PowerupState.MegaMushroom && ((mario->IsStarmanInvincible && !physicsObject->IsTouchingGround && !crouchHitbox && !mario->IsSliding && !mario->IsSpinnerFlying && !mario->IsPropellerFlying) || mario->IsGroundpounding);
-            if (mario->CurrentPowerupState <= PowerupState.MiniMushroom || smallHitbox) {
+            if (blueShellHitbox) {
+                newHeight = physics.BlueShellHitboxHeight;
+            } else if (mario->CurrentPowerupState <= PowerupState.MiniMushroom || smallHitbox) {
                 newHeight = physics.SmallHitboxHeight;
             } else {
                 newHeight = physics.LargeHitboxHeight;
@@ -2338,18 +2341,21 @@ namespace Quantum {
                     return;
                 }
 
-                // make Blue Shell fly when touched
-                if ((marioA->IsCrouchedInShell || marioB->IsCrouchedInShell) && (FPMath.Abs(marioAPhysics->Velocity.X) > 0 || FPMath.Abs(marioBPhysics->Velocity.X) > 0)) {
+                // crouched in shell interactions
+                if (marioA->IsCrouchedInShell || marioB->IsCrouchedInShell) {
                     var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
                     var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
                     // push the other Mario back only if grounded otherwise do knockback
                     if (marioA->IsCrouchedInShell) {
-                        if (marioAPhysics->IsTouchingGround && !marioBAbove) {
+                        if (marioAPhysics->IsTouchingGround) {
+                            // it looks pretty weird so do not affect players in knockback
+                            if (!marioB->IsInKnockback) {
                             marioBPhysics->Velocity.X = marioAPhysics->Velocity.X * FP._0_50;
+                            }
                             marioA->FacingRight = !fromRight;
                             marioAPhysics->Velocity.X = marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
-                        } else if (dropStars) {
-                            KnockbackStrength strength = KnockbackStrength.Groundpound;
+                        } else if (dropStars && !marioBAbove) {
+                            KnockbackStrength strength = marioB->CurrentPowerupState == PowerupState.MiniMushroom ? KnockbackStrength.Normal : KnockbackStrength.Groundpound;
                             bool didKnockback = marioB->DoKnockback(f, marioBEntity, !fromRight, dropStars ? 1 : 0, strength, marioAEntity);
                             if (didKnockback) {
                                 f.Events.PlayKnockbackEffect(marioBEntity, marioAEntity, strength, avgPosition);
@@ -2357,12 +2363,14 @@ namespace Quantum {
                         }
                     }
                     if (marioB->IsCrouchedInShell) {
-                        if (marioBPhysics->IsTouchingGround && !marioAAbove) {
+                        if (marioBPhysics->IsTouchingGround) {
+                            if (!marioA->IsInKnockback) {
                             marioAPhysics->Velocity.X = marioBPhysics->Velocity.X * FP._0_50;
+                            }
                             marioB->FacingRight = fromRight;
                             marioBPhysics->Velocity.X = marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.RunSpeedStage] * (fromRight ? 1 : -1);
-                        } else if (dropStars) {
-                            KnockbackStrength strength = KnockbackStrength.Groundpound;
+                        } else if (dropStars && !marioAAbove) {
+                            KnockbackStrength strength = marioA->CurrentPowerupState == PowerupState.MiniMushroom ? KnockbackStrength.Normal : KnockbackStrength.Groundpound;
                             bool didKnockback = marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, strength, marioBEntity);
                             if (didKnockback) {
                                 f.Events.PlayKnockbackEffect(marioAEntity, marioBEntity, strength, avgPosition);
@@ -2424,7 +2432,8 @@ namespace Quantum {
                 }
             }
 
-            if (!eitherDamageInvincible && !marioA->IsInKnockback && !marioB->IsInKnockback && !marioAStarman && !marioBStarman) {
+            // handle pushing
+            if (!eitherDamageInvincible && !marioA->IsInKnockback && !marioB->IsInKnockback) {
                 // Collide
                 int directionToOtherPlayer = fromRight ? -1 : 1;
                 var marioACollider = f.Unsafe.GetPointer<PhysicsCollider2D>(marioAEntity);
@@ -2496,10 +2505,23 @@ namespace Quantum {
 
             defenderMario->IsGroundpounding = false;
             defenderPhysicsObject->Velocity.X = defenderPhysics.WalkMaxVelocity[defenderPhysics.RunSpeedStage] * defenderPhysics.WalkBlueShellMultiplier[defenderPhysics.WalkSpeedStage] * (goLeft ? -1 : 1);
-            defenderPhysicsObject->Velocity.Y = FPMath.Min(0, defenderPhysicsObject->Velocity.Y);
+
+            // give the stomp a bit more OOMPH
+            var attackerPhysicsObject = f.Unsafe.GetPointer<PhysicsObject>(attacker);
+            defenderPhysicsObject->Velocity.Y = FPMath.Min(0, attackerPhysicsObject->Velocity.Y, defenderPhysicsObject->Velocity.Y);
+
+            // avoid overlap issues when stomping
+                var attackerTransform = f.Unsafe.GetPointer<Transform2D>(attacker);
+                var defenderCollider = f.Unsafe.GetPointer<PhysicsCollider2D>(defender);
+
+                // move the attacker above the defender so they don't interact
+                attackerTransform->Position.Y += defenderCollider->Shape.Box.Extents.Y;
 
             var attackerMario = f.Unsafe.GetPointer<MarioPlayer>(attacker);
             attackerMario->DoEntityBounce = true;
+
+            // a very specific event just for this because EventEnemyStomp is sucky >:(
+            f.Events.MarioPlayerBlueShellStomped(defender);
         }
 
         private static void MarioMarioStomp(Frame f, EntityRef attacker, EntityRef defender, bool fromRight, bool dropStars, FPVector2 avgPosition) {
