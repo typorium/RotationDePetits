@@ -1,0 +1,259 @@
+[33mcommit b3cc6dae272a0eece3b758a6bbcd14779c701658[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: typorium <lmmsmusic2@gmail.com>
+Date:   Wed Apr 8 16:22:57 2026 +0200
+
+    Ajout du gamemode Rotation De Pieces
+
+[33mcommit 588178188f8ef117efc6b8e6d5d053d6e180fd75[m[33m ([m[1;33mtag: [m[1;33mv1.0.0.0[m[33m, [m[1;33mtag: [m[1;33mV1.0.1.0[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: typorium <lmmsmusic2@gmail.com>
+Date:   Tue Apr 7 23:09:05 2026 +0200
+
+    Modified star and coins range in Star Chaser mode
+
+[33mcommit 264f3dbc404a44c2acd93daebbef274f193ba66d[m
+Merge: 08e68eec 5abafb16
+Author: Typorium <153554664+typorium@users.noreply.github.com>
+Date:   Tue Apr 7 20:19:22 2026 +0200
+
+    Merge branch 'ipodtouch0218:master' into master
+
+[33mcommit 5abafb165906ee9f0c610ab5b87d8a51d4f70ec3[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sun Mar 29 22:01:46 2026 -0400
+
+    Hotfix v2.1.0.1
+
+[33mcommit 6a94ae69e334de114ae62062ac04a26f8165d8c9[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sun Mar 29 20:17:20 2026 -0400
+
+    Actual v2.1.0.0 release
+
+[33mcommit 39928eba205cce0a1be409ee5c8961a887ce7c6d[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sun Mar 29 18:58:32 2026 -0400
+
+    Release v2.1.0.0
+
+[33mcommit 884065329b59daca61dc4d2ae0ba3dddefff91aa[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sun Mar 29 15:33:29 2026 -0400
+
+    nightly v2.0.5.0 (3/29) pt.3
+
+[33mcommit fef9f14b896ee2136d4798d27f69879e25187bb0[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sun Mar 29 15:07:13 2026 -0400
+
+    nightly v2.0.5.0 (3/29) pt.2
+
+[33mcommit 1a47cef419c9fb1c613f7f1560a0ab0534cbf871[m
+Merge: dab8dd8f 03336dc4
+Author: ipodtouch0218 <ipodtouch0218@users.noreply.github.com>
+Date:   Sun Mar 29 14:54:55 2026 -0400
+
+    Merge pull request #451 from Amy54Desu/extra-events-fur-v2.0.5
+    
+    PLZZZZZZ IPOD I BEG YOU OMgoD PLZZZZZZZZZZZZZzzzzz
+
+[33mcommit dab8dd8f34a96eacbd56f179092e8395763a4d4c[m
+Merge: 3639b0d3 f2134d32
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sun Mar 29 14:51:30 2026 -0400
+
+    Merge branch 'nightly' of github.com:ipodtouch0218/NSMB-MarioVsLuigi into nightly
+
+[33mcommit 3639b0d334736d94885052f137edce288bcf6846[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sun Mar 29 14:51:27 2026 -0400
+
+    nightly v2.0.5.0 (3/29)
+
+[33mcommit f2134d32aa5caca3b0e60511beea8c04ad9ab6be[m
+Merge: ebd394ab 22cd3250
+Author: ipodtouch0218 <ipodtouch0218@users.noreply.github.com>
+Date:   Sun Mar 29 14:49:57 2026 -0400
+
+    Merge pull request #452 from Amy54Desu/blue-shell-tweaks
+    
+    LAST THING I EVER DO FOR v2.0.5
+
+[33mcommit 22cd3250f7f2923b2e7fbb0f0598e19d4e070739[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Mon Mar 30 03:39:55 2026 +0900
+
+    Thank you grape
+    
+    This should fix the weird knockback thingy by adding a check that Mario is not above the blue shell when they interact. Yeah.
+
+[33mcommit c0b10c658d39496182ae4f24f2a5f76e9f8bbef6[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Mon Mar 30 03:33:17 2026 +0900
+
+    Tweak Item Spawn Odds
+
+[33mcommit dfbb7f314a87d95c514bde72711aa513cf7d82ea[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Mon Mar 30 03:31:04 2026 +0900
+
+    Update MarioPlayerSystem.cs
+
+[33mcommit afe442dae438d3bc9d703281ac96a20b1dec6dc3[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Mon Mar 30 02:28:25 2026 +0900
+
+    Update MarioPlayerSystem.cs
+    
+    revert Blue Shell controls to just require a sprint hold
+
+[33mcommit 23530a46d08097f2503498f53fdc71594b53bf02[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Mon Mar 30 01:40:17 2026 +0900
+
+    Update MarioPlayerSystem.cs
+    
+    Remove velocity check
+
+[33mcommit 184536f8e6424bf7ab418e0b6988e79c2060aa8a[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Mon Mar 30 01:31:33 2026 +0900
+
+    Update MarioPlayerSystem.cs
+    
+    Adds the ariel blue shell knockback (as well as fix the knockback effect spam)
+
+[33mcommit a1522f17897c81a70b7a8791b510829954d98ab6[m
+Merge: 2d2a03e5 ebd394ab
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Sun Mar 29 13:27:27 2026 +0900
+
+    Merge remote-tracking branch 'upstream/nightly' into blue-shell-tweaks
+
+[33mcommit 2d2a03e523444b40655e470b08fd64ba9e5ab264[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Sun Mar 29 13:26:50 2026 +0900
+
+    Update MarioPlayerSystem.cs
+
+[33mcommit 03336dc4bc13a99db519f1bc0fe72c7f741d7a9c[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Sun Mar 29 10:27:22 2026 +0900
+
+    Update ObjectiveCoinSystem.cs
+
+[33mcommit 43f4dabc5dfd468365ca73cfdadf238735b099f2[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Sun Mar 29 10:21:16 2026 +0900
+
+    PLZZZZZZ IPOD I BEG YOU MERGE THIS
+    
+    if you don't merge this you'll become a Braixen
+
+[33mcommit ebd394abcda3831b581b1a9bc3d71f5a7b30d46b[m
+Merge: 1e621f54 6250bf49
+Author: ipodtouch0218 <ipodtouch0218@users.noreply.github.com>
+Date:   Sat Mar 28 20:55:09 2026 -0400
+
+    Merge pull request #450 from Amy54Desu/epic-branch-uwu
+    
+    THIS COMMIT IS BIGGER THAN YOUR MOM
+
+[33mcommit 6250bf49e74959566a7777f87de1df1c3bcfb19e[m
+Author: Amy54Desu <69287652+Amy54Desu@users.noreply.github.com>
+Date:   Sun Mar 29 09:47:36 2026 +0900
+
+    WOWIE ZOWIE
+    
+    did you know you can jump
+
+[33mcommit 1e621f5481313d0c5ca77d760bc5988a589013ac[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sat Mar 28 18:19:23 2026 -0400
+
+    nightly v2.0.5.0 (3/28)
+
+[33mcommit 217801cd8bc4285f92263a986c7394de93acdec3[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Fri Mar 27 22:29:25 2026 -0400
+
+    nightly v2.0.5.0 (3/27) pt.2
+
+[33mcommit b1ea0d26b18d6d16294116a30fd9988623c4c7af[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Fri Mar 27 20:22:24 2026 -0400
+
+    nightly v2.0.5.0 (3/27)
+
+[33mcommit 65949b113daa1112b5de9958edc008aff5e692b4[m
+Author: ipodtouch0218 <ipodtouch0218@users.noreply.github.com>
+Date:   Fri Mar 27 15:11:44 2026 -0400
+
+    Fixed braces
+
+[33mcommit dde50ae4beb35622ba1863b62aaf8cba5e9dd877[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Thu Mar 26 22:47:57 2026 -0400
+
+    nightly v2.0.5.0 (3/26) pt.2
+
+[33mcommit c61eb79cf3bd5ed5da4457e9f64b049dc611ac04[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Thu Mar 26 17:21:47 2026 -0400
+
+    nightly v2.0.5.0 (3/26)
+
+[33mcommit 6eee53b6d0ee0c20301ebd372e1c08f4cd5040a4[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Wed Mar 25 00:16:33 2026 -0400
+
+    nightly v2.0.5.0 (3/24)
+
+[33mcommit d0e06a284733143a3591986c89061a4e32f09374[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Tue Mar 24 02:58:33 2026 -0400
+
+    nightly v2.0.5.0 (3/23) pt.2
+
+[33mcommit 33753befdb3ca83051c7f15841b016556f8be737[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Mon Mar 23 23:19:58 2026 -0400
+
+    nightly v2.0.5.0 (3/23)
+
+[33mcommit 52de9978b1700f0db21c29a723b18bc9f65b2ecc[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sun Mar 22 23:11:28 2026 -0400
+
+    nightly v2.0.5.0 (3/22)
+
+[33mcommit 67a77fa08ac44b95fab69ef825fd2ede73f4291c[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Sat Mar 21 23:56:58 2026 -0400
+
+    nightly v2.0.5.0 (3/21)
+
+[33mcommit e4fab40c2047810519588bbf7b2da28bfbb09c13[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Thu Mar 19 01:03:23 2026 -0400
+
+    nightly v2.0.5.0 (3/18) pt.2
+
+[33mcommit 4e47b78063ccb075ae4cfeec5978ad4dfca57060[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Wed Mar 18 22:26:32 2026 -0400
+
+    Revert "Update mario_big_exported.fbx"
+    
+    This reverts commit c2e55752dcc62065ecbf05a281b4c8e3de6141ca.
+
+[33mcommit e5ca52c24969da51d5b0267b7be52393c551217b[m
+Author: Danny A <ipodtouch0218@gmail.com>
+Date:   Wed Mar 18 22:26:19 2026 -0400
+
+    Revert "Update mario_big_exported.fbx"
+    
+    This reverts commit a42d858359e7874a39b01d5522a445005090a2f7.
+
+[33mcommit e45f4ecca4dbb4d5aaed2c9ad0fd2632739fddee[m
+Merge: c2852f96 2c2f1515
+Author: Danny A <ipodtouch0218@gmai
