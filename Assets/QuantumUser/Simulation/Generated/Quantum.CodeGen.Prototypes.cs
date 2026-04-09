@@ -56,10 +56,13 @@ namespace Quantum.Prototypes {
     public string Nickname;
     [MaxStringByteCount(38, "UTF-8")]
     public string UserId;
+    [MaxStringByteCount(46, "UTF-8")]
+    public string IpAddressHash;
     partial void MaterializeUser(Frame frame, ref Quantum.BannedPlayerInfo result, in PrototypeMaterializationContext context);
     public void Materialize(Frame frame, ref Quantum.BannedPlayerInfo result, in PrototypeMaterializationContext context = default) {
         PrototypeValidator.AssignQString(this.Nickname, 48, in context, out result.Nickname);
         PrototypeValidator.AssignQStringUtf8(this.UserId, 40, in context, out result.UserId);
+        PrototypeValidator.AssignQStringUtf8(this.IpAddressHash, 48, in context, out result.IpAddressHash);
         MaterializeUser(frame, ref result, in context);
     }
   }
