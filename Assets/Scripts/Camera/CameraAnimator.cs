@@ -24,7 +24,10 @@ namespace NSMB.Cameras {
         //---Serialized Variables
         [SerializeField] private PlayerElements playerElements;
         [SerializeField] private List<SecondaryCameraPositioner> secondaryPositioners;
-        [SerializeField] private float zoomSpeed = 1, moveSpeed = 2;
+
+        [Header("Freecam Movement")]
+        [SerializeField] private float zoomSpeed = 1;
+        [SerializeField] private float moveSpeed = 2;
         [SerializeField] private AudioSource zoomSfx;
 
         //---Private Variables
