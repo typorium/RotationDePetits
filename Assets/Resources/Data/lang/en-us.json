@@ -267,7 +267,7 @@
   "ui.inroom.settings.room.bans.remove": "(click to unban)",
   "ui.inroom.settings.room.bans.none": "No players are banned.",
   "ui.inroom.buttons.start": "Start Game",
-  "ui.inroom.buttons.starting": "Starting in {countdown}...",
+  "ui.inroom.buttons.starting": "Starting in {countdown}",
   "ui.inroom.buttons.readyup": "Ready Up!",
   "ui.inroom.buttons.unready": "Unready",
   "ui.inroom.buttons.exit": "Exit Room",
