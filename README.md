@@ -13,11 +13,6 @@ mario
 
 [Vous allez la vous téléchargez le zip de la dernière version et vous dézippez gg](https://github.com/typorium/RotationDePetits/releases)
 
-## Default Controls
-
-<details>
-  <summary><h2>Credits</h2></summary>
-</details>
 ### Les gens qui font ca:
 * Typorium (emoji anonymous)
 * Luden (furry femboy)
