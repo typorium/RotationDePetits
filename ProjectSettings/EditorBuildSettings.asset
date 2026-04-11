@@ -50,6 +50,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Levels/ParpGareDuNord.unity
     guid: b9dd7a9374fb14204bb55385ad39ac5c
+  - enabled: 0
+    path: Assets/Scenes/Levels/Parpmonte.unity
+    guid: ba5bb7cbab6c040c8a2eeeac4442cc2d
+  - enabled: 1
+    path: Assets/Scenes/Levels/monte2.unity
+    guid: a7c3039b4bfc043eb98726a64a4f2bd2
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 089c0b7845b45284db115d78b78a26c4,
       type: 2}
