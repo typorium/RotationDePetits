@@ -7053,6 +7053,10 @@ MonoBehaviour:
     Flags: 0
   BigStarSpawnpoints:
   - X:
+      RawValue: 523632
+    Y:
+      RawValue: -152698
+  - X:
       RawValue: 521011
     Y:
       RawValue: 463339
@@ -7063,12 +7067,8 @@ MonoBehaviour:
   - X:
       RawValue: -34078
     Y:
-      RawValue: 344719
-  - X:
-      RawValue: 523632
-    Y:
-      RawValue: -152698
+      RawValue: -59637
   - X:
       RawValue: -34078
     Y:
-      RawValue: -59637
+      RawValue: 344719
