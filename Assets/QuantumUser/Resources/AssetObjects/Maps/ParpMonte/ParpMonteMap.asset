@@ -544,7 +544,7 @@ MonoBehaviour:
           X:
             RawValue: -31457
           Y:
-            RawValue: 301465
+            RawValue: 298108
         Rotation:
           RawValue: 0
     - rid: 2483946841893240833
@@ -566,7 +566,7 @@ MonoBehaviour:
             RawValue: 0
           BoxExtents:
             X:
-              RawValue: 106496
+              RawValue: 120423
             Y:
               RawValue: 10240
           PositionOffset:
