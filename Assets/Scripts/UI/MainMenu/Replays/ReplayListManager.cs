@@ -58,6 +58,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         private bool sortAscending;
         private int sortIndex;
         private bool languageChangedSinceLastOpen;
+        private StringBuilder builder = new();
 
 
         [RuntimeInitializeOnLoadMethod]
@@ -183,8 +184,8 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 gamemodeName = "<sprite name=room_customlevel> ???";
             }
 
+            builder.Clear();
             // Playerlist
-            StringBuilder builder = new();
             foreach (int i in Enumerable.Range(0, header.PlayerInformation.Length).OrderByDescending(idx => header.PlayerInformation[idx].FinalObjectiveCount)) {
                 ref ReplayPlayerInformation info = ref header.PlayerInformation[i];
 
@@ -240,7 +241,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             builder.Append("<color=#aaa>").Append(DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(header.UnixTimestamp), false, false)).Append(" - ");
             builder.Append(Utils.SecondsToMinuteSeconds(header.ReplayLengthInFrames / 60)).Append(" - ").Append(Utils.BytesToString(replay.ReplayFile.FileSize));
 
-            replayInformation.text = builder.ToString();
+            replayInformation.SetText(builder);
             replayInformation.horizontalAlignment = HorizontalAlignmentOptions.Left;
         }
 
