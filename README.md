@@ -16,3 +16,6 @@ mario
 ### Les gens qui font ca:
 * Typorium (emoji anonymous)
 * Luden (furry femboy)
+
+### Comment contribuer :
+[lire ceci](https://docs.google.com/document/d/1fa3D19WODOGfzuFB0nntnGh6Ka1HNWWl7MmxHykPdjk/edit?tab=t.0)
