@@ -450,7 +450,7 @@ namespace NSMB.Networking {
             var bans = f.ResolveList(f.Global->BannedPlayerIds);
             foreach (var ban in bans) {
                 if (ban.UserId == Client.UserId) {
-                    QuantumRunner.Default.Shutdown(ShutdownCause.NetworkError);
+                    QuantumRunner.Default.Shutdown(ShutdownCause.Ok);
                     ThrowError("ui.error.join.banned", true);
                     return;
                 }
