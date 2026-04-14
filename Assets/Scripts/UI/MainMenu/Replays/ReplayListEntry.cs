@@ -59,29 +59,6 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             TranslationManager.OnLanguageChanged -= OnLanguageChanged;
         }
 
-        /*
-        public void Update() {
-            UpdateVisibility();
-        }
-
-        private static readonly Vector3[] corners = new Vector3[4];
-        public void UpdateVisibility(Rect parentRect) {
-            if (mainPanel.activeSelf) {
-                return;
-            }
-
-            RectTransform ourRectTransform = ((RectTransform) transform);
-            ourRectTransform.GetWorldCorners(corners);
-            Vector3 topLeft = corners[1];
-            Rect ourRect = new Rect(topLeft, ourRectTransform.rect.size);
-
-            if (parentRect.Overlaps(ourRect)) {
-                mainPanel.SetActive(true);
-                buttonPanel.SetActive(true);
-            }
-        }
-        */
-
         public void UpdateNavigation(ReplayListEntry previous) {
             if (previous) {
                 Navigation previousNavigation = previous.button.navigation;

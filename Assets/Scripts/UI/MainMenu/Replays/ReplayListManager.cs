@@ -1,3 +1,4 @@
+using JimmysUnityUtilities;
 using NSMB.Replay;
 using NSMB.UI.Elements;
 using NSMB.UI.MainMenu.Submenus.Prompts;
@@ -16,6 +17,8 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.Scripting;
 using UnityEngine.UI;
 
 namespace NSMB.UI.MainMenu.Submenus.Replays {
@@ -35,14 +38,20 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
         //---Properties
         public ReplayListEntry Selected { get; set; }
-        public List<ReplayListEntry> Replays => replays;
+        public List<BinaryReplayFile> AllReplays => allReplays;
+        public List<BinaryReplayFile> DisplayingReplays => string.IsNullOrEmpty(SearchTerm) ? allReplays : searchResults;
+        private string SearchTerm => searchField.text?.Trim();
+        private int SortIndex => sortDropdown.value;
+        private bool SortAscending => ascendingToggle.isOn;
+        public int PageCount => ((DisplayingReplays.Count - 1) / entriesPerPage) + 1;
+        public int CurrentPage { get; set; }
 
         //---Serialized Variables
-        [SerializeField] private MainMenuCanvas canvas;
+        [SerializeField] public MainMenuCanvas canvas;
         [SerializeField] private ReplayDeletePromptSubmenu deletePrompt;
         [SerializeField] private ReplayRenamePromptSubmenu renamePrompt;
         [SerializeField] private ReplayListEntry replayTemplate;
-        [SerializeField] private TMP_Text noReplaysText, hiddenReplaysText, headerTemplate;
+        [SerializeField] private TMP_Text noReplaysText, headerTemplate;
         [SerializeField] private ScrollRect scrollRect;
         [SerializeField] internal VerticalLayoutGroup layout;
         [SerializeField] private TMP_Dropdown sortDropdown;
@@ -51,15 +60,19 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         [SerializeField] private TMP_Text replayInformation;
         [SerializeField] private GameObject importButton, loadingIcon;
 
-        //---Private Variables
-        private readonly List<TMP_Text> headers = new();
-        private readonly List<ReplayListEntry> replays = new();
-        private readonly SortedSet<ReplayListEntry> temporaryReplays = new(new ReplayDateComparer());
-        private bool sortAscending;
-        private int sortIndex;
-        private bool languageChangedSinceLastOpen;
-        private StringBuilder builder = new();
+        [SerializeField] private TMP_Text pageTemplate;
+        [SerializeField] private int entriesPerPage = 25;
+        [SerializeField] private int pageListNearbyNumbers = 2;
 
+        //---Private Variables
+        private readonly List<ReplayListEntry> replayListEntries = new();
+        private readonly List<TMP_Text> headers = new();
+
+        private readonly List<BinaryReplayFile> searchResults = new();
+        private readonly List<BinaryReplayFile> allReplays = new();
+        private readonly HashSet<string> loadedFilepaths = new();
+
+        private readonly StringBuilder stringBuilder = new();
 
         [RuntimeInitializeOnLoadMethod]
         public static void CreateDirectories() {
@@ -84,23 +97,34 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             base.OnEnable();
 #if UNITY_EDITOR
             // #if fixes an error in the editor.
-            if (GlobalController.Instance && GlobalController.Instance.translationManager) {
-                OnLanguageChanged(GlobalController.Instance.translationManager);
+            if (!GlobalController.Instance || !GlobalController.Instance.translationManager) {
+                return;
             }
-#else
-            OnLanguageChanged(GlobalController.Instance.translationManager);
 #endif
+
+            Settings.Controls.UI.Next.performed += OnNext;
+            Settings.Controls.UI.Previous.performed += OnPrevious;
+            TranslationManager.OnLanguageChanged += OnLanguageChanged;
+            OnLanguageChanged(GlobalController.Instance.translationManager);
+        }
+
+        protected override async void OnDisable() {
+            base.OnDisable();
+#if UNITY_EDITOR
+            // #if fixes an error in the editor.
+            if (!GlobalController.Instance || !GlobalController.Instance.translationManager) {
+                return;
+            }
+#endif
+
+            await ClearReplayList();
+            TranslationManager.OnLanguageChanged -= OnLanguageChanged;
+            Settings.Controls.UI.Previous.performed -= OnPrevious;
+            TranslationManager.OnLanguageChanged -= OnLanguageChanged;
         }
 
         public void Initialize() {
             Instance = this;
-            TranslationManager.OnLanguageChanged += OnLanguageChanged;
-
-            // _ = FindReplays();
-        }
-
-        public void OnDestroyCustom() {
-            TranslationManager.OnLanguageChanged -= OnLanguageChanged;
         }
 
         public void Show() {
@@ -112,24 +136,18 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) layout.transform);
             Canvas.ForceUpdateCanvases();
 
-            _ = FindReplays();
+            _ = LoadReplays();
 
-            //SortReplays();
-            OnScrollRectScrolled(default);
             OnLanguageChanged(GlobalController.Instance.translationManager);
         }
 
-        private IEnumerator SelectAtEndOfFrame() {
-            yield return new WaitForEndOfFrame();
-            if (!canvas.EventSystem.alreadySelecting) {
-                if (Selected) {
-                    canvas.EventSystem.SetSelectedGameObject(Selected.IsOpen ? Selected.defaultSelection : Selected.button.gameObject);
-                } else if (GetFirstReplayEntry() != null) {
-                    canvas.EventSystem.SetSelectedGameObject(GetFirstReplayEntry().button.gameObject);
-                } else {
-                    canvas.EventSystem.SetSelectedGameObject(importButton);
-                }
-            }
+        private async Awaitable LoadReplays() {
+            noReplaysText.text = "";
+            await FindReplays();
+            await SortReplays();
+            await FilterReplays();
+            await ReloadReplayList();
+            StartCoroutine(SelectAtEndOfFrame());
         }
 
         public override void OnSelect(BaseEventData eventData) {
@@ -138,6 +156,38 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
         public override void OnPointerDown(PointerEventData eventData) {
             // Do nothing.
+        }
+
+        private void OnNext(InputAction.CallbackContext context) {
+            if (CurrentPage == PageCount || loadingIcon.activeInHierarchy) {
+                return;
+            }
+
+            if (canvas.EventSystem.currentSelectedGameObject
+                && canvas.EventSystem.currentSelectedGameObject.TryGetComponent(out TMP_InputField inputField)
+                && inputField.isFocused) {
+                // Don't move left/right when focused on an input field
+                return;
+            }
+
+            canvas.PlayCursorSound();
+            _ = ReloadReplayList(CurrentPage + 1);
+        }
+
+        private void OnPrevious(InputAction.CallbackContext context) {
+            if (CurrentPage == 0 || loadingIcon.activeInHierarchy) {
+                return;
+            }
+
+            if (canvas.EventSystem.currentSelectedGameObject
+                && canvas.EventSystem.currentSelectedGameObject.TryGetComponent(out TMP_InputField inputField)
+                && inputField.isFocused) {
+                // Don't move left/right when focused on an input field
+                return;
+            }
+
+            canvas.PlayCursorSound();
+            _ = ReloadReplayList(CurrentPage - 1);
         }
 
         public void StartRename(ReplayListEntry replay) {
@@ -149,7 +199,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         }
 
         public void Select(ReplayListEntry replay, bool open) {
-            foreach (var otherReplay in replays) {
+            foreach (var otherReplay in replayListEntries) {
                 if (otherReplay != replay) {
                     otherReplay.HideButtons();
                 }
@@ -169,11 +219,13 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 replayInformation.horizontalAlignment = HorizontalAlignmentOptions.Center;
                 return;
             }
+            /*
             if (!replay.ReplayFile.Header.IsCompatible) {
                 replayInformation.text = tm.GetTranslationWithReplacements("ui.extras.replays.incompatible", "version", replay.ReplayFile.Header.Version.ToStringIgnoreHotfix() + ".X");
                 replayInformation.horizontalAlignment = HorizontalAlignmentOptions.Center;
                 return;
             }
+            */
 
             BinaryReplayHeader header = replay.ReplayFile.Header;
             ref var rules = ref header.Rules;
@@ -181,67 +233,67 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             if (QuantumUnityDB.TryGetGlobalAsset(rules.Gamemode, out var gamemode)) {
                 gamemodeName = gamemode.NamePrefix + tm.GetTranslation(gamemode.TranslationKey);
             } else {
-                gamemodeName = "<sprite name=room_customlevel> ???";
+                gamemodeName = "???";
             }
 
-            builder.Clear();
+            stringBuilder.Clear();
             // Playerlist
             foreach (int i in Enumerable.Range(0, header.PlayerInformation.Length).OrderByDescending(idx => header.PlayerInformation[idx].FinalObjectiveCount)) {
                 ref ReplayPlayerInformation info = ref header.PlayerInformation[i];
 
                 // Color and width
-                builder.Append("<width=85%>");
+                stringBuilder.Append("<width=85%>");
                 if (header.Rules.TeamsEnabled) {
                     var allTeams = AssetRepository<TeamAsset>.AllAssets;
                     TeamAsset team = allTeams[info.Team % allTeams.Count];
-                    builder.Append("<nobr>");
-                    builder.Append("<color=#").Append(Utils.ColorToHex(team.color, false)).Append(">").Append(Settings.Instance.GraphicsColorblind ? team.textSpriteColorblind : team.textSpriteNormal);
+                    stringBuilder.Append("<nobr>");
+                    stringBuilder.Append("<color=#").Append(Utils.ColorToHex(team.color, false)).Append(">").Append(Settings.Instance.GraphicsColorblind ? team.textSpriteColorblind : team.textSpriteNormal);
                 } else {
-                    builder.Append("<color=white>");
-                    builder.Append("<nobr>- ");
+                    stringBuilder.Append("<color=white>");
+                    stringBuilder.Append("<nobr>- ");
                 }
 
                 // Username
-                builder.Append(string.IsNullOrWhiteSpace(info.Nickname) ? "noname" : info.Nickname);
-                builder.Append("</nobr>");
+                stringBuilder.Append(string.IsNullOrWhiteSpace(info.Nickname) ? "noname" : info.Nickname);
+                stringBuilder.Append("</nobr>");
 
                 // Stars
-                builder.Append("<width=100%><line-height=0><align=right><br>");
-                builder.Append(gamemode ? Utils.GetSymbolString(gamemode.ObjectiveSymbolPrefix) : "");
-                builder.Append(info.Team == header.WinningTeam ? "<color=yellow>" : "<color=white>");
-                builder.Append(Mathf.Max(0, info.FinalObjectiveCount));
+                stringBuilder.Append("<width=100%><line-height=0><align=right><br>");
+                stringBuilder.Append(gamemode ? Utils.GetSymbolString(gamemode.ObjectiveSymbolPrefix) : "");
+                stringBuilder.Append(info.Team == header.WinningTeam ? "<color=yellow>" : "<color=white>");
+                stringBuilder.Append(Mathf.Max(0, info.FinalObjectiveCount));
 
                 // Fix formatting
-                builder.AppendLine("<align=left><line-height=100%>");
+                stringBuilder.AppendLine("<align=left><line-height=100%>");
             }
-            builder.AppendLine();
+            stringBuilder.AppendLine();
 
             // Add rules
             string off = tm.GetTranslation("ui.generic.off");
             string on = tm.GetTranslation("ui.generic.on");
 
-            builder.Append("<align=center><color=white>");
-            builder.AppendLine(gamemodeName);
+            stringBuilder.Append("<align=center><color=white>");
+            stringBuilder.AppendLine(gamemodeName);
 
             if (gamemode is CoinRunnersGamemode) {
-                builder.Append("<sprite name=room_timer> ").Append(Utils.SecondsToMinuteSeconds(rules.TimerMinutes * 60)).Append("    ");
-                builder.Append("<sprite name=room_coins> ").Append(rules.CoinsForPowerup).Append("    ");
-                builder.Append("<sprite name=room_lives> ").Append(rules.Lives > 0 ? rules.Lives : off).Append("    ");
-                builder.Append("<sprite name=room_powerups>").Append(rules.CustomPowerupsEnabled ? on : off).Append("    ");
-                builder.Append("<sprite name=room_teams>").AppendLine(rules.TeamsEnabled ? on : off);
+                stringBuilder.Append("<sprite name=room_timer> ").Append(Utils.SecondsToMinuteSeconds(rules.TimerMinutes * 60)).Append("    ");
+                stringBuilder.Append("<sprite name=room_coins> ").Append(rules.CoinsForPowerup).Append("    ");
+                stringBuilder.Append("<sprite name=room_lives> ").Append(rules.Lives > 0 ? rules.Lives : off).Append("    ");
+                stringBuilder.Append("<sprite name=room_powerups>").Append(rules.CustomPowerupsEnabled ? on : off).Append("    ");
+                stringBuilder.Append("<sprite name=room_teams>").AppendLine(rules.TeamsEnabled ? on : off);
             } else {
                 // Default to star chasers
-                builder.Append("<sprite name=room_stars> ").Append(rules.StarsToWin).Append("    ");
-                builder.Append("<sprite name=room_coins> ").Append(rules.CoinsForPowerup).Append("    ");
-                builder.Append("<sprite name=room_lives> ").Append(rules.Lives > 0 ? rules.Lives : off).Append("    ");
-                builder.Append("<sprite name=room_timer> ").Append(rules.TimerMinutes > 0 ? Utils.SecondsToMinuteSeconds(rules.TimerMinutes * 60) : off).Append("    ");
-                builder.Append("<sprite name=room_powerups>").Append(rules.CustomPowerupsEnabled ? on : off).Append("    ");
-                builder.Append("<sprite name=room_teams>").AppendLine(rules.TeamsEnabled ? on : off);
+                stringBuilder.Append("<sprite name=room_stars> ").Append(rules.StarsToWin).Append("    ");
+                stringBuilder.Append("<sprite name=room_coins> ").Append(rules.CoinsForPowerup).Append("    ");
+                stringBuilder.Append("<sprite name=room_lives> ").Append(rules.Lives > 0 ? rules.Lives : off).Append("    ");
+                stringBuilder.Append("<sprite name=room_timer> ").Append(rules.TimerMinutes > 0 ? Utils.SecondsToMinuteSeconds(rules.TimerMinutes * 60) : off).Append("    ");
+                stringBuilder.Append("<sprite name=room_powerups>").Append(rules.CustomPowerupsEnabled ? on : off).Append("    ");
+                stringBuilder.Append("<sprite name=room_teams>").AppendLine(rules.TeamsEnabled ? on : off);
             } 
-            builder.Append("<color=#aaa>").Append(DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(header.UnixTimestamp), false, false)).Append(" - ");
-            builder.Append(Utils.SecondsToMinuteSeconds(header.ReplayLengthInFrames / 60)).Append(" - ").Append(Utils.BytesToString(replay.ReplayFile.FileSize));
+            stringBuilder.Append("<color=#aaa>").Append(DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(header.UnixTimestamp), false, false)).Append(" - ");
+            stringBuilder.Append(Utils.SecondsToMinuteSeconds(header.ReplayLengthInFrames / 60)).Append(" - ").Append(Utils.BytesToString(replay.ReplayFile.FileSize));
 
-            replayInformation.SetText(builder);
+            replayInformation.SetText(stringBuilder);
             replayInformation.horizontalAlignment = HorizontalAlignmentOptions.Left;
         }
 
@@ -259,7 +311,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 } else {
                     return dt.ToString(culture.DateTimeFormat);
                 }
-            } catch {
+            } catch (CultureNotFoundException) {
                 if (dateOnly) {
                     if (shortDisplay) {
                         return dt.ToLocalTime().ToShortDateString();
@@ -272,115 +324,239 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             }
         }
 
-        public void RemoveReplay(ReplayListEntry replay) {
-            if (!replay) {
-                return;
-            }
-            
-            replays.Remove(replay);
-            bool wasTemporary = temporaryReplays.Remove(replay);
-            
-            Destroy(replay.gameObject);
-            if (replays.Count == 0) {
+        private void UpdateNoReplaysText() {
+            if (allReplays.Count == 0) {
                 noReplaysText.text = GlobalController.Instance.translationManager.GetTranslation(Settings.Instance.GeneralReplaysEnabled ? "ui.extras.replays.none" : "ui.extras.replays.disabled");
-            }
-            int? index = isActiveAndEnabled ? replays.IndexOf(replay) : null;
-            SortReplays(index);
-            
-            if (wasTemporary && Settings.Instance.generalMaxTempReplays != 0) {
-                foreach (var tempReplay in temporaryReplays.Skip(Settings.Instance.generalMaxTempReplays - 5).Take(5)) {
-                    tempReplay.UpdateText();
-                }
+            } else {
+                noReplaysText.text = "";
             }
         }
 
-        public void RemoveReplayByPath(string path) {
-            RemoveReplay(replays.FirstOrDefault(rle => rle.ReplayFile.FilePath == path));
+        public async Awaitable ReloadReplayList(BinaryReplayFile focus) {
+            int index = allReplays.IndexOf(focus);
+            if (index == -1) {
+                return;
+            }
+
+            int page = index / entriesPerPage;
+            await ReloadReplayList(page, focus);
+        }
+
+        public async Awaitable ReloadReplayList(int? pageNullable = null, BinaryReplayFile focus = null) {
+            await Awaitable.MainThreadAsync();
+
+            if (pageNullable is int page) {
+                if (CurrentPage == page) {
+                    return;
+                }
+            } else {
+                page = CurrentPage;
+            }
+            page = Mathf.Clamp(page, 0, PageCount - 1);
+            CurrentPage = page;
+
+            await ClearReplayList();
+
+            string previousHeader = null;
+            var displayingReplays = DisplayingReplays;
+            ReplayListEntry focusEntry = null, previousEntry = null;
+            int start = page * entriesPerPage;
+            for (int i = start; i < start + entriesPerPage; i++) {
+                if (i >= displayingReplays.Count) {
+                    break;
+                }
+
+                var replay = displayingReplays[i];
+                string header = GetHeader(replay);
+                if (header != previousHeader) {
+                    AcquireHeader(header);
+                    previousHeader = header;
+                }
+                var replayListEntry = AcquireReplayListEntry(replay, previousEntry);
+
+                if (replay == focus) {
+                    focusEntry = replayListEntry;
+                }
+
+                previousEntry = replayListEntry;
+            }
+
+            if (focusEntry) {
+                Select(focusEntry, false);
+                scrollRect.ScrollToCenter((RectTransform) focusEntry.transform, false);
+            } else {
+                Select(GetFirstReplayEntry(), false);
+                scrollRect.verticalNormalizedPosition = 1;
+            }
+
+            RecalculatePages();
+            UpdateNoReplaysText();
+            loadingIcon.SetActive(false);
+        }
+
+        public async Awaitable ClearReplayList() {
+            await Awaitable.MainThreadAsync();
+            foreach (var entry in replayListEntries) {
+                entry.gameObject.SetActive(false);
+            }
+            foreach (var entry in headers) {
+                entry.gameObject.SetActive(false);
+            }
+
+            Transform pagesParent = pageTemplate.transform.parent;
+            for (int i = 1; i < pagesParent.childCount; i++) {
+                Destroy(pagesParent.GetChild(i).gameObject);
+            }
+        }
+        
+        private TMP_Text AcquireHeader(string header) {
+            var result = headers.FirstOrDefault(go => !go.isActiveAndEnabled);
+            if (!result) {
+                result = Instantiate(headerTemplate, headerTemplate.transform.parent);
+                headers.Add(result);
+            }
+
+            result.text = $"- {header} -";
+            result.name = result.text;
+            result.transform.SetAsLastSibling();
+            result.gameObject.SetActive(true);
+            return result;
+        }
+
+        private ReplayListEntry AcquireReplayListEntry(BinaryReplayFile replay, ReplayListEntry previousEntry) {
+            var result = replayListEntries.FirstOrDefault(rle => !rle.isActiveAndEnabled);
+            if (!result) {
+                result = Instantiate(replayTemplate, replayTemplate.transform.parent);
+                replayListEntries.Add(result);
+            }
+
+            result.Initialize(this, replay);
+            result.name = replay.Header.GetDisplayName();
+            result.UpdateText();
+            result.UpdateNavigation(previousEntry);
+            result.transform.SetAsLastSibling();
+            result.gameObject.SetActive(true);
+            return result;
         }
 
         private async Awaitable FindReplays() {
-            try {
-                await Awaitable.MainThreadAsync();
-                noReplaysText.text = "";
-                loadingIcon.SetActive(true);
-                hiddenReplaysText.gameObject.SetActive(false);
+            await Awaitable.BackgroundThreadAsync();
+            foreach (var filepath in Directory.EnumerateFiles(ReplayDirectory, "*.mvlreplay", SearchOption.AllDirectories)) {
+                if (loadedFilepaths.Contains(filepath)) {
+                    // Already loaded
+                    continue;
+                }
+                loadedFilepaths.Add(filepath);
 
-                if (languageChangedSinceLastOpen) {
-                    // Update to fix a bug where the names are invalid after a language switch.
-                    foreach (var createdReplays in replays) {
-                        createdReplays.UpdateText();
-                    }
-                    languageChangedSinceLastOpen = false;
+                if (BinaryReplayFile.TryLoadNewFromFile(filepath, includeReplayData: false, out var parsedReplay) != ReplayParseResult.Success) {
+                    // Not a valid replay file
+                    continue;
                 }
 
-                //await Awaitable.BackgroundThreadAsync();
-
-                List<BinaryReplayFile> newReplays = new();
-                foreach (var filepath in Directory.EnumerateFiles(ReplayDirectory, "*.mvlreplay", SearchOption.AllDirectories)) {
-                    if (newReplays.Any(brf => brf.FilePath == filepath)
-                        || replays.Any(brf => brf.ReplayFile.FilePath == filepath)) {
-                        continue;
-                    }
-
-                    var parseResult = BinaryReplayFile.TryLoadNewFromFile(filepath, false, out BinaryReplayFile replay);
-                    if (parseResult == ReplayParseResult.Success) {
-                        newReplays.Add(replay);
-                    } else {
-                        Debug.Log($"[Replay] Parsing '{filepath}' failed with reason '{parseResult}'");
-                    }
-                }
-
-                await Awaitable.MainThreadAsync();
-                foreach (var replay in newReplays) {
-                    ReplayListEntry newReplayEntry = Instantiate(replayTemplate, replayTemplate.transform.parent);
-                    newReplayEntry.Initialize(this, replay);
-                    newReplayEntry.UpdateText();
-                    newReplayEntry.name = newReplayEntry.ReplayFile.Header.GetDisplayName();
-                    newReplayEntry.gameObject.SetActive(true);
-                    replays.Add(newReplayEntry);
-
-                    if (newReplayEntry.IsTemporary) {
-                        temporaryReplays.Add(newReplayEntry);
-                    }
-
-                    if (isActiveAndEnabled) {
-                        newReplayEntry.gameObject.SetActive(true);
-                        canvas.EventSystem.SetSelectedGameObject(newReplayEntry.gameObject);
-                        scrollRect.verticalNormalizedPosition = 1;
-                    }
-                }
-
-                // Update a second time to fix the "Temporary" label.
-                foreach (var createdReplays in replays) {
-                    createdReplays.UpdateText();
-                }
-
-                await FilterReplays();
-                SortReplays();
-                if (replays.Count == 0) {
-                    noReplaysText.text = GlobalController.Instance.translationManager.GetTranslation(Settings.Instance.GeneralReplaysEnabled ? "ui.extras.replays.none" : "ui.extras.replays.disabled");
-                }
-                loadingIcon.SetActive(false);
-            } catch (Exception e) {
-                Debug.Log(e);
-                throw;
+                // This *IS* a replay file.
+                allReplays.Add(parsedReplay);
             }
         }
 
+        private async Awaitable FilterReplays() {
+            await Awaitable.BackgroundThreadAsync();
+            searchResults.Clear();
+
+            if (string.IsNullOrEmpty(SearchTerm)) {
+                searchResults.AddRange(allReplays);
+                return;
+            }
+
+            TranslationManager tm = GlobalController.Instance.translationManager;
+            foreach (var replay in allReplays) {
+                // Check display name
+                if (replay.Header.GetDisplayName().Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                    searchResults.Add(replay);
+                    continue;
+                }
+
+                // Check date
+                if (DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.Header.UnixTimestamp), false, false).Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                    searchResults.Add(replay);
+                    continue;
+                }
+
+                // Check stage name
+                if (QuantumUnityDB.TryGetGlobalAsset(replay.Header.Rules.Stage, out Map map)
+                    && QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
+
+                    if (tm.GetTranslation(stage.TranslationKey).Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                        searchResults.Add(replay);
+                        continue;
+                    }
+                }
+
+                // Check player usernames
+                bool found = false;
+                foreach (var playerInfo in replay.Header.PlayerInformation) {
+                    if (playerInfo.Nickname.Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    searchResults.Add(replay);
+                    continue;
+                }
+
+                /*
+                // Check status
+                if (replay.warningText.text.Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                    searchResultsNew.Add(replay);
+                    continue;
+                }
+                */
+                
+                // Did not match.
+            }
+        }
+
+        private async Awaitable SortReplays() {
+            //await Awaitable.BackgroundThreadAsync();
+            await Awaitable.MainThreadAsync();
+            allReplays.Sort(SortIndex switch {
+                1 => SortByName,
+                2 => SortByStage,
+                _ => SortByDate,
+            });
+        }
+
+        [Preserve]
         public void OnSortDropdownChanged() {
-            sortIndex = sortDropdown.value;
-            SortReplays();
+            _ = ChangeSort();
         }
 
+        [Preserve]
         public void OnAscendingSortToggleChanged() {
-            sortAscending = ascendingToggle.isOn;
-            SortReplays();
+            _ = ChangeSort();
         }
 
+        [Preserve]
         public void OnSearchChanged() {
-            _ = FilterReplays();
+            _ = ChangeFilter();
         }
 
+        private async Awaitable ChangeSort() {
+            await ClearReplayList();
+            loadingIcon.SetActive(true);
+            await SortReplays();
+            await FilterReplays();
+            await ReloadReplayList();
+        }
+
+        private async Awaitable ChangeFilter() {
+            await ClearReplayList();
+            loadingIcon.SetActive(true);
+            await FilterReplays();
+            await ReloadReplayList();
+        }
+
+        [Preserve]
         public void OnImportClicked() {
             TranslationManager tm = GlobalController.Instance.translationManager;
 
@@ -394,14 +570,11 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 #endif
         }
 
-        private IEnumerator ImportFile(string filepath, bool makeCopy) {
-#if UNITY_WEBGL
+        private async Awaitable ImportFile(string filepath, bool makeCopy) {
+#if UNITY_WEBGL && !UNITY_EDITOR
             using UnityEngine.Networking.UnityWebRequest downloadRequest = new(filepath, "GET");
             downloadRequest.downloadHandler = new UnityEngine.Networking.DownloadHandlerBuffer();
-            yield return downloadRequest.SendWebRequest();
-            while (!downloadRequest.downloadHandler.isDone) {
-                yield return null;
-            }
+            await downloadRequest.SendWebRequest();
             byte[] replay = ((UnityEngine.Networking.DownloadHandlerBuffer) downloadRequest.downloadHandler).data;
             using MemoryStream memStream = new MemoryStream(replay);
 
@@ -410,239 +583,157 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             ReplayParseResult parseResult = BinaryReplayFile.TryLoadNewFromFile(filepath, true, out BinaryReplayFile parsedReplay);
 #endif
 
-            if (parseResult == ReplayParseResult.Success) {
-                // Change to today
-                parsedReplay.Header.UnixTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
-
-                if (makeCopy) {
-                    // Write into the replays folder (not copy, since we changed the timestamp in the header...)
-                    string newPath = Path.Combine(ReplayDirectory, "saved", parsedReplay.Header.UnixTimestamp + ".mvlreplay");
-                    using (FileStream fs = new FileStream(newPath, FileMode.Create)) {
-                        parsedReplay.WriteToStream(fs);
-                    }
-                    parsedReplay.FilePath = newPath;
-                }
-
-                ReplayListEntry newReplayEntry = Instantiate(replayTemplate, replayTemplate.transform.parent);
-                newReplayEntry.Initialize(this, parsedReplay);
-                newReplayEntry.name = newReplayEntry.ReplayFile.Header.GetDisplayName();
-
-                replays.Add(newReplayEntry);
-                newReplayEntry.UpdateText();
-                newReplayEntry.gameObject.SetActive(true);
-                SortReplays();
-
-                canvas.EventSystem.SetSelectedGameObject(newReplayEntry.gameObject);
-
-                noReplaysText.text = "";
-            } else {
+            if (parseResult != ReplayParseResult.Success) {
                 GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_Error);
                 Debug.LogWarning($"[Replay] Failed to parse {filepath} as a replay: {parseResult}");
+                return;
             }
-            yield return null;
+
+            // Good to go.
+            parsedReplay.Header.UnixTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+
+            if (makeCopy) {
+                // Write into the replays folder (not copy, since we changed the timestamp in the header...)
+                string newPath = Path.Combine(ReplayDirectory, "saved", parsedReplay.Header.UnixTimestamp + ".mvlreplay");
+                using (FileStream fs = new FileStream(newPath, FileMode.Create)) {
+                    parsedReplay.WriteToStream(fs);
+                }
+                parsedReplay.FilePath = newPath;
+            }
+
+            allReplays.Add(parsedReplay);
+            await SortReplays();
+            await FilterReplays();
+            await ReloadReplayList(parsedReplay);
         }
 
-        public void UpdateReplayNavigation(int? selectIndex = null) {
-            ReplayListEntry previous = null;
-            foreach (var replay in replays) {
-                if (!replay.gameObject.activeInHierarchy) {
-                    continue;
-                }
-
-                replay.UpdateNavigation(previous);
-                previous = replay;
+        private void RecalculatePages() {
+            Transform parent = pageTemplate.transform.parent;
+            for (int i = 1; i < parent.childCount; i++) {
+                Destroy(parent.GetChild(i).gameObject);
             }
-            if (selectIndex.HasValue && replays.Count > 0) {
-                Select(replays[Mathf.Clamp(selectIndex.Value, 0, replays.Count - 1)], true);
-            } else {
-                Select(null, false);
-                scrollRect.verticalNormalizedPosition = 1;
+
+            int displayPage = CurrentPage + 1;
+
+            // Beginning
+            if (displayPage > pageListNearbyNumbers) {
+                for (int i = 1; i <= Mathf.Min(pageListNearbyNumbers, displayPage - 1 - pageListNearbyNumbers); i++) {
+                    InstantiatePageNumber(i);
+                }
+                if (displayPage > pageListNearbyNumbers * 2 + 1) {
+                    InstantiatePageNumber("...");
+                }
+            }
+
+            // Middle
+            for (int i = Mathf.Max(1, displayPage - pageListNearbyNumbers); i <= Mathf.Min(displayPage + pageListNearbyNumbers, PageCount); i++) {
+                InstantiatePageNumber(i, selected: i == displayPage);
+            }
+
+            // End
+            if (displayPage < PageCount - pageListNearbyNumbers) {
+                if (displayPage < PageCount - pageListNearbyNumbers * 2 - 1) {
+                    InstantiatePageNumber("...");
+                }
+                for (int i = Mathf.Max(PageCount - pageListNearbyNumbers, displayPage + 1 + pageListNearbyNumbers); i <= PageCount; i++) {
+                    InstantiatePageNumber(i);
+                }
+            }
+
+            void InstantiatePageNumber(object text, bool selected = false) {
+                var newPageNumber = Instantiate(pageTemplate, parent);
+                newPageNumber.text = text.ToString();
+                if (selected) {
+                    newPageNumber.text = "» " + newPageNumber.text + " «";
+                    newPageNumber.color = Color.white;
+                }
+                newPageNumber.gameObject.SetActive(true);
             }
         }
 
-        public void SortReplays(int? selectedIndex = null) {
-            replays.Sort(sortIndex switch {
-                1 => SortByName,
-                2 => SortByStage,
-                _ => SortByDate,
-            });
-            foreach (var header in headers) {
-                Destroy(header.gameObject);
+        public void RemoveReplay(ReplayListEntry replay) {
+            if (!replay) {
+                return;
             }
-            headers.Clear();
-            string previousHeader = null;
-            foreach (var replay in replays) {
-                string currentHeader = GetHeader(replay);
-                if (previousHeader != currentHeader && currentHeader != null) {
-                    TMP_Text newHeader = Instantiate(headerTemplate, headerTemplate.transform.parent);
-                    newHeader.gameObject.SetActive(true);
-                    newHeader.text = $"- {currentHeader} -";
 
-                    headers.Add(newHeader);
-                }
-                previousHeader = currentHeader;
-                replay.transform.SetAsLastSibling();
-            }
-            hiddenReplaysText.transform.SetAsLastSibling();
+            replayListEntries.Remove(replay);
+            allReplays.Remove(replay.ReplayFile);
+            searchResults.Remove(replay.ReplayFile);
+            loadedFilepaths.Remove(replay.ReplayFile.FilePath);
 
-            UpdateReplayNavigation(selectedIndex);
+            replay.gameObject.SetActive(false);
         }
 
-        public async Awaitable FilterReplays() {
-            // Reset state
-            await Awaitable.MainThreadAsync();
-            foreach (var replay in replays) {
-                replay.gameObject.SetActive(true);
-            }
-            foreach (var header in headers) {
-                header.gameObject.SetActive(true);
-            }
-
-            await Awaitable.BackgroundThreadAsync();
-            int hidden = 0;
-            TranslationManager tm = GlobalController.Instance.translationManager;
-            if (!string.IsNullOrWhiteSpace(searchField.text)) {
-                List<GameObject> toDisableGameObjects = new();
-                List<string> enabledHeaders = new();
-                foreach (var replay in replays) {
-                    // Check display name
-                    if (replay.ReplayFile.Header.GetDisplayName().Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
-                        enabledHeaders.Add(GetHeader(replay));
-                        continue;
-                    }
-
-                    // Check date
-                    if (DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.ReplayFile.Header.UnixTimestamp), false, false).Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
-                        enabledHeaders.Add(GetHeader(replay));
-                        continue;
-                    }
-
-                    // Check stage name
-                    if (QuantumUnityDB.TryGetGlobalAsset(replay.ReplayFile.Header.Rules.Stage, out Map map)
-                        && QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
-
-                        if (tm.GetTranslation(stage.TranslationKey).Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
-                            enabledHeaders.Add(GetHeader(replay));
-                            continue;
-                        }
-                    }
-
-                    // Check player usernames
-                    bool found = false;
-                    foreach (var playerInfo in replay.ReplayFile.Header.PlayerInformation) {
-                        if (playerInfo.Nickname.Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        enabledHeaders.Add(GetHeader(replay));
-                        continue;
-                    }
-
-                    // Check status
-                    if (replay.warningText.text.Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
-                        enabledHeaders.Add(GetHeader(replay));
-                        continue;
-                    }
-
-                    // Did not match
-                    toDisableGameObjects.Add(replay.gameObject);
-                    hidden++;
-                }
-
-                await Awaitable.MainThreadAsync();
-
-                foreach (var go in toDisableGameObjects) {
-                    go.SetActive(false);
-                }
-
-                // Activate headers w/ replays only
-                foreach (var header in headers) {
-                    header.gameObject.SetActive(enabledHeaders.Contains(header.text[2..^2]));
-                }
-            }
-
-            await Awaitable.MainThreadAsync();
-
-            hiddenReplaysText.gameObject.SetActive(hidden > 0);
-            hiddenReplaysText.text = tm.GetTranslationWithReplacements("ui.extras.replays.search.hidden", "replays", hidden.ToString());
-            UpdateReplayNavigation();
+        public void RemoveReplayByPath(string path) {
+            RemoveReplay(replayListEntries.FirstOrDefault(rle => rle.ReplayFile.FilePath == path));
         }
 
         public ReplayListEntry GetFirstReplayEntry() {
-            if (replays.Count <= 0) {
-                return null;
-            }
-
-            return replays[0];
+            return replayListEntries.FirstOrDefault(rle => rle.isActiveAndEnabled);
         }
 
-        private string GetHeader(ReplayListEntry rle) {
-            if (sortIndex == 1) {
+        private IEnumerator SelectAtEndOfFrame() {
+            yield return new WaitForEndOfFrame();
+            if (!canvas.EventSystem.alreadySelecting) {
+                if (Selected) {
+                    canvas.EventSystem.SetSelectedGameObject(Selected.IsOpen ? Selected.defaultSelection : Selected.button.gameObject);
+                } else if (GetFirstReplayEntry() != null) {
+                    canvas.EventSystem.SetSelectedGameObject(GetFirstReplayEntry().button.gameObject);
+                } else {
+                    canvas.EventSystem.SetSelectedGameObject(importButton);
+                }
+            }
+        }
+
+        private string GetHeader(BinaryReplayFile replay) {
+            if (SortIndex == 1) {
                 // Name
                 return null;
-            } else if (sortIndex == 2) {
+            } else if (SortIndex == 2) {
                 // Stage
-                if (QuantumUnityDB.TryGetGlobalAsset(rle.ReplayFile.Header.Rules.Stage, out Map map)) {
-                    if (QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
-                        return GlobalController.Instance.translationManager.GetTranslation(stage.TranslationKey);
-                    }
+                if (QuantumUnityDB.TryGetGlobalAsset(replay.Header.Rules.Stage, out Map map)
+                    && QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
+
+                    return GlobalController.Instance.translationManager.GetTranslation(stage.TranslationKey);
                 }
                 return "???";
             } else {
                 // Date
-                return DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(rle.ReplayFile.Header.UnixTimestamp), true, true);
+                return DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.Header.UnixTimestamp), true, true);
             }
         }
 
-        public int SortByDate(ReplayListEntry a, ReplayListEntry b) {
-            if (sortAscending) {
-                return a.ReplayFile.Header.UnixTimestamp.CompareTo(b.ReplayFile.Header.UnixTimestamp);
+        public int SortByDate(BinaryReplayFile a, BinaryReplayFile b) {
+            if (SortAscending) {
+                return a.Header.UnixTimestamp.CompareTo(b.Header.UnixTimestamp);
             } else {
-                return b.ReplayFile.Header.UnixTimestamp.CompareTo(a.ReplayFile.Header.UnixTimestamp);
+                return b.Header.UnixTimestamp.CompareTo(a.Header.UnixTimestamp);
             }
         }
 
-        public int SortByName(ReplayListEntry a, ReplayListEntry b) {
-            if (sortAscending) {
-                return a.ReplayFile.Header.GetDisplayName().CompareTo(b.ReplayFile.Header.GetDisplayName());
+        public int SortByName(BinaryReplayFile a, BinaryReplayFile b) {
+            if (SortAscending) {
+                return a.Header.GetDisplayName().CompareTo(b.Header.GetDisplayName());
             } else {
-                return b.ReplayFile.Header.GetDisplayName().CompareTo(a.ReplayFile.Header.GetDisplayName());
+                return b.Header.GetDisplayName().CompareTo(a.Header.GetDisplayName());
             }
         }
 
-        public int SortByStage(ReplayListEntry a, ReplayListEntry b) {
+        public int SortByStage(BinaryReplayFile a, BinaryReplayFile b) {
             var allMaps = AssetRepository<Map>.AllAssetRefs;
 
-            if (sortAscending) {
+            if (SortAscending) {
                 return
-                    allMaps.IndexOf(map => map == a.ReplayFile.Header.Rules.Stage)
-                    - allMaps.IndexOf(map => map == b.ReplayFile.Header.Rules.Stage);
+                    allMaps.IndexOf(map => map == a.Header.Rules.Stage)
+                    - allMaps.IndexOf(map => map == b.Header.Rules.Stage);
             } else {
                 return
-                    allMaps.IndexOf(map => map == b.ReplayFile.Header.Rules.Stage)
-                    - allMaps.IndexOf(map => map == a.ReplayFile.Header.Rules.Stage);
+                    allMaps.IndexOf(map => map == b.Header.Rules.Stage)
+                    - allMaps.IndexOf(map => map == a.Header.Rules.Stage);
             }
-        }
-
-        public void OnScrollRectScrolled(Vector2 pos) {
-            /*
-            RectTransform parent = (RectTransform) canvas.transform;
-            parent.GetWorldCorners(corners);
-            Rect parentRect = new((Vector2) corners[0], parent.rect.size);
-            foreach (var replay in replays) {
-                replay.UpdateVisibility(parentRect);
-            }
-            */
         }
 
         private void OnLanguageChanged(TranslationManager tm) {
-            if (!gameObject.activeInHierarchy) {
-                languageChangedSinceLastOpen = true;
-                return;
-            }
-
             int index = sortDropdown.value;
 
             sortDropdown.ClearOptions();
