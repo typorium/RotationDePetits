@@ -32,7 +32,8 @@ if "%LOCAL_VERSION%"=="%REMOTE_VERSION%" (
     del %ZIP_FILE%
 )
 :: Lancer le jeu
-start Game\TonJeu.exe
+echo Ok le jeu se lance bg
+start Game\NSMB-MarioVsLuigi.exe
 
 endlocal
 pause
