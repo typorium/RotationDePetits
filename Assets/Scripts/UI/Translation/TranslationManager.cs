@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Debug = UnityEngine.Debug;
 
 namespace NSMB.UI.Translation {
@@ -36,6 +37,13 @@ namespace NSMB.UI.Translation {
             RegisterBuiltinLocales();
             RegisterCustomLocales();
             initialized = true;
+        }
+
+        public void Update() {
+            if (Keyboard.current[Key.F5].wasPressedThisFrame) {
+                Reload();
+                GlobalController.Instance.PlaySound(SoundEffect.Player_Sound_PowerupCollect);
+            }
         }
 
         public string GetTranslation(string key) {

@@ -68,6 +68,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         private readonly List<ReplayListEntry> replayListEntries = new();
         private readonly List<TMP_Text> headers = new();
 
+        private string currentSearchTerm;
         private readonly List<BinaryReplayFile> searchResults = new();
         private readonly List<BinaryReplayFile> allReplays = new();
         private readonly HashSet<string> loadedFilepaths = new();
@@ -459,10 +460,12 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         }
 
         private async Awaitable FilterReplays() {
-            await Awaitable.BackgroundThreadAsync();
+            string newSearchTerm = SearchTerm;
+            
+            //await Awaitable.BackgroundThreadAsync();
             searchResults.Clear();
 
-            if (string.IsNullOrEmpty(SearchTerm)) {
+            if (string.IsNullOrEmpty(newSearchTerm)) {
                 searchResults.AddRange(allReplays);
                 return;
             }
@@ -470,13 +473,13 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             TranslationManager tm = GlobalController.Instance.translationManager;
             foreach (var replay in allReplays) {
                 // Check display name
-                if (replay.Header.GetDisplayName().Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                if (replay.Header.GetDisplayName().Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
                     searchResults.Add(replay);
                     continue;
                 }
 
                 // Check date
-                if (DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.Header.UnixTimestamp), false, false).Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                if (DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.Header.UnixTimestamp), false, false).Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
                     searchResults.Add(replay);
                     continue;
                 }
@@ -485,7 +488,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 if (QuantumUnityDB.TryGetGlobalAsset(replay.Header.Rules.Stage, out Map map)
                     && QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
 
-                    if (tm.GetTranslation(stage.TranslationKey).Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                    if (tm.GetTranslation(stage.TranslationKey).Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
                         searchResults.Add(replay);
                         continue;
                     }
@@ -494,7 +497,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 // Check player usernames
                 bool found = false;
                 foreach (var playerInfo in replay.Header.PlayerInformation) {
-                    if (playerInfo.Nickname.Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                    if (playerInfo.Nickname.Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
                         found = true;
                         break;
                     }
@@ -506,14 +509,16 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
                 /*
                 // Check status
-                if (replay.warningText.text.Contains(searchField.text, StringComparison.InvariantCultureIgnoreCase)) {
+                if (replay.warningText.text.Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
                     searchResultsNew.Add(replay);
                     continue;
                 }
                 */
-                
+
                 // Did not match.
             }
+
+            currentSearchTerm = newSearchTerm;
         }
 
         private async Awaitable SortReplays() {
@@ -538,6 +543,9 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
         [Preserve]
         public void OnSearchChanged() {
+            if (SearchTerm == currentSearchTerm) {
+                return;
+            }
             _ = ChangeFilter();
         }
 
