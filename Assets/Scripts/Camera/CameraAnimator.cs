@@ -316,7 +316,7 @@ namespace NSMB.Cameras {
 
             ourCamera.transform.position = newPosition;
 
-            GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_Back);
+            GlobalController.Instance.PlaySound(SoundEffect.UI_Back);
         }
 
         private void OnScreenshakeCallback(float screenshake) {

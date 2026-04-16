@@ -442,6 +442,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
         private async Awaitable FindReplays() {
             await Awaitable.BackgroundThreadAsync();
+
             foreach (var filepath in Directory.EnumerateFiles(ReplayDirectory, "*.mvlreplay", SearchOption.AllDirectories)) {
                 if (loadedFilepaths.Contains(filepath)) {
                     // Already loaded
@@ -460,9 +461,11 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         }
 
         private async Awaitable FilterReplays() {
+            await Awaitable.MainThreadAsync();
             string newSearchTerm = SearchTerm;
-            
+
             //await Awaitable.BackgroundThreadAsync();
+            await Awaitable.MainThreadAsync();
             searchResults.Clear();
 
             if (string.IsNullOrEmpty(newSearchTerm)) {
@@ -592,7 +595,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 #endif
 
             if (parseResult != ReplayParseResult.Success) {
-                GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_Error);
+                GlobalController.Instance.PlaySound(SoundEffect.UI_Error);
                 Debug.LogWarning($"[Replay] Failed to parse {filepath} as a replay: {parseResult}");
                 return;
             }
