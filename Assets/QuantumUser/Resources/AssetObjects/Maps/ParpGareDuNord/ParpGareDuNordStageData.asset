@@ -2492,8 +2492,8 @@ MonoBehaviour:
   - Tile:
       Id:
         Value: 971729107064745400
-    Rotation: 16383
-    Flags: 1
+    Rotation: 49151
+    Flags: 0
   - Tile:
       Id:
         Value: 0
