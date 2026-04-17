@@ -2182,8 +2182,9 @@ namespace Quantum {
             FPVector2 previousMarioAPosition = marioAPosition - (marioAPhysics->Velocity * f.DeltaTime);
             FPVector2 previousMarioBPosition = marioBPosition - (marioBPhysics->Velocity * f.DeltaTime);
             FP dot = FPVector2.Dot((previousMarioAPosition - previousMarioBPosition).Normalized, FPVector2.Up);
-            bool marioAAbove = dot > Constants._0_66;
-            bool marioBAbove = dot < -Constants._0_66;
+            FP yDiff = previousMarioAPosition.Y - previousMarioBPosition.Y;
+            bool marioAAbove = dot > Constants._0_66 && FPMath.Abs(yDiff) >= FP._0_10;
+            bool marioBAbove = dot < -Constants._0_66 && FPMath.Abs(yDiff) >= FP._0_10;
 
             // Mega mushroom cases
             bool marioAMega = marioA->CurrentPowerupState == PowerupState.MegaMushroom;
@@ -2275,6 +2276,14 @@ namespace Quantum {
                 return;
             }
 
+
+            var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
+            var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
+
+            FP averageWalkSpeed = (marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.WalkSpeedStage] + marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.WalkSpeedStage]) / 2;
+            FP velocityDifference = FPMath.Abs(marioAPhysics->Velocity.X - marioBPhysics->Velocity.X);
+
+
             if (!eitherDamageInvincible) {
                 // Blue shell cases
                 bool marioAShell = marioA->IsInShell;
@@ -2291,8 +2300,6 @@ namespace Quantum {
                 } else if (marioAShell) {
                     // only marioA is spinning in blue shell
                     if (!marioBAbove) {
-                        var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
-
                         // Hit them, powerdown them
                         marioB->FacingRight = !fromRight;
                         // powerdown must come before doknockback or it will not occur
@@ -2308,8 +2315,6 @@ namespace Quantum {
                 } else if (marioBShell) {
                     // only marioB is spinning in blue shell
                     if (!marioAAbove) {
-                        var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
-
                         // Hit them, powerdown them
                         marioA->FacingRight = fromRight;
                         if (dropStars) {
@@ -2343,59 +2348,65 @@ namespace Quantum {
 
                 // crouched in shell interactions
                 if (marioA->IsCrouchedInShell || marioB->IsCrouchedInShell) {
-                    var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
-                    var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
                     // push the other Mario back only if grounded otherwise do knockback
                     if (marioA->IsCrouchedInShell) {
                         if (marioAPhysics->IsTouchingGround) {
                             // it looks pretty weird so do not affect players in knockback
                             if (!marioB->IsInKnockback) {
-                            marioBPhysics->Velocity.X = marioAPhysics->Velocity.X * FP._0_50;
+                                marioBPhysics->Velocity.X = marioAPhysics->Velocity.X * FP._0_50;
                             }
                             marioA->FacingRight = !fromRight;
                             marioAPhysics->Velocity.X = marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.RunSpeedStage] * (fromRight ? -1 : 1);
-                        } else if (dropStars && !marioBAbove) {
-                            KnockbackStrength strength = marioB->CurrentPowerupState == PowerupState.MiniMushroom ? KnockbackStrength.Normal : KnockbackStrength.Groundpound;
-                            bool didKnockback = marioB->DoKnockback(f, marioBEntity, !fromRight, dropStars ? 1 : 0, strength, marioAEntity);
+                            return;
+                        } else if (dropStars && !marioBAbove
+#if BLUE_SHELL_BUMP_SPEED_REQUIREMENT
+                            && velocityDifference >= averageWalkSpeed && FPMath.Abs(marioAPhysics->Velocity.X) > marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.WalkSpeedStage]
+#endif
+                            ) {
+                            bool didKnockback = marioB->DoKnockback(f, marioBEntity, !fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioAEntity);
                             if (didKnockback) {
-                                f.Events.PlayKnockbackEffect(marioBEntity, marioAEntity, strength, avgPosition);
+                                f.Events.PlayKnockbackEffect(marioBEntity, marioAEntity, KnockbackStrength.Normal, avgPosition);
                             }
                         }
                     }
                     if (marioB->IsCrouchedInShell) {
                         if (marioBPhysics->IsTouchingGround) {
                             if (!marioA->IsInKnockback) {
-                            marioAPhysics->Velocity.X = marioBPhysics->Velocity.X * FP._0_50;
+                                marioAPhysics->Velocity.X = marioBPhysics->Velocity.X * FP._0_50;
                             }
                             marioB->FacingRight = fromRight;
                             marioBPhysics->Velocity.X = marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.RunSpeedStage] * (fromRight ? 1 : -1);
-                        } else if (dropStars && !marioAAbove) {
-                            KnockbackStrength strength = marioA->CurrentPowerupState == PowerupState.MiniMushroom ? KnockbackStrength.Normal : KnockbackStrength.Groundpound;
-                            bool didKnockback = marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, strength, marioBEntity);
+                            return;
+                        } else if (dropStars && !marioAAbove
+#if BLUE_SHELL_BUMP_SPEED_REQUIREMENT
+                            && velocityDifference >= averageWalkSpeed && FPMath.Abs(marioBPhysics->Velocity.X) > marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.WalkSpeedStage]
+#endif
+                            ) {
+                            bool didKnockback = marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioBEntity);
                             if (didKnockback) {
-                                f.Events.PlayKnockbackEffect(marioAEntity, marioBEntity, strength, avgPosition);
+                                f.Events.PlayKnockbackEffect(marioAEntity, marioBEntity, KnockbackStrength.Normal, avgPosition);
                             }
+                            return;
                         }
                     }
-                    return; // do not allow Blue Shell to bump
-                }
-
-                // Collided with them
-                bool marioAMini = marioA->CurrentPowerupState == PowerupState.MiniMushroom;
-                bool marioBMini = marioB->CurrentPowerupState == PowerupState.MiniMushroom;
-                if (!marioA->IsInKnockback && !marioB->IsInKnockback && marioAMini ^ marioBMini) {
-                    // Minis
-                    bool dealtKnockback = false;
-                    if (marioAMini) {
-                        dealtKnockback = marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioBEntity);
+                } else {
+                    // Collided with them
+                    bool marioAMini = marioA->CurrentPowerupState == PowerupState.MiniMushroom;
+                    bool marioBMini = marioB->CurrentPowerupState == PowerupState.MiniMushroom;
+                    if (!marioA->IsInKnockback && !marioB->IsInKnockback && marioAMini ^ marioBMini) {
+                        // Minis
+                        bool dealtKnockback = false;
+                        if (marioAMini) {
+                            dealtKnockback = marioA->DoKnockback(f, marioAEntity, fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioBEntity);
+                        }
+                        if (marioBMini) {
+                            dealtKnockback = marioB->DoKnockback(f, marioBEntity, !fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioAEntity);
+                        }
+                        if (dealtKnockback) {
+                            f.Events.PlayKnockbackEffect(marioAEntity, marioBEntity, KnockbackStrength.Normal, avgPosition);
+                        }
+                        return;
                     }
-                    if (marioBMini) {
-                        dealtKnockback = marioB->DoKnockback(f, marioBEntity, !fromRight, dropStars ? 1 : 0, KnockbackStrength.Normal, marioAEntity);
-                    }
-                    if (dealtKnockback) {
-                        f.Events.PlayKnockbackEffect(marioAEntity, marioBEntity, KnockbackStrength.Normal, avgPosition);
-                    }
-                    return;
                 }
             }
 
@@ -2405,11 +2416,7 @@ namespace Quantum {
 
                 // if neither of the players are in Blue Shell...
                 if (!marioA->IsInShell && !marioB->IsInShell) {
-                    var marioAPhysicsInfo = f.FindAsset(marioA->PhysicsAsset);
-                    var marioBPhysicsInfo = f.FindAsset(marioB->PhysicsAsset);
-
-                    if (FPMath.Abs(marioAPhysics->Velocity.X) > marioAPhysicsInfo.WalkMaxVelocity[marioAPhysicsInfo.WalkSpeedStage]
-                        || FPMath.Abs(marioBPhysics->Velocity.X) > marioBPhysicsInfo.WalkMaxVelocity[marioBPhysicsInfo.WalkSpeedStage]) {
+                    if (FPMath.Abs(velocityDifference) > averageWalkSpeed) {
                         // Bump
                         bool dealtKnockback = false;
                         if (marioAPhysics->IsTouchingGround && !marioAPhysics->IsUnderwater) {
@@ -2599,7 +2606,7 @@ namespace Quantum {
                 }
             }
         }
-        #endregion
+#endregion
 
         #region Signals
         public void OnRemoved(Frame f, EntityRef entity, Projectile* component) {

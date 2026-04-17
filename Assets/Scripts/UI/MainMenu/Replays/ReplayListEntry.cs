@@ -197,19 +197,19 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             manager.StartDeletion(this);
         }
 
-        static ProfilerMarker x = new("UpdateText");
+        private static ProfilerMarker profilerMarker = new("UpdateText");
         public void UpdateText() {
             if (ReplayFile == null) {
                 return;
             }
 
-            x.Begin(gameObject);
+            profilerMarker.Begin(gameObject);
 
             TranslationManager tm = GlobalController.Instance.translationManager;
             BinaryReplayHeader header = ReplayFile.Header;
 
             nameText.SetTextIfDifferent(header.GetDisplayName());
-            dateText.SetTextIfDifferent(ReplayListManager.DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(header.UnixTimestamp), false, false));
+            dateText.SetTextIfDifferent(tm.DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(header.UnixTimestamp), false, false));
 
             bool rtl = tm.RightToLeft;
             warningText.SetHorizontalAlignmentIfDifferent(rtl ? HorizontalAlignmentOptions.Left : HorizontalAlignmentOptions.Right);
@@ -262,7 +262,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             }
             favoriteButtonText.SetTextIfDifferent(finalFavoriteButtonText);
 
-            x.End();
+            profilerMarker.End();
         }
 
         private void OnLanguageChanged(TranslationManager tm) {

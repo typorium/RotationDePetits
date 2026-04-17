@@ -18,7 +18,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
             // page is 0-indexed, so -1
             replayList.canvas.PlayCursorSound();
-            _ = replayList.ReloadReplayList(page - 1);
+            _ = replayList.CreateReplayListEntries(default, page - 1);
         }
 
         [Preserve]
@@ -27,7 +27,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 return;
             }
             replayList.canvas.PlayCursorSound();
-            _ = replayList.ReloadReplayList(replayList.CurrentPage + 1);
+            _ = replayList.CreateReplayListEntries(default, replayList.CurrentPage + 1);
         }
 
         [Preserve]
@@ -36,7 +36,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 return;
             }
             replayList.canvas.PlayCursorSound();
-            _ = replayList.ReloadReplayList(replayList.CurrentPage - 1);
+            _ = replayList.CreateReplayListEntries(default, replayList.CurrentPage - 1);
         }
     }
 }

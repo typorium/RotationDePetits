@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -153,6 +154,32 @@ namespace NSMB.UI.Translation {
 
         public ICollection<string> GetAllLocales() {
             return allTranslations.Keys;
+        }
+
+        public string DateTimeToLocalizedString(DateTime dt, bool shortDisplay, bool dateOnly) {
+            dt = dt.ToLocalTime();
+            try {
+                CultureInfo culture = new(CurrentLocale);
+                if (dateOnly) {
+                    if (shortDisplay) {
+                        return dt.ToString(culture.DateTimeFormat.ShortDatePattern);
+                    } else {
+                        return dt.ToString(culture.DateTimeFormat.LongDatePattern);
+                    }
+                } else {
+                    return dt.ToString(culture.DateTimeFormat);
+                }
+            } catch (CultureNotFoundException) {
+                if (dateOnly) {
+                    if (shortDisplay) {
+                        return dt.ToLocalTime().ToShortDateString();
+                    } else {
+                        return dt.ToLocalTime().ToLongDateString();
+                    }
+                } else {
+                    return dt.ToLocalTime().ToString();
+                }
+            }
         }
 
         private void RegisterBuiltinLocales() {

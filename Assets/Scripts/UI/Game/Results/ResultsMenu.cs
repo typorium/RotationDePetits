@@ -183,7 +183,7 @@ namespace NSMB.UI.Game.Results {
                     }
                     
                     if (success) {
-                        _ = ReplayListManager.Instance.ReloadReplayList(newReplay);
+                        _ = replayManager.CreateReplayListEntries(default, newReplay);
                         ActiveReplayManager.Instance.StartReplayPlayback(newReplay);
                     } else {
                         labels[0].text = "» " + GlobalController.Instance.translationManager.GetTranslation("ui.game.results.nextreplay.nomore");

@@ -1,4 +1,3 @@
-using JimmysUnityUtilities;
 using NSMB.Replay;
 using NSMB.UI.Elements;
 using NSMB.UI.MainMenu.Submenus.Prompts;
@@ -10,10 +9,11 @@ using SFB;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -30,6 +30,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 #endif
 
         //---Static Variables
+        private static readonly string ReplayFileExtension = "mvlreplay";
         public static ReplayListManager Instance { get; private set; }
         public static string ReplayDirectory { get; private set; } 
         public static string TempDirectory { get; private set; }
@@ -69,11 +70,14 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         private readonly List<TMP_Text> headers = new();
 
         private string currentSearchTerm;
-        private readonly List<BinaryReplayFile> searchResults = new();
-        private readonly List<BinaryReplayFile> allReplays = new();
-        private readonly HashSet<string> loadedFilepaths = new();
+        private List<BinaryReplayFile> searchResults = new();
+        private List<BinaryReplayFile> allReplays = new();
+        private HashSet<string> loadedFilepaths = new();
 
         private readonly StringBuilder stringBuilder = new();
+
+        private bool ready;
+        private CancellationTokenSource currentCancellationSource;
 
         [RuntimeInitializeOnLoadMethod]
         public static void CreateDirectories() {
@@ -109,7 +113,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             OnLanguageChanged(GlobalController.Instance.translationManager);
         }
 
-        protected override async void OnDisable() {
+        protected override void OnDisable() {
             base.OnDisable();
 #if UNITY_EDITOR
             // #if fixes an error in the editor.
@@ -118,7 +122,9 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             }
 #endif
 
-            await ClearReplayList();
+            CancelExistingTask();
+            _ = ClearReplayListEntries(default);
+            
             TranslationManager.OnLanguageChanged -= OnLanguageChanged;
             Settings.Controls.UI.Previous.performed -= OnPrevious;
             TranslationManager.OnLanguageChanged -= OnLanguageChanged;
@@ -137,6 +143,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) layout.transform);
             Canvas.ForceUpdateCanvases();
 
+            ready = false;
             _ = LoadReplays();
 
             OnLanguageChanged(GlobalController.Instance.translationManager);
@@ -144,11 +151,12 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
         private async Awaitable LoadReplays() {
             noReplaysText.text = "";
-            await FindReplays();
-            await SortReplays();
-            await FilterReplays();
-            await ReloadReplayList();
+            await FindReplays(default);
+            await SortReplays(default);
+            await FilterReplays(default);
+            await CreateReplayListEntries(default);
             StartCoroutine(SelectAtEndOfFrame());
+            ready = true;
         }
 
         public override void OnSelect(BaseEventData eventData) {
@@ -172,7 +180,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             }
 
             canvas.PlayCursorSound();
-            _ = ReloadReplayList(CurrentPage + 1);
+            _ = CreateReplayListEntries(default, CurrentPage + 1);
         }
 
         private void OnPrevious(InputAction.CallbackContext context) {
@@ -188,7 +196,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             }
 
             canvas.PlayCursorSound();
-            _ = ReloadReplayList(CurrentPage - 1);
+            _ = CreateReplayListEntries(default, CurrentPage - 1);
         }
 
         public void StartRename(ReplayListEntry replay) {
@@ -291,38 +299,11 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 stringBuilder.Append("<sprite name=room_powerups>").Append(rules.CustomPowerupsEnabled ? on : off).Append("    ");
                 stringBuilder.Append("<sprite name=room_teams>").AppendLine(rules.TeamsEnabled ? on : off);
             } 
-            stringBuilder.Append("<color=#aaa>").Append(DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(header.UnixTimestamp), false, false)).Append(" - ");
+            stringBuilder.Append("<color=#aaa>").Append(tm.DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(header.UnixTimestamp), false, false)).Append(" - ");
             stringBuilder.Append(Utils.SecondsToMinuteSeconds(header.ReplayLengthInFrames / 60)).Append(" - ").Append(Utils.BytesToString(replay.ReplayFile.FileSize));
 
             replayInformation.SetText(stringBuilder);
             replayInformation.horizontalAlignment = HorizontalAlignmentOptions.Left;
-        }
-
-        public static string DateTimeToLocalizedString(DateTime dt, bool shortDisplay, bool dateOnly) {
-            TranslationManager tm = GlobalController.Instance.translationManager;
-            dt = dt.ToLocalTime();
-            try {
-                CultureInfo culture = new(tm.CurrentLocale);
-                if (dateOnly) {
-                    if (shortDisplay) {
-                        return dt.ToString(culture.DateTimeFormat.ShortDatePattern);
-                    } else {
-                        return dt.ToString(culture.DateTimeFormat.LongDatePattern);
-                    }
-                } else {
-                    return dt.ToString(culture.DateTimeFormat);
-                }
-            } catch (CultureNotFoundException) {
-                if (dateOnly) {
-                    if (shortDisplay) {
-                        return dt.ToLocalTime().ToShortDateString();
-                    } else {
-                        return dt.ToLocalTime().ToLongDateString();
-                    }
-                } else {
-                    return dt.ToLocalTime().ToString();
-                }
-            }
         }
 
         private void UpdateNoReplaysText() {
@@ -333,17 +314,27 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             }
         }
 
-        public async Awaitable ReloadReplayList(BinaryReplayFile focus) {
+        public async Awaitable CreateReplayListEntries(CancellationToken cancellationToken, BinaryReplayFile focus) {
+            if (cancellationToken.IsCancellationRequested) {
+                return;
+            }
+
+            await Awaitable.MainThreadAsync();
+
             int index = allReplays.IndexOf(focus);
             if (index == -1) {
                 return;
             }
 
             int page = index / entriesPerPage;
-            await ReloadReplayList(page, focus);
+            await CreateReplayListEntries(cancellationToken, page, focus);
         }
 
-        public async Awaitable ReloadReplayList(int? pageNullable = null, BinaryReplayFile focus = null) {
+        public async Awaitable CreateReplayListEntries(CancellationToken cancellationToken, int? pageNullable = null, BinaryReplayFile focus = null) {
+            if (cancellationToken.IsCancellationRequested) {
+                return;
+            }
+
             await Awaitable.MainThreadAsync();
 
             if (pageNullable is int page) {
@@ -356,7 +347,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             page = Mathf.Clamp(page, 0, PageCount - 1);
             CurrentPage = page;
 
-            await ClearReplayList();
+            await ClearReplayListEntries(cancellationToken);
 
             string previousHeader = null;
             var displayingReplays = DisplayingReplays;
@@ -390,12 +381,16 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 scrollRect.verticalNormalizedPosition = 1;
             }
 
-            RecalculatePages();
+            CreatePageNumbers();
             UpdateNoReplaysText();
             loadingIcon.SetActive(false);
         }
 
-        public async Awaitable ClearReplayList() {
+        public async Awaitable ClearReplayListEntries(CancellationToken cancellationToken) {
+            if (cancellationToken.IsCancellationRequested) {
+                return;
+            }
+
             await Awaitable.MainThreadAsync();
             foreach (var entry in replayListEntries) {
                 entry.gameObject.SetActive(false);
@@ -440,108 +435,178 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             return result;
         }
 
-        private async Awaitable FindReplays() {
-            await Awaitable.BackgroundThreadAsync();
-
-            foreach (var filepath in Directory.EnumerateFiles(ReplayDirectory, "*.mvlreplay", SearchOption.AllDirectories)) {
-                if (loadedFilepaths.Contains(filepath)) {
-                    // Already loaded
-                    continue;
-                }
-                loadedFilepaths.Add(filepath);
-
-                if (BinaryReplayFile.TryLoadNewFromFile(filepath, includeReplayData: false, out var parsedReplay) != ReplayParseResult.Success) {
-                    // Not a valid replay file
-                    continue;
-                }
-
-                // This *IS* a replay file.
-                allReplays.Add(parsedReplay);
-            }
-        }
-
-        private async Awaitable FilterReplays() {
-            await Awaitable.MainThreadAsync();
-            string newSearchTerm = SearchTerm;
-
-            //await Awaitable.BackgroundThreadAsync();
-            await Awaitable.MainThreadAsync();
-            searchResults.Clear();
-
-            if (string.IsNullOrEmpty(newSearchTerm)) {
-                searchResults.AddRange(allReplays);
+        private async Awaitable FindReplays(CancellationToken cancellationToken) {
+            if (cancellationToken.IsCancellationRequested) {
                 return;
             }
 
-            TranslationManager tm = GlobalController.Instance.translationManager;
-            foreach (var replay in allReplays) {
-                // Check display name
-                if (replay.Header.GetDisplayName().Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
-                    searchResults.Add(replay);
-                    continue;
-                }
+            try {
+                await Awaitable.BackgroundThreadAsync();
 
-                // Check date
-                if (DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.Header.UnixTimestamp), false, false).Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
-                    searchResults.Add(replay);
-                    continue;
-                }
+                HashSet<BinaryReplayFile> newFoundReplays = new();
+                foreach (var filepath in Directory.EnumerateFiles(ReplayDirectory, $"*.{ReplayFileExtension}", SearchOption.AllDirectories)) {
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
 
-                // Check stage name
-                if (QuantumUnityDB.TryGetGlobalAsset(replay.Header.Rules.Stage, out Map map)
-                    && QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
+                    // Should never *be* locked, but just in case. (user spams or something)
+                    lock (loadedFilepaths) {
+                        if (loadedFilepaths.Contains(filepath)) {
+                            // Already loaded
+                            continue;
+                        }
+                        loadedFilepaths.Add(filepath);
+                    }
 
-                    if (tm.GetTranslation(stage.TranslationKey).Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
-                        searchResults.Add(replay);
+                    if (BinaryReplayFile.TryLoadNewFromFile(filepath, includeReplayData: false, out var parsedReplay) != ReplayParseResult.Success) {
+                        // Not a valid replay file
                         continue;
                     }
+
+                    // This *IS* a replay file.
+                    newFoundReplays.Add(parsedReplay);
                 }
 
-                // Check player usernames
-                bool found = false;
-                foreach (var playerInfo in replay.Header.PlayerInformation) {
-                    if (playerInfo.Nickname.Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) {
-                    searchResults.Add(replay);
-                    continue;
+                if (cancellationToken.IsCancellationRequested) {
+                    return;
                 }
 
-                /*
-                // Check status
-                if (replay.warningText.text.Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
-                    searchResultsNew.Add(replay);
-                    continue;
-                }
-                */
-
-                // Did not match.
+                allReplays.AddRange(newFoundReplays);
+            } catch {
+                // Move exceptions to the main thread so they're printed.
+                await Awaitable.MainThreadAsync();
+                throw;
             }
-
-            currentSearchTerm = newSearchTerm;
         }
 
-        private async Awaitable SortReplays() {
-            //await Awaitable.BackgroundThreadAsync();
-            await Awaitable.MainThreadAsync();
-            allReplays.Sort(SortIndex switch {
-                1 => SortByName,
-                2 => SortByStage,
-                _ => SortByDate,
-            });
+        private async Awaitable FilterReplays(CancellationToken cancellationToken) {
+            if (cancellationToken.IsCancellationRequested) {
+                return;
+            }
+
+            try {
+                await Awaitable.MainThreadAsync();
+                string newSearchTerm = SearchTerm;
+
+                await Awaitable.BackgroundThreadAsync();
+                List<BinaryReplayFile> newSearchResults = new();
+
+                if (string.IsNullOrEmpty(newSearchTerm)) {
+                    newSearchResults.AddRange(allReplays);
+                    searchResults = newSearchResults;
+                    return;
+                }
+
+                TranslationManager tm = GlobalController.Instance.translationManager;
+                foreach (var replay in allReplays) {
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
+
+                    // Check display name
+                    if (replay.Header.GetDisplayName().Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
+                        newSearchResults.Add(replay);
+                        continue;
+                    }
+
+                    // Check date
+                    if (tm.DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.Header.UnixTimestamp), false, false).Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
+                        newSearchResults.Add(replay);
+                        continue;
+                    }
+
+                    // Check stage name
+                    if (QuantumUnityDB.TryGetGlobalAsset(replay.Header.Rules.Stage, out Map map)
+                        && QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
+
+                        if (tm.GetTranslation(stage.TranslationKey).Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
+                            newSearchResults.Add(replay);
+                            continue;
+                        }
+                    }
+
+                    // Check player usernames
+                    bool found = false;
+                    foreach (var playerInfo in replay.Header.PlayerInformation) {
+                        if (playerInfo.Nickname.Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        newSearchResults.Add(replay);
+                        continue;
+                    }
+
+                    /*
+                    // Check status
+                    if (replay.warningText.text.Contains(newSearchTerm, StringComparison.InvariantCultureIgnoreCase)) {
+                        searchResultsNew.Add(replay);
+                        continue;
+                    }
+                    */
+
+                    // Did not match.
+                }
+
+                if (cancellationToken.IsCancellationRequested) {
+                    return;
+                }
+
+                searchResults = newSearchResults;
+                currentSearchTerm = newSearchTerm;
+            } catch {
+                // Move exceptions to the main thread so they're printed.
+                await Awaitable.MainThreadAsync();
+                throw;
+            }
+        }
+
+        private async Awaitable SortReplays(CancellationToken cancellationToken) {
+            if (cancellationToken.IsCancellationRequested) {
+                return;
+            }
+
+            try {
+                await Awaitable.MainThreadAsync();
+                int sortIndex = SortIndex;
+                bool sortAscending = SortAscending;
+
+                Func<BinaryReplayFile, object> getSortingCriteria = sortIndex switch {
+                    1 => (BinaryReplayFile replay) => replay.Header.GetDisplayName(),
+                    2 => (BinaryReplayFile replay) => AssetRepository<Map>.AllAssetRefs.IndexOf(replay.Header.Rules.Stage),
+                    _ => (BinaryReplayFile replay) => replay.Header.UnixTimestamp,
+                };
+                var newSortedReplays = allReplays.Select(r => (r, getSortingCriteria(r)));
+
+                await Awaitable.BackgroundThreadAsync();
+
+                if (sortAscending) {
+                    newSortedReplays = newSortedReplays.OrderBy(t => t.Item2);
+                } else {
+                    newSortedReplays = newSortedReplays.OrderByDescending(t => t.Item2);
+                }
+
+                if (cancellationToken.IsCancellationRequested) {
+                    return;
+                }
+
+                allReplays = newSortedReplays.Select(t => t.Item1).ToList();
+            } catch {
+                // Move exceptions to the main thread so they're printed.
+                await Awaitable.MainThreadAsync();
+                throw;
+            }
         }
 
         [Preserve]
         public void OnSortDropdownChanged() {
-            _ = ChangeSort();
+            RefreshList();
         }
 
         [Preserve]
         public void OnAscendingSortToggleChanged() {
-            _ = ChangeSort();
+            RefreshList();
         }
 
         [Preserve]
@@ -549,22 +614,17 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             if (SearchTerm == currentSearchTerm) {
                 return;
             }
-            _ = ChangeFilter();
+            RefreshList();
         }
 
-        private async Awaitable ChangeSort() {
-            await ClearReplayList();
-            loadingIcon.SetActive(true);
-            await SortReplays();
-            await FilterReplays();
-            await ReloadReplayList();
-        }
-
-        private async Awaitable ChangeFilter() {
-            await ClearReplayList();
-            loadingIcon.SetActive(true);
-            await FilterReplays();
-            await ReloadReplayList();
+        private void RefreshList() {
+            _ = StartNewTaskSequence(async (cancellationToken) => {
+                loadingIcon.SetActive(true);
+                await ClearReplayListEntries(cancellationToken);
+                await SortReplays(cancellationToken);
+                await FilterReplays(cancellationToken);
+                await CreateReplayListEntries(cancellationToken);
+            });
         }
 
         [Preserve]
@@ -572,9 +632,9 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             TranslationManager tm = GlobalController.Instance.translationManager;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-            UploadFile(name, nameof(ImportFile), ".mvlreplay", false);
+            UploadFile(name, nameof(ImportFile), $".{ReplayFileExtension}", false);
 #else
-            string[] selected = StandaloneFileBrowser.OpenFilePanel(tm.GetTranslation("ui.extras.replays.actions.import"), "", "mvlreplay", false);
+            string[] selected = StandaloneFileBrowser.OpenFilePanel(tm.GetTranslation("ui.extras.replays.actions.import"), "", ReplayFileExtension, false);
             if (selected != null && selected.Length > 0) {
                 StartCoroutine(ImportFile(selected[0], true));
             }
@@ -605,7 +665,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
 
             if (makeCopy) {
                 // Write into the replays folder (not copy, since we changed the timestamp in the header...)
-                string newPath = Path.Combine(ReplayDirectory, "saved", parsedReplay.Header.UnixTimestamp + ".mvlreplay");
+                string newPath = Path.Combine(ReplayDirectory, "saved", $"{parsedReplay.Header.UnixTimestamp}.{ReplayFileExtension}");
                 using (FileStream fs = new FileStream(newPath, FileMode.Create)) {
                     parsedReplay.WriteToStream(fs);
                 }
@@ -613,12 +673,44 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             }
 
             allReplays.Add(parsedReplay);
-            await SortReplays();
-            await FilterReplays();
-            await ReloadReplayList(parsedReplay);
+
+            await StartNewTaskSequence(async (cancellationToken) => {
+                await SortReplays(cancellationToken);
+                await FilterReplays(cancellationToken);
+                await CreateReplayListEntries(cancellationToken, parsedReplay);
+            });
         }
 
-        private void RecalculatePages() {
+        private async Awaitable StartNewTaskSequence(Func<CancellationToken, Awaitable> asyncTask) {
+            try {
+                CancelExistingTask();
+
+                var token = (currentCancellationSource = new()).Token;
+
+                while (!ready) {
+                    await Task.Delay(100);
+                    if (token.IsCancellationRequested) {
+                        return;
+                    }
+                }
+
+                await asyncTask(token);
+            } catch {
+                // Move exceptions to the main thread so they're printed.
+                await Awaitable.MainThreadAsync();
+                throw;
+            }
+        }
+
+        private void CancelExistingTask() {
+            if (currentCancellationSource != null) {
+                currentCancellationSource.Cancel();
+                currentCancellationSource.Dispose();
+            }
+            currentCancellationSource = null;
+        }
+
+        private void CreatePageNumbers() {
             Transform parent = pageTemplate.transform.parent;
             for (int i = 1; i < parent.childCount; i++) {
                 Destroy(parent.GetChild(i).gameObject);
@@ -697,6 +789,7 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
         }
 
         private string GetHeader(BinaryReplayFile replay) {
+            TranslationManager tm = GlobalController.Instance.translationManager;
             if (SortIndex == 1) {
                 // Name
                 return null;
@@ -705,42 +798,12 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 if (QuantumUnityDB.TryGetGlobalAsset(replay.Header.Rules.Stage, out Map map)
                     && QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
 
-                    return GlobalController.Instance.translationManager.GetTranslation(stage.TranslationKey);
+                    return tm.GetTranslation(stage.TranslationKey);
                 }
                 return "???";
             } else {
                 // Date
-                return DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.Header.UnixTimestamp), true, true);
-            }
-        }
-
-        public int SortByDate(BinaryReplayFile a, BinaryReplayFile b) {
-            if (SortAscending) {
-                return a.Header.UnixTimestamp.CompareTo(b.Header.UnixTimestamp);
-            } else {
-                return b.Header.UnixTimestamp.CompareTo(a.Header.UnixTimestamp);
-            }
-        }
-
-        public int SortByName(BinaryReplayFile a, BinaryReplayFile b) {
-            if (SortAscending) {
-                return a.Header.GetDisplayName().CompareTo(b.Header.GetDisplayName());
-            } else {
-                return b.Header.GetDisplayName().CompareTo(a.Header.GetDisplayName());
-            }
-        }
-
-        public int SortByStage(BinaryReplayFile a, BinaryReplayFile b) {
-            var allMaps = AssetRepository<Map>.AllAssetRefs;
-
-            if (SortAscending) {
-                return
-                    allMaps.IndexOf(map => map == a.Header.Rules.Stage)
-                    - allMaps.IndexOf(map => map == b.Header.Rules.Stage);
-            } else {
-                return
-                    allMaps.IndexOf(map => map == b.Header.Rules.Stage)
-                    - allMaps.IndexOf(map => map == a.Header.Rules.Stage);
+                return tm.DateTimeToLocalizedString(DateTime.UnixEpoch.AddSeconds(replay.Header.UnixTimestamp), true, true);
             }
         }
 
@@ -758,24 +821,12 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
             UpdateInformation(Selected);
         }
 
-        /*
-        public int? GetReplaysUntilDeletion(ReplayListEntry replay) {
-            int max = Settings.Instance.generalMaxTempReplays;
-            int index = temporaryReplays.IndexOf(r => r == replay);
-            if (max <= 0 || !replay.IsTemporary || index == -1) {
-                return null;
-            }
-
-            return Mathf.Max(1, max - index);
-        }
-        */
-
-        public IList<string> GetTemporaryReplaysToDelete() {
+        public static IList<string> GetTemporaryReplaysToDelete() {
             if (Settings.Instance.generalMaxTempReplays <= 0) {
                 return Array.Empty<string>();
             }
 
-            var x = Directory.EnumerateFiles(TempDirectory, "*.mvlreplay")
+            var x = Directory.EnumerateFiles(TempDirectory, $"*.{ReplayFileExtension}")
                 .OrderByDescending(path => {
                     try {
                         return File.GetLastWriteTime(path);
@@ -787,16 +838,6 @@ namespace NSMB.UI.MainMenu.Submenus.Replays {
                 .ToList();
 
             return x;
-        }
-
-        public class ReplayDateComparer : IComparer<ReplayListEntry> {
-            public int Compare(ReplayListEntry x, ReplayListEntry y) {
-                try {
-                    return File.GetLastWriteTime(x.ReplayFile.FilePath).CompareTo(y.ReplayFile.FilePath);
-                } catch {
-                    return 0;
-                }
-            }
         }
     }
 }
