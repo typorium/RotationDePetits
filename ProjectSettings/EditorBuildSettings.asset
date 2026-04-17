@@ -65,6 +65,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Levels/ParpChateau.unity
     guid: 77e7d047513c34a529263a31b6f58f97
+  - enabled: 1
+    path: Assets/Scenes/Levels/Ciel.unity
+    guid: 590df13d1eb494b1f8f2a0e71d5e6ae1
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 089c0b7845b45284db115d78b78a26c4,
       type: 2}
