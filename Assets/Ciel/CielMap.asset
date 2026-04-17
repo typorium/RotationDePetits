@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CielMap
   m_EditorClassIdentifier: Quantum.Engine.dll::Quantum.Map
   Identifier:
-    Path: QuantumUser/Resources/AssetObjects/Maps/Ciel/CielMap
+    Path: Ciel/CielMap
     Guid:
       Value: 301699823861433959
   UserAsset:

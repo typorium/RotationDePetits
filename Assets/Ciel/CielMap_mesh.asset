@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CielMap_mesh
   m_EditorClassIdentifier: Quantum.Engine.dll::Quantum.BinaryData
   Identifier:
-    Path: QuantumUser/Resources/AssetObjects/Maps/Ciel/CielMap_mesh
+    Path: Ciel/CielMap_mesh
     Guid:
       Value: 328160921391175090
   Data: 0000000000000000

@@ -13,18 +13,19 @@ MonoBehaviour:
   m_Name: CielStageData
   m_EditorClassIdentifier: Quantum.Simulation::VersusStageData
   Identifier:
-    Path: QuantumUser/Resources/AssetObjects/Maps/Ciel/CielStageData
+    Path: Ciel/CielStageData
     Guid:
       Value: 315300120911078439
   ShowAuthorAndComposer: 0
   StageAuthor: luden
-  MusicComposer: 
-  TranslationKey: levels.custom.Ciel
-  GroupingTranslationKey: 
+  MusicComposer: tg
+  TranslationKey: level.rdp.ciel
+  GroupingTranslationKey: level.header.rdp
   DiscordStageImage: 
   SortOrder: 0
-  Icon: {fileID: 0}
-  MainMenuPreviewPrefab: {fileID: 0}
+  Icon: {fileID: 21300000, guid: d65bece2d20a7eb49bb91fd73710962e, type: 3}
+  MainMenuPreviewPrefab: {fileID: 7821959775126946859, guid: f5c2c528397e43445b9479444883bfcd,
+    type: 3}
   OverrideAutomaticTilemapSettings: 0
   TileDimensions:
     X: 40
