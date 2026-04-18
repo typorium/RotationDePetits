@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Debug = UnityEngine.Debug;
 
 namespace NSMB.UI.Translation {
@@ -36,6 +38,13 @@ namespace NSMB.UI.Translation {
             RegisterBuiltinLocales();
             RegisterCustomLocales();
             initialized = true;
+        }
+
+        public void Update() {
+            if (Keyboard.current[Key.F5].wasPressedThisFrame) {
+                Reload();
+                GlobalController.Instance.PlaySound(SoundEffect.Player_Sound_PowerupCollect);
+            }
         }
 
         public string GetTranslation(string key) {
@@ -145,6 +154,32 @@ namespace NSMB.UI.Translation {
 
         public ICollection<string> GetAllLocales() {
             return allTranslations.Keys;
+        }
+
+        public string DateTimeToLocalizedString(DateTime dt, bool shortDisplay, bool dateOnly) {
+            dt = dt.ToLocalTime();
+            try {
+                CultureInfo culture = new(CurrentLocale);
+                if (dateOnly) {
+                    if (shortDisplay) {
+                        return dt.ToString(culture.DateTimeFormat.ShortDatePattern);
+                    } else {
+                        return dt.ToString(culture.DateTimeFormat.LongDatePattern);
+                    }
+                } else {
+                    return dt.ToString(culture.DateTimeFormat);
+                }
+            } catch (CultureNotFoundException) {
+                if (dateOnly) {
+                    if (shortDisplay) {
+                        return dt.ToLocalTime().ToShortDateString();
+                    } else {
+                        return dt.ToLocalTime().ToLongDateString();
+                    }
+                } else {
+                    return dt.ToLocalTime().ToString();
+                }
+            }
         }
 
         private void RegisterBuiltinLocales() {
