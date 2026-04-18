@@ -3573,7 +3573,7 @@ GameObject:
   m_Component:
   - component: {fileID: 994733591}
   - component: {fileID: 994733592}
-  m_Layer: 20
+  m_Layer: 21
   m_Name: BluePillarL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3589,7 +3589,7 @@ Transform:
   m_GameObject: {fileID: 994733590}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8, y: 4, z: 0}
+  m_LocalPosition: {x: -8, y: 4, z: 10}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3695,7 +3695,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1017538730}
   - component: {fileID: 1017538731}
-  m_Layer: 20
+  m_Layer: 21
   m_Name: RedPillarL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3711,7 +3711,7 @@ Transform:
   m_GameObject: {fileID: 1017538729}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 24, y: 4, z: 0}
+  m_LocalPosition: {x: 24, y: 4, z: 10}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4004,7 +4004,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1090718754}
   - component: {fileID: 1090718755}
-  m_Layer: 20
+  m_Layer: 21
   m_Name: RedPillarR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4020,7 +4020,7 @@ Transform:
   m_GameObject: {fileID: 1090718753}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16, y: 4, z: 0}
+  m_LocalPosition: {x: -16, y: 4, z: 10}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4869,7 +4869,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1371898792}
   - component: {fileID: 1371898793}
-  m_Layer: 20
+  m_Layer: 21
   m_Name: BluePillarR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4885,7 +4885,7 @@ Transform:
   m_GameObject: {fileID: 1371898791}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 16, y: 4, z: 0}
+  m_LocalPosition: {x: 16, y: 4, z: 10}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13677,7 +13677,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1909747756}
-  m_Layer: 20
+  m_Layer: 21
   m_Name: StaticBGs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
