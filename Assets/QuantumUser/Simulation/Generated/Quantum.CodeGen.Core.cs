@@ -3008,16 +3008,14 @@ namespace Quantum {
     public FPVector2 Gravity;
     [FieldOffset(40)]
     public FP TerminalVelocity;
-    [FieldOffset(12)]
-    public QBoolean IsFrozen;
     [FieldOffset(8)]
-    public QBoolean DisableCollision;
-    [FieldOffset(20)]
-    public QBoolean SlowInLiquids;
-    [FieldOffset(16)]
-    public QBoolean IsWaterSolid;
+    public QBoolean IsFrozen;
     [FieldOffset(4)]
-    public QBoolean BreakMegaObjects;
+    public QBoolean DisableCollision;
+    [FieldOffset(16)]
+    public QBoolean SlowInLiquids;
+    [FieldOffset(12)]
+    public QBoolean IsWaterSolid;
     [FieldOffset(96)]
     [ExcludeFromPrototype()]
     public FPVector2 Velocity;
@@ -3039,12 +3037,12 @@ namespace Quantum {
     [FieldOffset(0)]
     [ExcludeFromPrototype()]
     public Byte HoverFrames;
-    [FieldOffset(28)]
+    [FieldOffset(24)]
     [ExcludeFromPrototype()]
     [AllocateOnComponentAdded()]
     [FreeOnComponentRemoved()]
     public QListPtr<PhysicsContact> Contacts;
-    [FieldOffset(24)]
+    [FieldOffset(20)]
     [ExcludeFromPrototype()]
     [AllocateOnComponentAdded()]
     [FreeOnComponentRemoved()]
@@ -3061,7 +3059,6 @@ namespace Quantum {
         hash = hash * 31 + DisableCollision.GetHashCode();
         hash = hash * 31 + SlowInLiquids.GetHashCode();
         hash = hash * 31 + IsWaterSolid.GetHashCode();
-        hash = hash * 31 + BreakMegaObjects.GetHashCode();
         hash = hash * 31 + Velocity.GetHashCode();
         hash = hash * 31 + Parent.GetHashCode();
         hash = hash * 31 + ParentVelocity.GetHashCode();
@@ -3095,7 +3092,6 @@ namespace Quantum {
         var p = (PhysicsObject*)ptr;
         serializer.Stream.Serialize(&p->HoverFrames);
         serializer.Stream.Serialize(&p->UnderwaterCounter);
-        QBoolean.Serialize(&p->BreakMegaObjects, serializer);
         QBoolean.Serialize(&p->DisableCollision, serializer);
         QBoolean.Serialize(&p->IsFrozen, serializer);
         QBoolean.Serialize(&p->IsWaterSolid, serializer);
