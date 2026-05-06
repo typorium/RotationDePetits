@@ -33,9 +33,6 @@ namespace NSMB.UI.MainMenu.Submenus.RoomList {
         [SerializeField] private TMP_Text playersText, nameText, inProgressText, symbolsText, mapText;
         [SerializeField] private Image icon;
 
-        //---Private Variables
-        private StringBuilder stringBuilder = new();
-
         public void OnValidate() {
             this.SetIfNull(ref icon);
         }
@@ -59,59 +56,64 @@ namespace NSMB.UI.MainMenu.Submenus.RoomList {
             playersText.text = $"{room.PlayerCount}/{room.MaxPlayers}";
             inProgressText.text = boolProperties.GameStarted ? tm.GetTranslation("ui.rooms.listing.status.started") : tm.GetTranslation("ui.rooms.listing.status.notstarted");
 
-            stringBuilder.Clear();
+            StringBuilder symbols = new();
+
+
             if (boolProperties.CustomPowerups) {
-                stringBuilder.Append("<sprite name=room_powerups>");
+                symbols.Append("<sprite name=room_powerups>");
             }
 
             if (boolProperties.Teams) {
-                stringBuilder.Append("<sprite name=room_teams>");
+                symbols.Append("<sprite name=room_teams>");
             }
 
             if (intProperties.Timer > 0) {
-                stringBuilder.Append("<sprite name=room_timer>").Append(Utils.GetSymbolString(intProperties.Timer.ToString(), Utils.smallSymbols));
+                symbols.Append("<sprite name=room_timer>").Append(Utils.GetSymbolString(intProperties.Timer.ToString(), Utils.smallSymbols));
             }
 
             if (intProperties.Lives > 0) {
-                stringBuilder.Append("<sprite name=room_lives>").Append(Utils.GetSymbolString(intProperties.Lives.ToString(), Utils.smallSymbols));
+                symbols.Append("<sprite name=room_lives>").Append(Utils.GetSymbolString(intProperties.Lives.ToString(), Utils.smallSymbols));
             }
 
             if (intProperties.StarRequirement > 0) {
-                stringBuilder.Append("<sprite name=room_stars>").Append(Utils.GetSymbolString(intProperties.StarRequirement.ToString(), Utils.smallSymbols));
+                symbols.Append("<sprite name=room_stars>").Append(Utils.GetSymbolString(intProperties.StarRequirement.ToString(), Utils.smallSymbols));
             }
 
-            stringBuilder.Append("<sprite name=room_coins>").Append(Utils.GetSymbolString(intProperties.CoinRequirement.ToString(), Utils.smallSymbols));
+            symbols.Append("<sprite name=room_coins>").Append(Utils.GetSymbolString(intProperties.CoinRequirement.ToString(), Utils.smallSymbols));
 
             if (boolProperties.AddonsEnabled) {
-                stringBuilder.Append("<sprite name=room_addons>");
+                symbols.Append("<sprite name=room_addons>");
             }
+            
+            symbolsText.text = symbols.ToString();
 
-            symbolsText.SetText(stringBuilder);
-            stringBuilder.Clear();
+
+            StringBuilder gamemodeAndStage = new();
+            AssetGuid guid;
 
             if (gamemodeAssetGuid != null
-                && AssetGuid.TryParse(gamemodeAssetGuid, out AssetGuid guid, true)
+                && AssetGuid.TryParse(gamemodeAssetGuid, out guid, true)
                 && QuantumUnityDB.TryGetGlobalAsset(new AssetRef<GamemodeAsset>(guid), out GamemodeAsset gamemode)) {
 
-                stringBuilder.Append(gamemode.NamePrefix).Append(tm.GetTranslation(gamemode.TranslationKey));
+                gamemodeAndStage.Append(gamemode.NamePrefix).Append(tm.GetTranslation(gamemode.TranslationKey));
             } else {
-                stringBuilder.Append("???");
+                gamemodeAndStage.Append("???");
             }
 
-            stringBuilder.Append(" - ");
+            gamemodeAndStage.Append(" - ");
 
             if (stageAssetGuid != null
                 && AssetGuid.TryParse(stageAssetGuid, out guid, true)
                 && QuantumUnityDB.TryGetGlobalAsset(new AssetRef<Map>(guid), out Map map)
                 && QuantumUnityDB.TryGetGlobalAsset(map.UserAsset, out VersusStageData stage)) {
 
-                stringBuilder.Append(tm.GetTranslation(stage.TranslationKey));
+                gamemodeAndStage.Append(tm.GetTranslation(stage.TranslationKey));
             } else {
-                stringBuilder.Append("???");
+                gamemodeAndStage.Append("???");
             }
 
 
-            mapText.SetText(stringBuilder);
+            mapText.text = gamemodeAndStage.ToString();
         }
     }
 }

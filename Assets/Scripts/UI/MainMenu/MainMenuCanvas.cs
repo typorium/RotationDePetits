@@ -43,7 +43,6 @@ namespace NSMB.UI.MainMenu {
         private readonly List<MainMenuSubmenu> submenuStack = new();
         private readonly List<ISoundOverrideProvider> sfxProviders = new();
         private Color defaultHeaderColor;
-        private StringBuilder headerBuilder = new();
 
         public void OnValidate() {
             this.SetIfNull(ref sfx);
@@ -108,7 +107,8 @@ namespace NSMB.UI.MainMenu {
         }
 
         public void UpdateHeader() {
-            headerBuilder.Clear();
+            StringBuilder builder = new();
+
             bool showHeader = false;
             Color? newHeaderColor = null;
 
@@ -118,16 +118,16 @@ namespace NSMB.UI.MainMenu {
             foreach (var menu in submenus) {
                 showHeader |= menu.ShowHeader;
                 if (!string.IsNullOrEmpty(menu.Header)) {
-                    headerBuilder.Append(menu.Header).Append(headerSeparation);
+                    builder.Append(menu.Header).Append(headerSeparation);
                 }
                 if (menu.HeaderColor.HasValue) {
                     newHeaderColor = menu.HeaderColor;
                 }
             }
 
-            if (headerBuilder.Length > 0) {
-                headerBuilder.Remove(headerBuilder.Length - headerSeparation.Length, headerSeparation.Length);
-                headerPath.text = headerBuilder.ToString();
+            if (builder.Length > 0) {
+                builder.Remove(builder.Length - headerSeparation.Length, headerSeparation.Length);
+                headerPath.text = builder.ToString();
                 headerPath.horizontalAlignment = rtl ? HorizontalAlignmentOptions.Right : HorizontalAlignmentOptions.Left;
             }
 

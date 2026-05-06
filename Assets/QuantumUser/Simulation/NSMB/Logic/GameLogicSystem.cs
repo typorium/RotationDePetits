@@ -233,7 +233,7 @@ namespace Quantum {
 
             var bans = f.ResolveList(f.Global->BannedPlayerIds);
             foreach (var ban in bans) {
-                if (ban.MatchesPlayer(runtimePlayer)) {
+                if (ban.UserId == runtimePlayer.UserId) {
                     // banned user- ignore them.
                     return;
                 }

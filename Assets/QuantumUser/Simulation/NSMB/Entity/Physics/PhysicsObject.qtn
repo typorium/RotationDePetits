@@ -11,6 +11,7 @@ component PhysicsObject {
     bool DisableCollision;
     bool SlowInLiquids;
     bool IsWaterSolid;
+    bool BreakMegaObjects;
     
     [ExcludeFromPrototype] FPVector2 Velocity;
     [ExcludeFromPrototype] EntityRef Parent;

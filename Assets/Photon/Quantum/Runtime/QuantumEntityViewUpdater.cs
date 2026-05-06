@@ -314,7 +314,7 @@ namespace Quantum {
         bool checkPossiblyOrphanedMapEntityViews = false;
 
         if (_mapData == null && AutoFindMapData) {
-          _mapData = FindAnyObjectByType<QuantumMapData>();
+          _mapData = FindFirstObjectByType<QuantumMapData>();
           if (_mapData) {
             checkPossiblyOrphanedMapEntityViews = true;
           }

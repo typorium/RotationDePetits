@@ -409,8 +409,10 @@ MonoBehaviour:
     DisableCollision:
       Value: 0
     SlowInLiquids:
-      Value: 0
+      Value: 1
     IsWaterSolid:
+      Value: 0
+    BreakMegaObjects:
       Value: 0
 --- !u!114 &5501024112843099950
 MonoBehaviour:

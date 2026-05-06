@@ -8,7 +8,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
     public class ProfilePanel : InRoomSubmenuPanel {
 
         //---Properties
-        public override bool IsInSubmenu => teamChooser.content.activeSelf || paletteChooser.content.activeSelf || characterChooser.content.activeSelf;
+        public override bool IsInSubmenu => teamChooser.content.activeSelf || paletteChooser.content.activeSelf;
 
         //---Serialized Variables
         [SerializeField] private Image paletteBackground;
@@ -36,12 +36,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
             if (paletteChooser.content.activeSelf) {
                 paletteChooser.Close(true);
-                playSound = false;
-                return false;
-            }
-
-            if (characterChooser.content.activeSelf) {
-                characterChooser.Close(true);
                 playSound = false;
                 return false;
             }

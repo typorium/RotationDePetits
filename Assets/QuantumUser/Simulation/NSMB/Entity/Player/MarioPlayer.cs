@@ -1,4 +1,6 @@
 using Photon.Deterministic;
+using System;
+using UnityEngine;
 
 namespace Quantum {
     public unsafe partial struct MarioPlayer {
@@ -434,6 +436,16 @@ namespace Quantum {
 
             if (IsInKnockback) {
                 ResetKnockback(f, entity);
+            }
+
+            if (CurrentPowerupState == PowerupState.MiniMushroom && strength >= KnockbackStrength.Groundpound) {
+                f.Signals.OnMarioPlayerDropObjective(entity, starsToDrop - 1, attacker);
+                Powerdown(f, entity, false, attacker);
+                return true;
+            }
+
+            if (IsInKnockback || IsInWeakKnockback) {
+                starsToDrop = Math.Min(1, starsToDrop);
             }
 
             var gamemode = f.FindAsset(f.Global->Rules.Gamemode);

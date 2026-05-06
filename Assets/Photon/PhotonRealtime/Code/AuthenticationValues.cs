@@ -146,11 +146,6 @@ namespace Photon.Realtime
 
                 case CustomAuthenticationType.Viveport:
                     return this.AuthGetParametersContain("userToken");
-
-                case CustomAuthenticationType.None:
-                case CustomAuthenticationType.Custom:
-                    // no checks needed (None) or possible (Custom)
-                    break;
             }
 
             return true;

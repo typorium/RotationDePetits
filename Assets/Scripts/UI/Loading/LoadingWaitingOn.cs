@@ -19,7 +19,6 @@ namespace NSMB.UI.Loading {
         //---Private Variables
         private GameObject playerListParent;
         private LoadingState currentLoadingState = LoadingState.None;
-        private StringBuilder loadingListBuilder = new();
 
         public void OnValidate() {
             this.SetIfNull(ref statusText);
@@ -71,7 +70,7 @@ namespace NSMB.UI.Loading {
                 int secondsUntilKick = (int) Mathf.Max(0, (f.Global->PlayerLoadFrames * f.DeltaTime).AsFloat);
                 statusText.text = secondsUntilKick <= 10 ? secondsUntilKick.ToString() : tm.GetTranslation("ui.loading.waiting");
 
-                loadingListBuilder.Clear();
+                StringBuilder loadingListBuilder = new();
                 foreach ((_, var otherPlayerData) in f.Unsafe.GetComponentBlockIterator<PlayerData>()) {
                     if (otherPlayerData->IsLoaded) {
                         continue;
@@ -85,7 +84,7 @@ namespace NSMB.UI.Loading {
                     loadingListBuilder.AppendLine(runtimePlayer.PlayerNickname.ToValidNickname(f, otherPlayerData->PlayerRef));
                 }
                 playerListParent.SetActive(true);
-                playerList.SetText(loadingListBuilder);
+                playerList.text = loadingListBuilder.ToString();
             }
         }
 

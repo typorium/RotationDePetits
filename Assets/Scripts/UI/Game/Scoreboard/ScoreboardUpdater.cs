@@ -25,7 +25,6 @@ namespace NSMB.UI.Game.Scoreboard {
         //---Private Variables
         private readonly List<ScoreboardEntry> entries = new();
         private bool isToggled;
-        private StringBuilder stringBuilder = new();
 
         public void OnValidate() {
             this.SetIfNull(ref playerElements, UnityExtensions.GetComponentType.Parent);
@@ -146,9 +145,9 @@ namespace NSMB.UI.Game.Scoreboard {
                 return;
             }
 
-            stringBuilder.Clear();
-
             var teams = f.Context.GetAllAssets<TeamAsset>();
+            StringBuilder result = new();
+
             var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
             Span<int> teamObjectiveCounts = stackalloc int[Constants.MaxPlayers];
             gamemode.GetAllTeamsObjectiveCounts(f, teamObjectiveCounts);
@@ -165,11 +164,11 @@ namespace NSMB.UI.Game.Scoreboard {
                     objectiveCount = 0;
                 }
                 TeamAsset team = teams[i];
-                stringBuilder.Append(Settings.Instance.GraphicsColorblind ? team.textSpriteColorblind : team.textSpriteNormal);
-                stringBuilder.Append(Utils.GetSymbolString("x" + objectiveCount));
+                result.Append(Settings.Instance.GraphicsColorblind ? team.textSpriteColorblind : team.textSpriteNormal);
+                result.Append(Utils.GetSymbolString("x" + objectiveCount));
             }
 
-            teamHeaderText.SetText(stringBuilder);
+            teamHeaderText.text = result.ToString();
         }
 
         public unsafe void UpdateSpectatorCount(Frame f) {

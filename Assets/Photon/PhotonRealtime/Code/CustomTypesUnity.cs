@@ -42,7 +42,7 @@ namespace Photon.Realtime
 
         #region Custom De/Serializer Methods
 
-        private static readonly byte[] memVector3 = new byte[SizeV3];
+        public static readonly byte[] memVector3 = new byte[SizeV3];
 
         private static short SerializeVector3(StreamBuffer outStream, object customobject)
         {
@@ -82,7 +82,7 @@ namespace Photon.Realtime
         }
 
 
-        private static readonly byte[] memVector2 = new byte[SizeV2];
+        public static readonly byte[] memVector2 = new byte[SizeV2];
 
         private static short SerializeVector2(StreamBuffer outStream, object customobject)
         {
@@ -119,7 +119,7 @@ namespace Photon.Realtime
         }
 
 
-        private static readonly byte[] memQuarternion = new byte[SizeQuat];
+        public static readonly byte[] memQuarternion = new byte[SizeQuat];
 
         private static short SerializeQuaternion(StreamBuffer outStream, object customobject)
         {

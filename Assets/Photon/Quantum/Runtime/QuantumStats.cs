@@ -88,7 +88,7 @@ namespace Quantum {
 
     void Start() {
       // create event system if none exists in the scene
-      var eventSystem = FindAnyObjectByType<EventSystem>();
+      var eventSystem = FindFirstObjectByType<EventSystem>();
       if (eventSystem == null) {
         gameObject.AddComponent<EventSystem>();
         gameObject.AddComponent<QuantumUnityInputSystemWithLegacyFallback>();
@@ -200,7 +200,7 @@ namespace Quantum {
       QuantumStats stats;
 
       // find existing or create new
-      if (!(stats = FindAnyObjectByType<QuantumStats>())) {
+      if (!(stats = FindFirstObjectByType<QuantumStats>())) {
         stats = Instantiate(UnityEngine.Resources.Load<QuantumStats>(nameof(QuantumStats)));
       }
 

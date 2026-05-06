@@ -401,7 +401,7 @@ namespace NSMB.UI.Game {
             // Wait before playing the music 
             yield return new WaitForSecondsRealtime(delay);
 
-            GlobalController.Instance.PlaySound(resultMusic);
+            GlobalController.Instance.sfx.PlayOneShot(resultMusic);
             winTextAnimator.SetTrigger(resultAnimationTrigger);
             winText.enabled = true;
         }
