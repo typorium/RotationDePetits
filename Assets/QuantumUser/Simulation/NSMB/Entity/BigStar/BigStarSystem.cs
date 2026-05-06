@@ -139,7 +139,6 @@ namespace Quantum {
                 var physicsCollider = f.Unsafe.GetPointer<PhysicsCollider2D>(entity);
                 if (!PhysicsObjectSystem.BoxInGround(f, transform->Position, physicsCollider->Shape, stage: stage)) {
                     physicsObject->DisableCollision = false;
-                    physicsObject->SlowInLiquids = true;
                 }
             }
 

@@ -179,7 +179,6 @@ namespace Photon.Realtime
             }
             catch
             {
-                // ignored / not of interest
             }
 
             this.sock = null;

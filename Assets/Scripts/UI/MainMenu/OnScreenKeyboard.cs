@@ -23,6 +23,7 @@ namespace NSMB.UI.MainMenu {
         private InputActionAsset actionAsset;
         private List<KeyboardRow> rows = new();
         private TMP_InputField inputField;
+        private string disabledChars = "";
         private Vector2Int selectedCharacter;
         private bool usingGamepad;
         private bool up, right, down, left;
@@ -73,20 +74,20 @@ namespace NSMB.UI.MainMenu {
             }
 
             this.inputField = inputField;
+            this.disabledChars = disabledChars;
 
             foreach (var row in rows) {
                 Destroy(row.GameObject);
             }
             rows.Clear();
 
-            RectTransform parent = (RectTransform) rowTemplate.transform.parent;
-            float totalWidth = parent.rect.width;
+            float totalWidth = ((RectTransform) (rowTemplate.transform.parent)).rect.width;
             int maxCharCount = 0;
 
             for (int y = 0; y < newRows.Length; y++) {
                 string row = newRows[y];
                 KeyboardRow newRow = new KeyboardRow {
-                    GameObject = Instantiate(rowTemplate, parent),
+                    GameObject = Instantiate(rowTemplate, rowTemplate.transform.parent),
                     Characters = new(),
                 };
                 rows.Add(newRow);
@@ -97,16 +98,18 @@ namespace NSMB.UI.MainMenu {
                     char character = row[x];
                     GameObject newLetter = Instantiate(letterTemplate, newRow.GameObject.transform);
                     newLetter.SetActive(true);
-                    KeyboardCharacter keyboardCharacter = new KeyboardCharacter {
+                    newRow.Characters.Add(new KeyboardCharacter {
                         GameObject = newLetter,
                         Character = character,
-                        IsDisabled = disabledChars.Contains(character),
-                    };
-                    newRow.Characters.Add(keyboardCharacter);
+                    });
 
                     var text = newLetter.GetComponentInChildren<TMP_Text>();
                     text.text = GetDisplayString(character);
-                    text.color = keyboardCharacter.IsDisabled ? disabledColor : deselectedColor;
+                    if (disabledChars.Contains(character)) {
+                        text.color = disabledColor;
+                    } else {
+                        text.color = deselectedColor;
+                    }
 
                     var clickable = newLetter.GetComponentInChildren<Clickable>();
                     Vector2Int position = new(x, y);
@@ -139,8 +142,8 @@ namespace NSMB.UI.MainMenu {
             Settings.Controls.UI.Navigate.performed += OnNavigate;
             Settings.Controls.UI.Navigate.canceled += OnNavigate;
             keyboardPanel.SetActive(true);
-            SetSelection(0, 0);
-            GlobalController.Instance.PlaySound(SoundEffect.UI_WindowOpen);
+            SetSelection(Vector2Int.zero);
+            GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_WindowOpen);
         }
 
         public void Close() {
@@ -151,50 +154,72 @@ namespace NSMB.UI.MainMenu {
             keyboardPanel.SetActive(false);
             Settings.Controls.UI.Navigate.performed -= OnNavigate;
             Settings.Controls.UI.Navigate.canceled -= OnNavigate;
-            GlobalController.Instance.PlaySound(SoundEffect.UI_WindowClose);
+            GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_WindowClose);
         }
 
-        public void SetSelection(int x, int y) {
+        public void SetSelection(Vector2Int newSelection) {
+            KeyboardCharacter newCharacter = rows[newSelection.y].Characters[newSelection.x];
+            if (disabledChars.Contains(newCharacter.Character)) {
+                return;
+            }
+
             KeyboardCharacter previousCharacter = rows[selectedCharacter.y].Characters[selectedCharacter.x];
-            previousCharacter.GameObject.GetComponent<TMP_Text>().color = previousCharacter.IsDisabled ? disabledColor : deselectedColor;
+            previousCharacter.GameObject.GetComponent<TMP_Text>().color = deselectedColor;
 
-            KeyboardCharacter newCharacter = rows[y].Characters[x];
             newCharacter.GameObject.GetComponent<TMP_Text>().color = selectedColor;
-
-            selectedCharacter = new Vector2Int(x, y);
+            selectedCharacter = newSelection;
         }
 
         public void MoveHorizontally(int x) {
             int newX = selectedCharacter.x;
-            int newY = selectedCharacter.y;
-            newX += x;
-            if (newX < 0 || newX >= rows[newY].Characters.Count) {
-                return;
-            }
 
-            SetSelection(newX, newY);
+            KeyboardCharacter previousCharacter = rows[selectedCharacter.y].Characters[selectedCharacter.x];
+            KeyboardCharacter newCharacter = null;
+
+            int newY = selectedCharacter.y;
+            do {
+                newX += x;
+                if (newX < 0) {
+                    return;
+                }
+                if (newX >= rows[newY].Characters.Count) {
+                    if (--newY < 0) {
+                        return;
+                    }
+                }
+                newCharacter = rows[newY].Characters[newX];
+            } while (disabledChars.Contains(newCharacter.Character));
+
+            previousCharacter.GameObject.GetComponent<TMP_Text>().color = deselectedColor;
+            newCharacter.GameObject.GetComponent<TMP_Text>().color = selectedColor;
+            selectedCharacter = new(newX, newY);
         }
 
         public void MoveVertically(int y) {
-            int newX = selectedCharacter.x;
             int newY = selectedCharacter.y;
-            newY += y;
-            if (newY < 0 || newY >= rows.Count || newX >= rows[newY].Characters.Count) {
-                return;
-            }
 
-            SetSelection(newX, newY);
+            KeyboardRow row = rows[selectedCharacter.y];
+            KeyboardCharacter previousCharacter = row.Characters[selectedCharacter.x];
+            KeyboardCharacter newCharacter = null;
+
+            int newX = selectedCharacter.x;
+            do {
+                newY += y;
+                if (newY < 0 || newY >= rows.Count) {
+                    return;
+                }
+                newX = Mathf.Min(selectedCharacter.x, rows[newY].Characters.Count - 1);
+                newCharacter = rows[newY].Characters[newX];
+            } while (disabledChars.Contains(newCharacter.Character));
+
+            previousCharacter.GameObject.GetComponent<TMP_Text>().color = deselectedColor;
+            newCharacter.GameObject.GetComponent<TMP_Text>().color = selectedColor;
+            selectedCharacter = new(newX, newY);
         }
 
         public void TypeCharacter(Vector2Int pos) {
             string text = inputField.text;
-            KeyboardCharacter keyboardCharacter = rows[pos.y].Characters[pos.x];
-            if (keyboardCharacter.IsDisabled) {
-                GlobalController.Instance.PlaySound(SoundEffect.UI_Error);
-                return;
-            }
-
-            char c = keyboardCharacter.Character;
+            char c = rows[pos.y].Characters[pos.x].Character;
 
             if (c == '\b') {
                 if (text.Length == 0) {
@@ -215,7 +240,7 @@ namespace NSMB.UI.MainMenu {
             }
 
             if (text != inputField.text) {
-                GlobalController.Instance.PlaySound(SoundEffect.UI_Chat_FullType);
+                GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_Chat_FullType);
             }
             inputField.text = text;
             inputField.caretPosition = text.Length;
@@ -303,7 +328,6 @@ namespace NSMB.UI.MainMenu {
         private class KeyboardCharacter {
             public GameObject GameObject;
             public char Character;
-            public bool IsDisabled;
         }
     }
 }

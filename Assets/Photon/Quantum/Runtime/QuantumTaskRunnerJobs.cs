@@ -51,7 +51,7 @@ namespace Quantum {
     }
 
     public static QuantumTaskRunnerJobs GetInstance() {
-      var instance = FindAnyObjectByType<QuantumTaskRunnerJobs>();
+      var instance = FindFirstObjectByType<QuantumTaskRunnerJobs>();
       if (instance) {
         return instance;
       }

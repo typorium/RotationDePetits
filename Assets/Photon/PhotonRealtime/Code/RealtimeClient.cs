@@ -178,7 +178,7 @@ namespace Photon.Realtime
         /// </remarks>
         public ProtocolPorts ProtocolPorts = new ProtocolPorts();
 
-        /// <summary>The currently used server address (if any). The type of server is defined by Server property.</summary>
+        /// <summary>The currently used server address (if any). The type of server is define by Server property.</summary>
         public string CurrentServerAddress { get { return this.RealtimePeer.ServerAddress; } }
 
         /// <summary>Your Master Server address. In PhotonCloud, call ConnectToRegionMaster() to find your Master Server.</summary>
@@ -224,8 +224,10 @@ namespace Photon.Realtime
                 ClientState previousState = this.state;
                 this.state = value;
 
-                var stateChanged = this.StateChanged;
-                stateChanged?.Invoke(previousState, this.state);
+                if (this.StateChanged != null)
+                {
+                    this.StateChanged(previousState, this.state);
+                }
             }
         }
 
@@ -1105,19 +1107,19 @@ namespace Photon.Realtime
         private void ConfigUnitySockets()
         {
             Type websocketType = null;
-            #if (UNITY_XBOXONE || UNITY_GAMECORE || UNITY_SWITCH2) && !UNITY_EDITOR
-            websocketType = Type.GetType("Photon.Client.SocketNativeSource, Assembly-CSharp", false);
+            #if (UNITY_XBOXONE || UNITY_GAMECORE) && !UNITY_EDITOR
+            websocketType = Type.GetType("ExitGames.Client.Photon.SocketNativeSource, Assembly-CSharp", false);
             if (websocketType == null)
             {
-                websocketType = Type.GetType("Photon.Client.SocketNativeSource, Assembly-CSharp-firstpass", false);
+                websocketType = Type.GetType("ExitGames.Client.Photon.SocketNativeSource, Assembly-CSharp-firstpass", false);
             }
             if (websocketType == null)
             {
-                websocketType = Type.GetType("Photon.Client.SocketNativeSource, PhotonRealtime", false);
+                websocketType = Type.GetType("ExitGames.Client.Photon.SocketNativeSource, PhotonRealtime", false);
             }
             if (websocketType != null)
             {
-                this.RealtimePeer.SocketImplementationConfig[ConnectionProtocol.Udp] = websocketType;    // the native socket plugin supports UDP as well
+                this.RealtimePeer.SocketImplementationConfig[ConnectionProtocol.Udp] = websocketType;    // on Xbox, the native socket plugin supports UDP as well
             }
             #else
             // to support WebGL export in Unity, we find and assign the SocketWebTcp class (if it's in the project).
@@ -1195,7 +1197,7 @@ namespace Photon.Realtime
             }
 
             Uri uri = new Uri(protocolScheme + address);
-            string result = $"{uri.Scheme}://{uri.Host}:{port}{uri.AbsolutePath}".TrimEnd('/');
+            string result = $"{uri.Scheme}://{uri.Host}:{port}{uri.AbsolutePath}";
 
             if (this.AddressRewriter != null)
             {
@@ -1259,15 +1261,8 @@ namespace Photon.Realtime
         /// </summary>
         private void ReadoutProperties(PhotonHashtable gameProperties, PhotonHashtable actorProperties, int targetActorNr)
         {
-            if (this.CurrentRoom == null)
-            {
-                // can't read properties of players or room without a CurrentRoom
-                Log.Error("Reading properties requires a CurrentRoom.", this.LogLevel, this.LogPrefix);
-                return;
-            }
-
             // read game properties and cache them locally
-            if (gameProperties != null)
+            if (this.CurrentRoom != null && gameProperties != null)
             {
                 this.CurrentRoom.InternalCacheProperties(gameProperties);
                 if (this.InRoom)
@@ -1347,7 +1342,6 @@ namespace Photon.Realtime
             if (this.LocalPlayer == null)
             {
                 Log.Warn(string.Format("Local actor is null. CurrentRoom: {0} CurrentRoom.Players: {1} newID: {2}", this.CurrentRoom, this.CurrentRoom?.Players == null, newID), this.LogLevel, this.LogPrefix);
-                return;
             }
 
             if (this.CurrentRoom == null)
@@ -1959,8 +1953,7 @@ namespace Photon.Realtime
                     break;
             }
 
-            var opResponseReceived = this.OpResponseReceived;
-            opResponseReceived?.Invoke(operationResponse);
+            if (this.OpResponseReceived != null) this.OpResponseReceived(operationResponse);
         }
 
         /// <summary>
@@ -2368,8 +2361,10 @@ namespace Photon.Realtime
             }
 
             this.UpdateCallbackTargets();
-            var eventReceived = this.EventReceived;
-            eventReceived?.Invoke(photonEvent);
+            if (this.EventReceived != null)
+            {
+                this.EventReceived(photonEvent);
+            }
         }
 
 
@@ -2377,8 +2372,10 @@ namespace Photon.Realtime
         public virtual void OnMessage(bool isRawMessage, object message)
         {
             this.UpdateCallbackTargets();
-            var messageReceived = this.MessageReceived;
-            messageReceived?.Invoke(isRawMessage, message);
+            if (this.MessageReceived != null)
+            {
+                this.MessageReceived(isRawMessage, message);
+            }
         }
 
 
@@ -2413,10 +2410,7 @@ namespace Photon.Realtime
                 return;
             }
 
-            if (regionHandler.BestRegion != null)
-            {
-                this.CurrentRegion = regionHandler.BestRegion.Code;
-            }
+            this.CurrentRegion = regionHandler.BestRegion.Code;
 
             if (State == ClientState.ConnectedToNameServer)
             {

@@ -21,7 +21,7 @@ namespace Quantum.Editor {
     private static StaticFrameStateStorage Storage {
       get {
         if (!_stateStorage) {
-          _stateStorage = FindAnyObjectByType<StaticFrameStateStorage>();
+          _stateStorage = FindFirstObjectByType<StaticFrameStateStorage>();
           if (!_stateStorage) {
             _stateStorage = ScriptableObject.CreateInstance<StaticFrameStateStorage>();
           }

@@ -38,7 +38,6 @@ namespace NSMB.UI.MainMenu.Submenus.Prompts {
 
         public void ClickConfirm() {
             manager.RemoveReplay(target);
-            _ = manager.CreateReplayListEntries(default);
             try {
                 File.Delete(target.ReplayFile.FilePath);
             } catch { }

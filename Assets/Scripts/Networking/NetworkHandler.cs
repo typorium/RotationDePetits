@@ -58,7 +58,6 @@ namespace NSMB.Networking {
             QuantumCallback.Subscribe<CallbackGameStarted>(this, OnGameStarted);
             QuantumCallback.Subscribe<CallbackPluginDisconnect>(this, OnPluginDisconnect);
             QuantumCallback.Subscribe<CallbackChecksumError>(this, OnChecksumError);
-            QuantumCallback.Subscribe<CallbackLocalPlayerAddConfirmed>(this, OnLocalPlayerAddConfirmed);
             QuantumEvent.Subscribe<EventHostChanged>(this, OnHostChanged);
             QuantumEvent.Subscribe<EventGameStateChanged>(this, OnGameStateChanged);
             QuantumEvent.Subscribe<EventPlayerAdded>(this, OnPlayerAdded);
@@ -334,21 +333,6 @@ namespace NSMB.Networking {
             }
         }
 
-        private unsafe void OnLocalPlayerAddConfirmed(CallbackLocalPlayerAddConfirmed e) {
-            Frame f = e.Game.Frames.Predicted;
-            RuntimePlayer player = f.GetPlayerData(e.Player);
-
-            var bans = f.ResolveList(f.Global->BannedPlayerIds);
-            foreach (var ban in bans) {
-                if (ban.MatchesPlayer(player)) {
-                    // We're banned...
-                    QuantumRunner.Default.Shutdown(ShutdownCause.NetworkError);
-                    ThrowError("ui.error.join.banned", true);
-                    return;
-                }
-            }
-        }
-
         private void OnChecksumError(CallbackChecksumError e) {
             Debug.LogError($"[[ CHECKSUM ERROR DETECTED ON TICK {e.Error.Tick}!!! ]]\nChecksums per client:\n{string.Join('\n', e.Error.Checksums.Select(ce => ce.Client + ": " + ce.Checksum))}");
             StringBuilder sb = new();
@@ -450,7 +434,7 @@ namespace NSMB.Networking {
             var bans = f.ResolveList(f.Global->BannedPlayerIds);
             foreach (var ban in bans) {
                 if (ban.UserId == Client.UserId) {
-                    QuantumRunner.Default.Shutdown(ShutdownCause.Ok);
+                    QuantumRunner.Default.Shutdown(ShutdownCause.NetworkError);
                     ThrowError("ui.error.join.banned", true);
                     return;
                 }
