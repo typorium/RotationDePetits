@@ -42,6 +42,7 @@ struct GameRules {
 	bool DrawOnTimeUp;
 
 	int CoinMultiplier;
+	float KnockbackMultiplier
 }
 
 enum GameState : Byte {
