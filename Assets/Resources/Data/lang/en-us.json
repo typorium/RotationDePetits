@@ -423,5 +423,7 @@
   "gamemode.rotationdepieces": "Il pleut beaucoup",
   "gamemode.rotationdepieces.description": "Pareil que Coin Runners, mais avec plus d'options !",
   "ui.inroom.settings.game.coinmultiplier": "Coin Multiplier",
-  "ui.inroom.settings.game.coinmultiplier.description": "Multiplicateur du nombre de pieces violettes."
+  "ui.inroom.settings.game.coinmultiplier.description": "Multiplicateur du nombre de pieces violettes.",
+  "ui.inroom.settings.game.knockbackmultiplier": "Knockback Multiplier",
+  "ui.inroom.settings.game.knockbackmultiplier.description": "Multiplicateur de recul #YOLO"
 }
