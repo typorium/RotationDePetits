@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -263916522, guid: b156eeaae3f741b40af66649a4748430, type: 3}
-  m_Name: CielMap_mesh
+  m_Name: Super SpleefMap_mesh
   m_EditorClassIdentifier: Quantum.Engine.dll::Quantum.BinaryData
   Identifier:
-    Path: Ciel/CielMap_mesh
+    Path: QuantumUser/Resources/AssetObjects/Maps/Super Spleef/Super SpleefMap_mesh
     Guid:
-      Value: 328160921391175090
+      Value: 508757482225009261
   Data: 0000000000000000
   IsCompressed: 0
