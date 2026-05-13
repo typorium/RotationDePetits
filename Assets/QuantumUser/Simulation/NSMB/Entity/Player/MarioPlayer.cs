@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using System;
+using System.Globalization;
 using UnityEngine;
 
 namespace Quantum {
@@ -294,6 +295,7 @@ namespace Quantum {
         }
 
         public bool Powerdown(Frame f, EntityRef entity, bool ignoreInvincible, EntityRef attacker) {
+
             if (!ignoreInvincible && !IsDamageable) {
                 return false;
             }
@@ -461,11 +463,22 @@ namespace Quantum {
             }
             */
 
+            // Knockback Multiplier
+            /*
+             Initial value is represented as an integer from 0 to 60.
+             To convert it to a multiplier, we divide it by 10 (0 to 6.0)
+             and add 1 to it (1.0 to 7.0).
+             */
+
+            FP knockbackMultiplier = FP.FromFloat_UNSAFE((float) (f.Global->Rules.KnockbackMultiplier));
+            knockbackMultiplier /= 10;
+            knockbackMultiplier += 1;
+
             FPVector2 knockbackVelocity = strength switch {
-                KnockbackStrength.Groundpound => new(Constants._8_25 / 2, Constants._3_50),
-                KnockbackStrength.FireballBump => new(Constants._3_75 / 2, 0),
-                KnockbackStrength.CollisionBump => new(Constants._2_50, Constants._3_50),
-                KnockbackStrength.Normal or _ => new(Constants._3_75 / 2, Constants._3_50),
+                KnockbackStrength.Groundpound => new(Constants._8_25 / 2 * knockbackMultiplier, Constants._3_50 * knockbackMultiplier),
+                KnockbackStrength.FireballBump => new(Constants._3_75 / 2 * knockbackMultiplier, 0 * knockbackMultiplier),
+                KnockbackStrength.CollisionBump => new(Constants._2_50 * knockbackMultiplier, Constants._3_50 * knockbackMultiplier),
+                KnockbackStrength.Normal or _ => new(Constants._3_75 / 2 * knockbackMultiplier, Constants._3_50 * knockbackMultiplier),
             };
             if (CurrentKnockback == KnockbackStrength.CollisionBump) {
                 knockbackVelocity = FPVector2.Zero;

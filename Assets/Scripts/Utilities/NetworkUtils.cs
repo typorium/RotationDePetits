@@ -2,6 +2,7 @@ using NSMB.Addons;
 using Photon.Client;
 using Photon.Realtime;
 using Quantum;
+using System;
 using System.Collections.Generic;
 
 namespace NSMB.Utilities {
@@ -9,7 +10,7 @@ namespace NSMB.Utilities {
 
         public static PhotonHashtable DefaultRoomProperties => new() {
             [Enums.NetRoomProperties.HostName] = "noname",
-            [Enums.NetRoomProperties.IntProperties] = (int) IntegerProperties.Default,
+            [Enums.NetRoomProperties.IntProperties] = (long) IntegerProperties.Default,
             [Enums.NetRoomProperties.BoolProperties] = (int) BooleanProperties.Default,
             [Enums.NetRoomProperties.StageGuid] = AssetRepository<GamemodeAsset>.AllAssets[0].DefaultRules.Stage.Id.ToString(),
             [Enums.NetRoomProperties.GamemodeGuid] = AssetRepository<GamemodeAsset>.AllAssets[0].Identifier.Guid.ToString(),
@@ -41,7 +42,8 @@ namespace NSMB.Utilities {
             public static readonly IntegerProperties Default = new() {
                 CoinRequirement = 8,
                 StarRequirement = 10,
-                CoinMultiplier = 1
+                CoinMultiplier = 1,
+                KnockbackMultiplier = 0
             };
 
             // Timer :: Value ranges from 0-99: 7 bits
@@ -49,33 +51,37 @@ namespace NSMB.Utilities {
             // CoinRequirement :: Value ranges from 3-25: 5 bits
             // StarRequirement :: Value ranges from 1-25: 5 bits
             // MaxPlayers :: Value ranges from 1-10: 4 bits
+            // CoinMultiplier :: Value ranges from 1-20: 5 bits
+            // KnockbackMultiplier:: Value ranges from 1-60: 6 bits
 
-            // 30....26   25.....19   18...14   13...9   8...4   3..0
-            // CoinMulti     Timer       Lives     Coins    Stars   Unused
-            public int CoinMultiplier, Timer, Lives, CoinRequirement, StarRequirement;
+            // 36....31   30....26   25.....19   18...14   13...9   8...4   3..0
+            // KnbMulti   CoinMulti  Timer       Lives     Coins    Stars   Unused
+            public int KnockbackMultiplier, CoinMultiplier, Timer, Lives, CoinRequirement, StarRequirement;
 
-            public static implicit operator int(IntegerProperties props) {
-                int value = 0;
+            public static implicit operator long(IntegerProperties props) {
+                long value = 0;
 
                 //value |= (props.Level & 0b111111) << 26;
-                value |= (props.CoinMultiplier & 0b111111) << 26;
-                value |= (props.Timer & 0b1111111) << 19;
-                value |= (props.Lives & 0b11111) << 14;
-                value |= (props.CoinRequirement & 0b11111) << 9;
-                value |= (props.StarRequirement & 0b11111) << 4;
+                value |= (uint)(props.KnockbackMultiplier & 0b111111) << 31;
+                value |= (uint) (props.CoinMultiplier & 0b11111) << 26;
+                value |= (uint) (props.Timer & 0b1111111) << 19;
+                value |= (uint) (props.Lives & 0b11111) << 14;
+                value |= (uint) (props.CoinRequirement & 0b11111) << 9;
+                value |= (uint) (props.StarRequirement & 0b11111) << 4;
                 // value |= (props.MaxPlayers & 0b1111) << 0;
 
                 return value;
             }
 
-            public static implicit operator IntegerProperties(int bits) {
+            public static implicit operator IntegerProperties(long bits) {
                 IntegerProperties ret = new() {
                     //Level = (bits >> 26) & 0b111111,
-                    CoinMultiplier = (bits >> 26) & 0b1111111,
-                    Timer = (bits >> 19) & 0b1111111,
-                    Lives = (bits >> 14) & 0b11111,
-                    CoinRequirement = (bits >> 9) & 0b11111,
-                    StarRequirement = (bits >> 4) & 0b11111,
+                    KnockbackMultiplier = (int) ((bits >> 26) & 0b111111),
+                    CoinMultiplier = (int)((bits >> 26) & 0b11111),
+                    Timer = (int) ((bits >> 19) & 0b1111111),
+                    Lives = (int) ((bits >> 14) & 0b11111),
+                    CoinRequirement = (int) ((bits >> 9) & 0b11111),
+                    StarRequirement = (int) ((bits >> 4) & 0b11111),
                     // MaxPlayers = (bits >> 0) & 0b1111,
                 };
                 return ret;

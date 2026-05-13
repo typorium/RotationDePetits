@@ -165,7 +165,8 @@ namespace NSMB.Replay {
                         TimerMinutes = rules.TimerMinutes,
                         CustomPowerupsEnabled = rules.CustomPowerupsEnabled,
                         TeamsEnabled = rules.TeamsEnabled,
-                        CoinMultiplier = rules.CoinMultiplier
+                        CoinMultiplier = rules.CoinMultiplier,
+                        KnockbackMultiplier = rules.KnockbackMultiplier
                     },
                     PlayerInformation = playerInformation,
                     WinningTeam = winner,
