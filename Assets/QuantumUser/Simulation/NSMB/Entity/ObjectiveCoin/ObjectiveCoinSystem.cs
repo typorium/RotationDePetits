@@ -92,23 +92,13 @@ namespace Quantum {
             }
 
             int amount = oldAmount;
-
-            GamemodeAsset gamemode = f.FindAsset(f.Global->Rules.Gamemode);
-            if (gamemode is RotationDePiecesGamemode) {
-                amount *= f.Global->Rules.CoinMultiplier;
-            }
+            CoinRunnersGamemode gamemode = (CoinRunnersGamemode)(f.FindAsset(f.Global->Rules.Gamemode));
 
             VersusStageData stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
             for (int i = 0; i < amount; i++) {
 
                 EntityRef newCoin;
-                if (gamemode is RotationDePiecesGamemode) {
-                    var castedGamemode = (RotationDePiecesGamemode) gamemode;
-                    newCoin = f.Create(castedGamemode.ObjectiveCoinPrototype);
-                } else {
-                    var castedGamemode = (CoinRunnersGamemode) gamemode;
-                    newCoin = f.Create(castedGamemode.ObjectiveCoinPrototype);
-                }
+                newCoin = f.Create(gamemode.ObjectiveCoinPrototype);
                 var transform = f.Unsafe.GetPointer<Transform2D>(newCoin);
                 var physicsObject = f.Unsafe.GetPointer<PhysicsObject>(newCoin);
 
