@@ -151,7 +151,6 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 }
                 return;
             }
-
             DecreaseValueInternal();
             UpdateState();
         }
