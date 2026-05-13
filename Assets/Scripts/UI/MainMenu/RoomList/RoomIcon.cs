@@ -47,7 +47,7 @@ namespace NSMB.UI.MainMenu.Submenus.RoomList {
 
             GetCustomProperty(room.CustomProperties, Enums.NetRoomProperties.GamemodeGuid, out string gamemodeAssetGuid);
             GetCustomProperty(room.CustomProperties, Enums.NetRoomProperties.StageGuid, out string stageAssetGuid);
-            GetCustomProperty(room.CustomProperties, Enums.NetRoomProperties.IntProperties, out int intPropertiesPacked);
+            GetCustomProperty(room.CustomProperties, Enums.NetRoomProperties.IntProperties, out long intPropertiesPacked);
             GetCustomProperty(room.CustomProperties, Enums.NetRoomProperties.BoolProperties, out int boolPropertiesPacked);
 
             IntegerProperties intProperties = intPropertiesPacked;

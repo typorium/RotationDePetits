@@ -117,6 +117,7 @@
     <Compile Include="Assets\Scripts\UI\Options\PauseOptionMenuManager.cs" />
     <Compile Include="Assets\Scripts\Replay\ReplayParseResult.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\About\CreditsLoader.cs" />
+    <Compile Include="Assets\Scripts\UI\MainMenu\InRoom\Room\KnockbackChangeableRule.cs" />
     <Compile Include="Assets\Scripts\UI\Game\PlayerElements.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\StagePreviewManager.cs" />
     <Compile Include="Assets\Scripts\Entity\Player\MarioPlayerAnimator.cs" />
