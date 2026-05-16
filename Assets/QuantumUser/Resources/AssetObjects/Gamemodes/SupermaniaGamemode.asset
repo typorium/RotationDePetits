@@ -9,18 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b537400c7ed4a2e4eb81f6d05b729ad4, type: 3}
-  m_Name: CoinRunnersGamemode
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 11500000, guid: 521689560a5b296448a327ca74f9d7ce, type: 3}
+  m_Name: SupermaniaGamemode
+  m_EditorClassIdentifier: Quantum.Simulation::Quantum.SupermaniaGamemode
   Identifier:
-    Path: QuantumUser/Resources/AssetObjects/Gamemodes/CoinRunnersGamemode
+    Path: QuantumUser/Resources/AssetObjects/Gamemodes/SupermaniaGamemode
     Guid:
-      Value: 394255533064620237
-  NamePrefix: '<sprite name=room_coins> '
-  TranslationKey: gamemode.coinrunners
-  DescriptionTranslationKey: gamemode.coinrunners.description
-  DiscordRpcKey: gamemode-coinrunners
-  ObjectiveSymbolPrefix: c
+      Value: 362779500902819172
+  NamePrefix: '<sprite name=room_stars> '
+  TranslationKey: gamemode.supermania
+  DescriptionTranslationKey: gamemode.supermania.description
+  DiscordRpcKey: gamemode-supermania
+  ObjectiveSymbolPrefix: M
   AllCoinItems:
   - Id:
       Value: 481353246829238635
@@ -40,25 +40,23 @@ MonoBehaviour:
       Value: 315844579913471239
   - Id:
       Value: 378514462062875007
-  - Id:
-      Value: 480960334749072574
   FallbackCoinItem:
     Id:
       Value: 390055422968795145
   LooseCoinPrototype:
     Id:
       Value: 1464681621458001613
-  Order: 100
+  Order: 200
   DefaultRules:
     Stage:
       Id:
         Value: 438935048561577377
     Gamemode:
       Id:
-        Value: 394255533064620237
-    StarsToWin: 0
+        Value: 362779500902819172
+    StarsToWin: 1
     CoinsForPowerup: 8
-    Lives: 0
+    Lives: 1
     TimerMinutes: 5
     TeamsEnabled:
       Value: 0
@@ -68,9 +66,6 @@ MonoBehaviour:
       Value: 0
     CoinMultiplier: 1
     KnockbackMultiplier: 0
-  ObjectiveCoinPrototype:
+  BigStarPrototype:
     Id:
-      Value: 1441489962698596482
-  StarCoinPrototype:
-    Id:
-      Value: 1349860830661540207
+      Value: 1295981493910502871

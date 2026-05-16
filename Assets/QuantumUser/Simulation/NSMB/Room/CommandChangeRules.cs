@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using System;
+using UnityEngine;
 
 namespace Quantum {
     public class CommandChangeRules : DeterministicCommand, ILobbyCommand {
@@ -57,6 +58,7 @@ namespace Quantum {
                 tempRules.Stage = rules.Stage;
 
                 rules = tempRules;
+
             }
             if (rulesChanges.HasFlag(Rules.Stage)) {
                 levelChanged = rules.Stage != Stage;

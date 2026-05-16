@@ -170,6 +170,7 @@
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Camera\CameraSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\Helpers\IAssetOverrideProvider.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\Boo\Boo.cs" />
+    <Compile Include="Assets\QuantumUser\Simulation\NSMB\Gamemode\SupermaniaGamemode.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\RuntimeConfig.User.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\Physics\PhysicsObjectSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\ObjectiveCoin\ObjectiveCoinSystem.cs" />

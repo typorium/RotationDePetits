@@ -1281,6 +1281,24 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct SupermaniaData {
+    public const Int32 SIZE = 4;
+    public const Int32 ALIGNMENT = 4;
+    [FieldOffset(0)]
+    public Int32 TimerUntilPowerUp;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 9403;
+        hash = hash * 31 + TimerUntilPowerUp.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (SupermaniaData*)ptr;
+        serializer.Stream.Serialize(&p->TimerUntilPowerUp);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
     public const Int32 SIZE = 3144;
     public const Int32 ALIGNMENT = 8;
@@ -1459,8 +1477,13 @@ namespace Quantum {
     [FieldOverlap(4)]
     [FramePrinter.PrintIf("_field_used_", Quantum.GamemodeSpecificData.COINRUNNERS)]
     private CoinRunnersData _CoinRunners;
+    [FieldOffset(4)]
+    [FieldOverlap(4)]
+    [FramePrinter.PrintIf("_field_used_", Quantum.GamemodeSpecificData.SUPERMANIA)]
+    private SupermaniaData _SuperMania;
     public const Int32 STARCHASERS = 1;
     public const Int32 COINRUNNERS = 2;
+    public const Int32 SUPERMANIA = 3;
     public readonly Int32 Field {
       get {
         return _field_used_;
@@ -1488,12 +1511,24 @@ namespace Quantum {
         }
       }
     }
+    public SupermaniaData* SuperMania {
+      get {
+        fixed (SupermaniaData* p = &_SuperMania) {
+          if (_field_used_ != SUPERMANIA) {
+            Native.Utils.Clear(p, 4);
+            _field_used_ = SUPERMANIA;
+          }
+          return p;
+        }
+      }
+    }
     public override readonly Int32 GetHashCode() {
       unchecked { 
         var hash = 11299;
         hash = hash * 31 + _field_used_.GetHashCode();
         hash = hash * 31 + _StarChasers.GetHashCode();
         hash = hash * 31 + _CoinRunners.GetHashCode();
+        hash = hash * 31 + _SuperMania.GetHashCode();
         return hash;
       }
     }
@@ -1509,6 +1544,9 @@ namespace Quantum {
         }
         if (p->_field_used_ == STARCHASERS) {
           Quantum.StarChasersData.Serialize(&p->_StarChasers, serializer);
+        }
+        if (p->_field_used_ == SUPERMANIA) {
+          Quantum.SupermaniaData.Serialize(&p->_SuperMania, serializer);
         }
     }
   }
@@ -4537,6 +4575,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum.StageTileInstance), Quantum.StageTileInstance.SIZE);
       typeRegistry.Register(typeof(Quantum.StarChasersData), Quantum.StarChasersData.SIZE);
       typeRegistry.Register(typeof(Quantum.StarCoin), Quantum.StarCoin.SIZE);
+      typeRegistry.Register(typeof(Quantum.SupermaniaData), Quantum.SupermaniaData.SIZE);
       typeRegistry.Register(typeof(Transform2D), Transform2D.SIZE);
       typeRegistry.Register(typeof(Transform2DVertical), Transform2DVertical.SIZE);
       typeRegistry.Register(typeof(Transform3D), Transform3D.SIZE);
