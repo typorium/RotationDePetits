@@ -4,12 +4,12 @@ using System;
 namespace Quantum {
     public unsafe class SupermaniaGamemode : GamemodeAsset {
 
-        public AssetRef<EntityPrototype> BigStarPrototype;
-
         public override void EnableGamemode(Frame f) {
+            f.SystemEnable<ManiaSystem>();
         }
 
         public override void DisableGamemode(Frame f) {
+            f.SystemDisable<ManiaSystem>();
         }
 
         public override void CheckForGameEnd(Frame f) {
@@ -75,8 +75,7 @@ namespace Quantum {
 
             // Make a copy to not modify the `type` variable
             // Which can cause desyncs.
-            GamemodeSpecificData gamemodeDataCopy = mario->GamemodeData;
-            return gamemodeDataCopy.StarChasers->Stars;
+            return 0;
         }
 
         public override FP GetItemSpawnWeight(Frame f, CoinItemAsset item, int ourStars) {

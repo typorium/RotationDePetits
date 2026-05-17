@@ -425,5 +425,8 @@
   "ui.inroom.settings.game.coinmultiplier.description": "Multiplicateur du nombre de pieces violettes.",
 
   "ui.inroom.settings.game.knockbackmultiplier": "Knockback Multiplier",
-  "ui.inroom.settings.game.knockbackmultiplier.description": "Multiplicateur de recul #YOLO"
+  "ui.inroom.settings.game.knockbackmultiplier.description": "Multiplicateur de recul #YOLO",
+
+  "ui.inroom.settings.game.timeruntilmania": "Time until Mania",
+  "ui.inroom.settings.game.timeruntilmania.description": "Delai entre chaque manias."
 }

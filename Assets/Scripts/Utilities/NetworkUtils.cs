@@ -43,7 +43,8 @@ namespace NSMB.Utilities {
                 CoinRequirement = 8,
                 StarRequirement = 10,
                 CoinMultiplier = 1,
-                KnockbackMultiplier = 0
+                KnockbackMultiplier = 0,
+                TimerUntilMania = 1
             };
 
             // Timer :: Value ranges from 0-99: 7 bits
@@ -53,15 +54,17 @@ namespace NSMB.Utilities {
             // MaxPlayers :: Value ranges from 1-10: 4 bits
             // CoinMultiplier :: Value ranges from 1-20: 5 bits
             // KnockbackMultiplier:: Value ranges from 1-60: 6 bits
+            // TimerUntilMania::Value ranges from 1-12: 4 bits
 
-            // 36....31   30....26   25.....19   18...14   13...9   8...4   3..0
-            // KnbMulti   CoinMulti  Timer       Lives     Coins    Stars   Unused
-            public int KnockbackMultiplier, CoinMultiplier, Timer, Lives, CoinRequirement, StarRequirement;
+            // 40....37   36....31   30....26   25.....19   18...14   13...9   8...4   3..0
+            // TimeMania  KnbMulti   CoinMulti  Timer       Lives     Coins    Stars   Unused
+            public int TimerUntilMania, KnockbackMultiplier, CoinMultiplier, Timer, Lives, CoinRequirement, StarRequirement;
 
             public static implicit operator long(IntegerProperties props) {
                 long value = 0;
 
                 //value |= (props.Level & 0b111111) << 26;
+                value |= (uint) (props.TimerUntilMania & 0b1111) << 37;
                 value |= (uint)(props.KnockbackMultiplier & 0b111111) << 31;
                 value |= (uint) (props.CoinMultiplier & 0b11111) << 26;
                 value |= (uint) (props.Timer & 0b1111111) << 19;
@@ -76,7 +79,8 @@ namespace NSMB.Utilities {
             public static implicit operator IntegerProperties(long bits) {
                 IntegerProperties ret = new() {
                     //Level = (bits >> 26) & 0b111111,
-                    KnockbackMultiplier = (int) ((bits >> 26) & 0b111111),
+                    TimerUntilMania = (int) ((bits >> 37) & 0b1111),
+                    KnockbackMultiplier = (int) ((bits >> 31) & 0b111111),
                     CoinMultiplier = (int)((bits >> 26) & 0b11111),
                     Timer = (int) ((bits >> 19) & 0b1111111),
                     Lives = (int) ((bits >> 14) & 0b11111),

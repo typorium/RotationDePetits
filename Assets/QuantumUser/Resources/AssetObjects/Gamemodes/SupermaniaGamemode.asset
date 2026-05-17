@@ -65,6 +65,7 @@ MonoBehaviour:
     DrawOnTimeUp:
       Value: 0
     CoinMultiplier: 1
+    TimerUntilMania: 1
     KnockbackMultiplier: 0
   BigStarPrototype:
     Id:

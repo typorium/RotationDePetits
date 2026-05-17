@@ -207,6 +207,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 CommandChangeRules.Rules.TeamsEnabled => (bool) rules.TeamsEnabled,
                 CommandChangeRules.Rules.CoinMultiplier => rules.CoinMultiplier,
                 CommandChangeRules.Rules.KnockbackMultiplier => rules.KnockbackMultiplier,
+                CommandChangeRules.Rules.TimerUntilMania => rules.TimerUntilMania,
                 _ => null
             };
 

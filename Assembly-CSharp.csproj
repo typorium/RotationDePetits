@@ -292,6 +292,7 @@
     <Compile Include="Assets\Scripts\Utilities\BuildIdentifier.cs" />
     <Compile Include="Assets\Scripts\Utilities\Enums.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\MainMenuCanvas.cs" />
+    <Compile Include="Assets\Scripts\UI\MainMenu\InRoom\Room\ManiaChangeableRule.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\InRoom\Player\PlayerListEntry.cs" />
     <Compile Include="Assets\Scripts\Utilities\ChatFilter.cs" />
     <Compile Include="Assets\Scripts\Entity\Powerup\GoldBlockAnimator.cs" />

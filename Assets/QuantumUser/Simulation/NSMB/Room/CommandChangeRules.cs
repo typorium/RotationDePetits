@@ -18,6 +18,7 @@ namespace Quantum {
         public bool DrawOnTimeUp;
         public int CoinMultiplier;
         public int KnockbackMultiplier;
+        public int TimerUntilMania;
 
         public override void Serialize(BitStream stream) {
             if (stream.Writing) {
@@ -37,6 +38,7 @@ namespace Quantum {
             stream.Serialize(ref DrawOnTimeUp);
             stream.Serialize(ref CoinMultiplier);
             stream.Serialize(ref KnockbackMultiplier);
+            stream.Serialize(ref TimerUntilMania);
         }
 
         public unsafe void Execute(Frame f, PlayerRef sender, PlayerData* playerData) {
@@ -91,6 +93,9 @@ namespace Quantum {
             if (rulesChanges.HasFlag(Rules.KnockbackMultiplier)) {
                 rules.KnockbackMultiplier = KnockbackMultiplier;
             }
+            if (rulesChanges.HasFlag(Rules.TimerUntilMania)) {
+                rules.TimerUntilMania = TimerUntilMania;
+            }
 
             f.Global->Rules = rules;
             f.Events.RulesChanged(gamemodeChanged, levelChanged);
@@ -113,7 +118,8 @@ namespace Quantum {
             CustomPowerupsEnabled = 1 << 7,
             DrawOnTimeUp = 1 << 8,
             CoinMultiplier = 1 << 9,
-            KnockbackMultiplier = 1 << 10
+            KnockbackMultiplier = 1 << 10,
+            TimerUntilMania = 1 << 11
         }
     }
 }

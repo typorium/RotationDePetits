@@ -177,6 +177,7 @@
     <Compile Include="Assets\QuantumUser\Simulation\Generated\Quantum.CodeGen.Prototypes.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Map\BreakableObject\BreakableObjectSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\BigStar\BigStar.cs" />
+    <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\Player\ManiaSystem\ManiaSystem.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\Holdable\Holdable.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Map\StageTile.cs" />
     <Compile Include="Assets\QuantumUser\Simulation\NSMB\Map\StageSystem.cs" />
@@ -222,6 +223,7 @@
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Coin\Coin.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\IceBlock\IceBlock.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Map\BreakableObject\BreakableObject.qtn" />
+    <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Player\ManiaSystem\ManiaSystemGlobals.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Powerup\Powerup.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Freezable\Freezable.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\Holdable\Holdable.qtn" />

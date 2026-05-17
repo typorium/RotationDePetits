@@ -135,14 +135,9 @@ struct CoinRunnersData {
 	int ObjectiveCoins;
 }
 
-struct SupermaniaData {
-	int TimerUntilPowerUp;
-}
-
 union GamemodeSpecificData {
 	StarChasersData StarChasers;
 	CoinRunnersData CoinRunners;
-	SupermaniaData SuperMania;
 }
 
 enum KnockbackStrength : Byte {
