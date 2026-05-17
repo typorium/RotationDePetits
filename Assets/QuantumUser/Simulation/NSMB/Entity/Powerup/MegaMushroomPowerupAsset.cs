@@ -30,7 +30,7 @@ public unsafe class MegaMushroomPowerupAsset : PowerupAsset {
         coinItem->IgnorePlayerFrames = 85;
     }
 
-    protected override unsafe void OnCollected(Frame f, EntityRef marioEntity) {
+    public override unsafe void OnCollected(Frame f, EntityRef marioEntity) {
         var mario = f.Unsafe.GetPointer<MarioPlayer>(marioEntity);
         var marioPhysicsObject = f.Unsafe.GetPointer<PhysicsObject>(marioEntity);
 

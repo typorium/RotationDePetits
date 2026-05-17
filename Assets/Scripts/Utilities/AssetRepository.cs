@@ -2,6 +2,7 @@ using NSMB.Addons;
 using Quantum;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace NSMB.Utilities {
     public static class AssetRepository<T> where T : AssetObject {
