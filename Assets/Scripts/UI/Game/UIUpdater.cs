@@ -333,7 +333,7 @@ namespace NSMB.UI.Game {
 
             // MANIA
             if (gamemode is SupermaniaGamemode) {
-                float timeRemaining = f.Global->Timer.AsInt % (f.Global->Rules.TimerUntilMania * 10);
+                float timeRemaining = f.Global->ManiaPowerupTimer.AsFloat;
                 int secondsRemaining = Mathf.Max(Mathf.CeilToInt(timeRemaining), 0);
                 
                 if (secondsRemaining != cachedManiaTimer) {

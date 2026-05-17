@@ -214,6 +214,11 @@ namespace Quantum {
         }
 
         public void SetReserveItem(Frame f, PowerupAsset newItem) {
+            var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+            if (gamemode is SupermaniaGamemode) {
+                return;
+            }
+
             var currentItem = f.FindAsset(ReserveItem);
 
             if (currentItem == null) {

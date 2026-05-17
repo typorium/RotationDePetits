@@ -23,8 +23,6 @@ MonoBehaviour:
   ObjectiveSymbolPrefix: M
   AllCoinItems:
   - Id:
-      Value: 481353246829238635
-  - Id:
       Value: 390055422968795145
   - Id:
       Value: 296548766860541996
@@ -67,6 +65,3 @@ MonoBehaviour:
     CoinMultiplier: 1
     TimerUntilMania: 1
     KnockbackMultiplier: 0
-  BigStarPrototype:
-    Id:
-      Value: 1295981493910502871

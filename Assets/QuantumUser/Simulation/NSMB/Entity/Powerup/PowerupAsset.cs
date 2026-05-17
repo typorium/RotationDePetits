@@ -66,6 +66,11 @@ public unsafe class PowerupAsset : CoinItemAsset, ISoundOverrideProvider {
     }
 
     public override bool CanSpawn(Frame f, bool fromRouletteBlock) {
+        var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+        if (gamemode is SupermaniaGamemode) {
+            return false;
+        }
+
         if (!base.CanSpawn(f, fromRouletteBlock)) {
             return false;
         }
@@ -91,6 +96,12 @@ public unsafe class PowerupAsset : CoinItemAsset, ISoundOverrideProvider {
     }
 
     public virtual unsafe PowerupReserveResult Collect(Frame f, EntityRef marioEntity) {
+
+        var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+        if (gamemode is SupermaniaGamemode) {
+            return PowerupReserveResult.KeepOldReserveNew;
+        }
+
         var mario = f.Unsafe.GetPointer<MarioPlayer>(marioEntity);
 
         // Reserve if it's the same item
@@ -128,5 +139,5 @@ public unsafe class PowerupAsset : CoinItemAsset, ISoundOverrideProvider {
         }
     }
 
-    protected virtual void OnCollected(Frame f, EntityRef entity) { }
+    public virtual void OnCollected(Frame f, EntityRef entity) { }
 }
