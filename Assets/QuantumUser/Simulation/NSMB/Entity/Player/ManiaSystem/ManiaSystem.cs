@@ -3,6 +3,7 @@ using Quantum;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.IO;
+using Photon.Deterministic;
 
 
 namespace Quantum {
@@ -54,6 +55,8 @@ namespace Quantum {
 
             // Get mario player
             var mario = filter.MarioPlayer;
+            var physics = f.FindAsset(mario->PhysicsAsset);
+            var oldState = mario->CurrentPowerupState;
 
             // Get random powerup
             GamemodeAsset gamemode = f.FindAsset(f.Global->Rules.Gamemode);
@@ -62,18 +65,34 @@ namespace Quantum {
 
             // No powerup (little mario)
             if (itemIndex == itempoolCount) {
-                if (!(mario->CurrentPowerupState == PowerupState.NoPowerup)) {
+                if (oldState != PowerupState.NoPowerup) {
                     SetPowerupState(mario, PowerupState.NoPowerup);
-                    return;
+                    ResetFreezeSize(f, filter.Freezable, physics.IceBlockSmallSize);
                 }
+                return;
             }
 
             // Other powerup
             PowerupAsset item = f.FindAsset(gamemode.AllCoinItems[itemIndex]) as PowerupAsset;
-            Debug.Log(item.State.ToString());
+            if (item.State == oldState) {
+                return;
+            }
             SetPowerupState(mario, item.State);
             item.OnCollected(f, filter.Entity);
 
+            if (oldState == PowerupState.NoPowerup) {
+                ResetFreezeSize(f, filter.Freezable, physics.IceBlockBigSize);
+            }
+
+        }
+
+        private void ResetFreezeSize(Frame f, Freezable* freezable, FPVector2 size) {
+
+            if (! (freezable->IsFrozen(f)) ) {
+                return;
+            }
+
+            freezable->IceBlockSize = size;
         }
 
         private void SetPowerupState(MarioPlayer* mario, PowerupState state) {
