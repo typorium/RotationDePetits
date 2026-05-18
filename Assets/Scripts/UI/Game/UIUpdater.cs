@@ -233,13 +233,14 @@ namespace NSMB.UI.Game {
 
         private void UpdateElementVisibility(Frame f, bool marioExists) {
             var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+            var isManiaRandom = f.Global->Rules.TimerUntilMania == 0;
 
             teamsParent.SetActive(marioExists && f.Global->Rules.TeamsEnabled);
             starsParent.SetActive(marioExists && gamemode is not SupermaniaGamemode);
             livesParent.SetActive(marioExists && f.Global->Rules.IsLivesEnabled);
             coinsParent.SetActive(marioExists && gamemode is not SupermaniaGamemode);
             timerParent.SetActive(f.Global->Rules.IsTimerEnabled);
-            maniaParent.SetActive(gamemode is SupermaniaGamemode);
+            maniaParent.SetActive(gamemode is SupermaniaGamemode && !isManiaRandom);
             reserveItemBox.SetActive(marioExists && gamemode is not SupermaniaGamemode);
         }
 
@@ -339,7 +340,6 @@ namespace NSMB.UI.Game {
                 if (secondsRemaining != cachedManiaTimer) {
                     cachedManiaTimer = secondsRemaining;
                     uiMania.text = Utils.GetSymbolString("Tx" + Utils.SecondsToMinuteSeconds(secondsRemaining));
-                    maniaParent.SetActive(true);
                 }
             }
         }

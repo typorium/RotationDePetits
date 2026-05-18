@@ -10,6 +10,9 @@ namespace Quantum {
 
     public unsafe class ManiaSystem : SystemMainThreadEntityFilter<MarioPlayer, ManiaSystem.Filter>, ISignalOnGameStarting {
 
+        private const int _randomMinimum = 4;
+        private const int _randomMaximum = 20;
+
         public struct Filter {
             public EntityRef Entity;
             public Transform2D* Transform;
@@ -22,7 +25,16 @@ namespace Quantum {
         }
 
         public void OnGameStarting(Frame f) {
-            f.Global->ManiaPowerupTimer = f.Global->Rules.TimerUntilMania * 10;
+
+            // Random
+            if (f.Global->Rules.TimerUntilMania == 0) {
+                f.Global->ManiaPowerupTimer = f.RNG->NextInclusive(_randomMinimum, _randomMaximum);
+            }
+
+            // Timer défini
+            else {
+                f.Global->ManiaPowerupTimer = f.Global->Rules.TimerUntilMania * 10;
+            }
         }
 
         public override void Update(Frame f) {
@@ -35,8 +47,17 @@ namespace Quantum {
 
             // Reset cooldown
             if (f.Global->ManiaPowerupTimer <= 0) {
-                while (f.Global->ManiaPowerupTimer <= 0) {
-                    f.Global->ManiaPowerupTimer += f.Global->Rules.TimerUntilMania * 10;
+
+                // Random
+                if (f.Global->Rules.TimerUntilMania == 0) {
+                    f.Global->ManiaPowerupTimer = f.RNG->NextInclusive(_randomMinimum, _randomMaximum);
+                }
+                
+                // Timer prédéfini
+                else {
+                    while (f.Global->ManiaPowerupTimer <= 0) {
+                        f.Global->ManiaPowerupTimer += f.Global->Rules.TimerUntilMania * 10;
+                    }
                 }
             }
 
