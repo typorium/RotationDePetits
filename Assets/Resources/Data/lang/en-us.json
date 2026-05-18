@@ -428,5 +428,6 @@
   "ui.inroom.settings.game.knockbackmultiplier.description": "Multiplicateur de recul #YOLO",
 
   "ui.inroom.settings.game.timeruntilmania": "Time until Mania",
-  "ui.inroom.settings.game.timeruntilmania.description": "Delai entre chaque manias."
+  "ui.inroom.settings.game.timeruntilmania.description": "Delai entre chaque manias.",
+  "ui.generic.random": "Random"
 }

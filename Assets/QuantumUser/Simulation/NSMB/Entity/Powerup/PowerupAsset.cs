@@ -98,9 +98,6 @@ public unsafe class PowerupAsset : CoinItemAsset, ISoundOverrideProvider {
     public virtual unsafe PowerupReserveResult Collect(Frame f, EntityRef marioEntity) {
 
         var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
-        if (gamemode is SupermaniaGamemode) {
-            return PowerupReserveResult.KeepOldReserveNew;
-        }
 
         var mario = f.Unsafe.GetPointer<MarioPlayer>(marioEntity);
 

@@ -3,7 +3,7 @@ using Quantum;
 
 public unsafe class MegaMushroomPowerupAsset : PowerupAsset {
 
-    public FP GrowAnimationDuration = FP._1_50;
+    public static FP GrowAnimationDuration = FP._1_50;
 
     public override int CountPlayersWithState(Frame f) {
         int playersWithPower = 0;
