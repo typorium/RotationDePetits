@@ -50,13 +50,16 @@ namespace Quantum {
             var stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
             stage.SetTileRelative(f, blockBump->Tile, blockBump->ResultTile);
 
-            if (f.TryFindAsset(blockBump->Powerup, out var powerupPrototype)) {
-                EntityRef newCoinItemEntity = f.Create(powerupPrototype);
+            var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+            if (gamemode is not SupermaniaGamemode) {
+                if (f.TryFindAsset(blockBump->Powerup, out var powerupPrototype)) {
+                    EntityRef newCoinItemEntity = f.Create(powerupPrototype);
 
-                if (f.Unsafe.TryGetPointer(newCoinItemEntity, out CoinItem* coinItem)
-                    && f.TryFindAsset(coinItem->Scriptable, out CoinItemAsset cia)) {
+                    if (f.Unsafe.TryGetPointer(newCoinItemEntity, out CoinItem* coinItem)
+                        && f.TryFindAsset(coinItem->Scriptable, out CoinItemAsset cia)) {
+                        cia.InitializeFromBlockBump(f, newCoinItemEntity, ref filter);
+                    }
 
-                    cia.InitializeFromBlockBump(f, newCoinItemEntity, ref filter);
                 }
             }
 

@@ -4,6 +4,7 @@ namespace Quantum {
     public unsafe partial struct CoinItem {
 
         public void Initialize(Frame f, EntityRef thisEntity, byte spawnAnimationLength, PowerupSpawnReason spawnReason) {
+
             SpawnReason = spawnReason;
             SpawnAnimationFrames = spawnAnimationLength;
             Lifetime += spawnAnimationLength;
@@ -44,6 +45,7 @@ namespace Quantum {
 
         public void InitializePlayerSpawn(Frame f, EntityRef thisEntity, EntityRef playerToFollow) {
             Initialize(f, thisEntity, 60, PowerupSpawnReason.Coins);
+
             ParentMarioPlayer = playerToFollow;
             IgnorePlayerFrames = 60;
 

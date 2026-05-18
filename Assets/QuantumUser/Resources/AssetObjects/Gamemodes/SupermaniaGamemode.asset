@@ -53,7 +53,7 @@ MonoBehaviour:
       Id:
         Value: 362779500902819172
     StarsToWin: 1
-    CoinsForPowerup: 8
+    CoinsForPowerup: 200
     Lives: 1
     TimerMinutes: 5
     TeamsEnabled:

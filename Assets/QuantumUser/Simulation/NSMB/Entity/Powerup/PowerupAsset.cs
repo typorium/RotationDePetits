@@ -66,10 +66,6 @@ public unsafe class PowerupAsset : CoinItemAsset, ISoundOverrideProvider {
     }
 
     public override bool CanSpawn(Frame f, bool fromRouletteBlock) {
-        var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
-        if (gamemode is SupermaniaGamemode) {
-            return false;
-        }
 
         if (!base.CanSpawn(f, fromRouletteBlock)) {
             return false;
