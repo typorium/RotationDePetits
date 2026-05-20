@@ -234,6 +234,7 @@
     <Compile Include="Assets\Scripts\UI\Game\PlayerNametag.cs" />
     <Compile Include="Assets\Scripts\Entity\Enemy\BulletBillAnimator.cs" />
     <Compile Include="Assets\Scripts\UI\Loading\MarioLoader.cs" />
+    <Compile Include="Assets\Scripts\UI\MainMenu\InRoom\Profile\PowerupSelection.cs" />
     <Compile Include="Assets\Scripts\UI\Elements\ScaleWithParent.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\Main\MainSubmenu.cs" />
     <Compile Include="Assets\Scripts\Sound\LoopingSoundPlayer.cs" />
