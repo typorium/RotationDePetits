@@ -1032,7 +1032,6 @@ namespace Quantum {
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (GameRules*)ptr;
-        serializer.Stream.Serialize(&p->KnockbackMultiplier);
         serializer.Stream.Serialize(&p->CoinMultiplier);
         serializer.Stream.Serialize(&p->CoinsForPowerup);
         serializer.Stream.Serialize(&p->KnockbackMultiplier);
