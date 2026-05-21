@@ -59,7 +59,10 @@ namespace Quantum {
             }
 #else
             if (f.GetPlayerCommand(player) is CommandSpawnReserveItem) {
-                SpawnReserveItem(f, ref filter);
+                var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+                if (gamemode is not SupermaniaGamemode) {
+                    SpawnReserveItem(f, ref filter);
+                }
             }
 #endif
 

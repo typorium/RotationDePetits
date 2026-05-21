@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 namespace NSMB.UI.MainMenu.Submenus.Prompts {
     public class RulesGameSettingsPanel : GameSettingsPanel {

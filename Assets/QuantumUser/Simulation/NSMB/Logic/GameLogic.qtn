@@ -41,7 +41,13 @@ struct GameRules {
 	bool CustomPowerupsEnabled;
 	bool DrawOnTimeUp;
 
+	// Coin Runners
 	int CoinMultiplier;
+
+	// Supermania
+	int TimerUntilMania;
+
+	// Global
 	int KnockbackMultiplier;
 }
 

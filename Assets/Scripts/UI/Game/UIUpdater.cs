@@ -28,7 +28,7 @@ namespace NSMB.UI.Game {
         [SerializeField] private CanvasGroup toggler;
         [SerializeField] private TrackIcon playerTrackTemplate, starTrackTemplate, starCoinTrackTemplate, objectiveCoinTrackTemplate;
         [SerializeField] private Sprite storedItemNull;
-        [SerializeField] private TMP_Text uiTeamObjective, uiMainObjective, uiCoins, uiDebug, uiLives, uiCountdown;
+        [SerializeField] private TMP_Text uiTeamObjective, uiMainObjective, uiCoins, uiDebug, uiLives, uiCountdown, uiMania;
         [SerializeField] private Image itemReserve, itemColor;
         [SerializeField] private GameObject boos, reserveItemBox;
         [SerializeField] private Animation reserveAnimation;
@@ -41,11 +41,11 @@ namespace NSMB.UI.Game {
         private readonly Dictionary<MonoBehaviour, TrackIcon> entityTrackIcons = new();
         private readonly Dictionary<Type, List<TrackIcon>> availablePooledTrackIcons = new();
         private readonly List<Image> backgrounds = new();
-        private GameObject teamsParent, starsParent, coinsParent, livesParent, timerParent;
+        private GameObject teamsParent, starsParent, coinsParent, livesParent, timerParent, maniaParent;
         private Material timerMaterial;
 
         //private TeamManager teamManager;
-        private int cachedCoins = -1, cachedTeamObjective = -1, cachedObjective = -1, cachedLives = -1, cachedTimer = -1;
+        private int cachedCoins = -1, cachedTeamObjective = -1, cachedObjective = -1, cachedLives = -1, cachedTimer = -1, cachedManiaTimer = -1;
         private PowerupAsset previousPowerup;
         private EntityRef previousTarget;
         private bool previousMarioExists;
@@ -97,12 +97,14 @@ namespace NSMB.UI.Game {
             coinsParent = uiCoins.transform.parent.gameObject;
             livesParent = uiLives.transform.parent.gameObject;
             timerParent = uiCountdown.transform.parent.gameObject;
+            maniaParent = uiMania.transform.parent.gameObject;
 
             backgrounds.Add(teamsParent.GetComponentInChildren<Image>());
             backgrounds.Add(starsParent.GetComponentInChildren<Image>());
             backgrounds.Add(coinsParent.GetComponentInChildren<Image>());
             backgrounds.Add(livesParent.GetComponentInChildren<Image>());
             backgrounds.Add(timerParent.GetComponentInChildren<Image>());
+            backgrounds.Add(maniaParent.GetComponentInChildren<Image>());
         }
 
         public void Start() {
@@ -230,12 +232,16 @@ namespace NSMB.UI.Game {
         }
 
         private void UpdateElementVisibility(Frame f, bool marioExists) {
+            var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+            var isManiaRandom = f.Global->Rules.TimerUntilMania == 0;
+
             teamsParent.SetActive(marioExists && f.Global->Rules.TeamsEnabled);
-            starsParent.SetActive(marioExists);
+            starsParent.SetActive(marioExists && gamemode is not SupermaniaGamemode);
             livesParent.SetActive(marioExists && f.Global->Rules.IsLivesEnabled);
-            coinsParent.SetActive(marioExists);
+            coinsParent.SetActive(marioExists && gamemode is not SupermaniaGamemode);
             timerParent.SetActive(f.Global->Rules.IsTimerEnabled);
-            reserveItemBox.SetActive(marioExists);
+            maniaParent.SetActive(gamemode is SupermaniaGamemode && !isManiaRandom);
+            reserveItemBox.SetActive(marioExists && gamemode is not SupermaniaGamemode);
         }
 
         private void OnStartCameraFadeOut(EventStartCameraFadeOut e) {
@@ -313,7 +319,7 @@ namespace NSMB.UI.Game {
             }
 
             // COINS
-            if (mario->Coins != cachedCoins) {
+            if ( gamemode is not SupermaniaGamemode && mario->Coins != cachedCoins) {
                 cachedCoins = mario->Coins;
                 uiCoins.text = Utils.GetSymbolString("Cx" + cachedCoins + "/" + coinRequirement);
             }
@@ -323,6 +329,17 @@ namespace NSMB.UI.Game {
                 if (mario->Lives != cachedLives) {
                     cachedLives = mario->Lives;
                     uiLives.text = QuantumUnityDB.GetGlobalAsset(mario->CharacterAsset).UiString + Utils.GetSymbolString("x" + cachedLives);
+                }
+            }
+
+            // MANIA
+            if (gamemode is SupermaniaGamemode) {
+                float timeRemaining = f.Global->ManiaPowerupTimer.AsFloat;
+                int secondsRemaining = Mathf.Max(Mathf.CeilToInt(timeRemaining), 0);
+                
+                if (secondsRemaining != cachedManiaTimer) {
+                    cachedManiaTimer = secondsRemaining;
+                    uiMania.text = Utils.GetSymbolString("Tx" + Utils.SecondsToMinuteSeconds(secondsRemaining));
                 }
             }
         }

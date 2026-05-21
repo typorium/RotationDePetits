@@ -14,6 +14,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 return currentIndex < allGamemodes.Count - 1;
             }
         }
+
         public override bool CanDecreaseValue {
             get {
                 var allGamemodes = AssetRepository<GamemodeAsset>.AllAssetRefs;
@@ -24,6 +25,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         protected override void IncreaseValueInternal() {
             var allGamemodes = AssetRepository<GamemodeAsset>.AllAssetRefs;
+
             int currentIndex = allGamemodes.IndexOf(gm => gm == (AssetRef<GamemodeAsset>) value);
             int newIndex = Mathf.Min(currentIndex + 1, allGamemodes.Count - 1);
 
@@ -66,9 +68,12 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
 
         protected override void UpdateLabel() {
             string stageName;
-            if (value is AssetRef<GamemodeAsset> gamemodeAsset
-                && QuantumUnityDB.TryGetGlobalAsset(gamemodeAsset, out GamemodeAsset gamemode)) {
-                stageName = gamemode.NamePrefix + GlobalController.Instance.translationManager.GetTranslation(gamemode.TranslationKey);
+            if (value is AssetRef<GamemodeAsset> gamemodeAsset) {
+                if (QuantumUnityDB.TryGetGlobalAsset(gamemodeAsset, out GamemodeAsset gamemode)) {
+                    stageName = gamemode.NamePrefix + GlobalController.Instance.translationManager.GetTranslation(gamemode.TranslationKey);
+                } else {
+                    stageName = "???";
+                }
             } else {
                 stageName = "???";
             }

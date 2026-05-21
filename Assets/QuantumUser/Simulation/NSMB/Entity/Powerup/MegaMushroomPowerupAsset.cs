@@ -3,7 +3,7 @@ using Quantum;
 
 public unsafe class MegaMushroomPowerupAsset : PowerupAsset {
 
-    public FP GrowAnimationDuration = FP._1_50;
+    public static FP GrowAnimationDuration = FP._1_50;
 
     public override int CountPlayersWithState(Frame f) {
         int playersWithPower = 0;
@@ -30,7 +30,7 @@ public unsafe class MegaMushroomPowerupAsset : PowerupAsset {
         coinItem->IgnorePlayerFrames = 85;
     }
 
-    protected override unsafe void OnCollected(Frame f, EntityRef marioEntity) {
+    public override unsafe void OnCollected(Frame f, EntityRef marioEntity) {
         var mario = f.Unsafe.GetPointer<MarioPlayer>(marioEntity);
         var marioPhysicsObject = f.Unsafe.GetPointer<PhysicsObject>(marioEntity);
 

@@ -23,6 +23,7 @@ public unsafe class CoinItemAsset : AssetObject {
     }
 
     public virtual void InitializeFromBlockBump(Frame f, EntityRef entity, ref BlockBumpSystem.Filter blockBumpFilter) {
+
         var blockBump = blockBumpFilter.BlockBump;
         var stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
 
@@ -90,6 +91,12 @@ public unsafe class CoinItemAsset : AssetObject {
     }
 
     public virtual bool CanSpawn(Frame f, bool fromRouletteBlock) {
+
+        var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+        if (gamemode is SupermaniaGamemode) {
+            return false;
+        }
+
         if (fromRouletteBlock && !Flags.HasFlag(TypeFlags.SpawnableFromCoins)) {
             return false;
         }
