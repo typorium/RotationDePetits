@@ -21,7 +21,7 @@ namespace NSMB.UI.Elements {
                 }
 
                 if ((holdTime += Time.unscaledDeltaTime) > 0.5f) {
-                    OnClick?.Invoke();
+                    Click();
                     holdTime = 0.4f;
                 }
             }

@@ -427,6 +427,7 @@ namespace Quantum.Prototypes {
     public QBoolean CustomPowerupsEnabled;
     public QBoolean DrawOnTimeUp;
     public Int32 CoinMultiplier;
+    public Int32 KnockbackMultiplier;
     partial void MaterializeUser(Frame frame, ref Quantum.GameRules result, in PrototypeMaterializationContext context);
     public void Materialize(Frame frame, ref Quantum.GameRules result, in PrototypeMaterializationContext context = default) {
         result.Stage = this.Stage;
@@ -439,6 +440,7 @@ namespace Quantum.Prototypes {
         result.CustomPowerupsEnabled = this.CustomPowerupsEnabled;
         result.DrawOnTimeUp = this.DrawOnTimeUp;
         result.CoinMultiplier = this.CoinMultiplier;
+        result.KnockbackMultiplier = this.KnockbackMultiplier;
         MaterializeUser(frame, ref result, in context);
     }
   }
