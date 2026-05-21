@@ -144,13 +144,13 @@ MonoBehaviour:
     Priority: 0
     PlayGlobally: 0
     AudioClips:
-    - {fileID: 8300000, guid: 446d92542cf9149aa8269d09a64af222, type: 3}
+    - {fileID: 8300000, guid: 7dceacc6bf7d041448a0ce51a114b8b2, type: 3}
   - SoundEffect: 94
     Mode: 0
     Priority: 0
     PlayGlobally: 0
     AudioClips:
-    - {fileID: 8300000, guid: a29c8f3e20370436babd3857ce740d95, type: 3}
+    - {fileID: 8300000, guid: d467996fde2070347bd414de49d28f03, type: 3}
   - SoundEffect: 21
     Mode: 0
     Priority: 0
