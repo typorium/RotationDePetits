@@ -144,7 +144,6 @@
     <Compile Include="Assets\Scripts\UI\Options\Loaders\ResolutionOptionLoader.cs" />
     <Compile Include="Assets\Scripts\Entity\MaterialDuplicator.cs" />
     <Compile Include="Assets\Scripts\UI\Translation\TextAssetJsonTranslationSource.cs" />
-    <Compile Include="Assets\Scripts\UI\MainMenu\Prompts\UpdatePromptSubmenu.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\Prompts\CreateRoomPromptSubmenu.cs" />
     <Compile Include="Assets\Scripts\UI\Options\Loaders\SimpleLoader.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\Prompts\ReplayRenamePromptSubmenu.cs" />
@@ -192,7 +191,6 @@
     <Compile Include="Assets\Scripts\Settings.cs" />
     <Compile Include="Assets\Scripts\Quantum\StageContext.cs" />
     <Compile Include="Assets\Scripts\UI\Game\Replay\Tabs\ReplayUITab.cs" />
-    <Compile Include="Assets\Scripts\Networking\UpdateChecker.cs" />
     <Compile Include="Assets\Scripts\UI\RTL\RTLComponentFLipper.cs" />
     <Compile Include="Assets\Scripts\UI\Loading\LoadingPowerup.cs" />
     <Compile Include="Assets\Scripts\UI\RTL\RTLLayoutGroupFlipper.cs" />
@@ -234,7 +232,6 @@
     <Compile Include="Assets\Scripts\UI\Game\PlayerNametag.cs" />
     <Compile Include="Assets\Scripts\Entity\Enemy\BulletBillAnimator.cs" />
     <Compile Include="Assets\Scripts\UI\Loading\MarioLoader.cs" />
-    <Compile Include="Assets\Scripts\UI\MainMenu\InRoom\Profile\PowerupSelection.cs" />
     <Compile Include="Assets\Scripts\UI\Elements\ScaleWithParent.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\Main\MainSubmenu.cs" />
     <Compile Include="Assets\Scripts\Sound\LoopingSoundPlayer.cs" />
