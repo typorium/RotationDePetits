@@ -20,7 +20,7 @@ MonoBehaviour:
   TranslationKey: gamemode.supermania
   DescriptionTranslationKey: gamemode.supermania.description
   DiscordRpcKey: gamemode-supermania
-  ObjectiveSymbolPrefix: M
+  ObjectiveSymbolPrefix: 
   AllCoinItems:
   - Id:
       Value: 390055422968795145

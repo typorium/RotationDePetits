@@ -1,4 +1,4 @@
-#define MaxPlayers 10
+#define MaxPlayers 20
 #pragma max_players MaxPlayers
 
 global {

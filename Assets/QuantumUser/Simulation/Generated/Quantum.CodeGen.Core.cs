@@ -140,77 +140,6 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
-  public unsafe partial struct BitSet10 {
-    public const Int32 SIZE = 8;
-    public const Int32 ALIGNMENT = 8;
-    [FieldOffset(0)]
-    public fixed UInt64 Bits[1];
-    public const Int32 BitsSize = 10;
-    public readonly Int32 Length {
-      get {
-        return 10;
-      }
-    }
-    public static void Print(void* ptr, FramePrinter printer) {
-      var p = (BitSet10*)ptr;
-      printer.ScopeBegin();
-      UnmanagedUtils.PrintBytesBits((byte*)&p->Bits, 10, 64, printer);
-      printer.ScopeEnd();
-    }
-    public static BitSet10 FromArray(UInt64[] values) {
-      Assert.Always(1 == values.Length, "Invalid array size", values.Length);
-      BitSet10 result = default;
-      for (int i = 0; i < 1; ++i) {
-        result.Bits[i] = values[i];
-      }
-      return result;
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Set(Int32 bit) {
-      Assert.Check(bit >= 0 && bit < 10);
-      fixed (UInt64* p = Bits) (p[bit/64]) |= (1UL<<(bit%64));
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Clear(Int32 bit) {
-      Assert.Check(bit >= 0 && bit < 10);
-      fixed (UInt64* p = Bits) (p[bit/64]) &= ~(1UL<<(bit%64));
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly Boolean IsSet(Int32 bit) {
-      fixed (UInt64* p = Bits) return ((p[bit/64])&(1UL<<(bit%64))) != 0UL;
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly Int32 GetSetCount() {
-      fixed (UInt64* p = Bits) {
-        int result = 0;
-        result += Maths.CountSetBits(p[0] & 0x3FFUL);
-        return result;
-      }
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly Boolean IsAnySet() {
-      fixed (UInt64* p = Bits) {
-        if ((p[0] & 0x3FFUL) != 0) return true;
-        return false;
-      }
-    }
-    public override readonly Int32 GetHashCode() {
-      unchecked { 
-        var hash = 5483;
-        fixed (UInt64* p = Bits) hash = hash * 31 + HashCodeUtils.GetArrayHashCode(p, 1);
-        return hash;
-      }
-    }
-    public static void Serialize(void* ptr, FrameSerializer serializer) {
-        var p = (BitSet10*)ptr;
-        serializer.Stream.SerializeBuffer(&p->Bits[0], 1);
-    }
-  }
-  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct BitSet128 {
     public const Int32 SIZE = 16;
     public const Int32 ALIGNMENT = 8;
@@ -281,6 +210,77 @@ namespace Quantum {
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (BitSet128*)ptr;
         serializer.Stream.SerializeBuffer(&p->Bits[0], 2);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct BitSet20 {
+    public const Int32 SIZE = 8;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(0)]
+    public fixed UInt64 Bits[1];
+    public const Int32 BitsSize = 20;
+    public readonly Int32 Length {
+      get {
+        return 20;
+      }
+    }
+    public static void Print(void* ptr, FramePrinter printer) {
+      var p = (BitSet20*)ptr;
+      printer.ScopeBegin();
+      UnmanagedUtils.PrintBytesBits((byte*)&p->Bits, 20, 64, printer);
+      printer.ScopeEnd();
+    }
+    public static BitSet20 FromArray(UInt64[] values) {
+      Assert.Always(1 == values.Length, "Invalid array size", values.Length);
+      BitSet20 result = default;
+      for (int i = 0; i < 1; ++i) {
+        result.Bits[i] = values[i];
+      }
+      return result;
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Set(Int32 bit) {
+      Assert.Check(bit >= 0 && bit < 20);
+      fixed (UInt64* p = Bits) (p[bit/64]) |= (1UL<<(bit%64));
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Clear(Int32 bit) {
+      Assert.Check(bit >= 0 && bit < 20);
+      fixed (UInt64* p = Bits) (p[bit/64]) &= ~(1UL<<(bit%64));
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearAll() {
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Boolean IsSet(Int32 bit) {
+      fixed (UInt64* p = Bits) return ((p[bit/64])&(1UL<<(bit%64))) != 0UL;
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Int32 GetSetCount() {
+      fixed (UInt64* p = Bits) {
+        int result = 0;
+        result += Maths.CountSetBits(p[0] & 0xFFFFFUL);
+        return result;
+      }
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Boolean IsAnySet() {
+      fixed (UInt64* p = Bits) {
+        if ((p[0] & 0xFFFFFUL) != 0) return true;
+        return false;
+      }
+    }
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 5743;
+        fixed (UInt64* p = Bits) hash = hash * 31 + HashCodeUtils.GetArrayHashCode(p, 1);
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (BitSet20*)ptr;
+        serializer.Stream.SerializeBuffer(&p->Bits[0], 1);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -1090,7 +1090,7 @@ namespace Quantum {
       }
     }
     static partial void GetMaxCountCodeGen(ref int maxCount) {
-      maxCount = 10;
+      maxCount = 20;
     }
     public Boolean IsDown(InputButtons button) {
       switch (button) {
@@ -1286,7 +1286,7 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 3152;
+    public const Int32 SIZE = 5552;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
     public AssetRef<Map> Map;
@@ -1309,63 +1309,63 @@ namespace Quantum {
     [FieldOffset(600)]
     public Int32 PlayerConnectedCount;
     [FieldOffset(604)]
-    [FramePrinter.FixedArrayAttribute(typeof(Input), 10)]
-    private fixed Byte _input_[1200];
-    [FieldOffset(1808)]
-    public BitSet10 PlayerLastConnectionState;
-    [FieldOffset(1824)]
+    [FramePrinter.FixedArrayAttribute(typeof(Input), 20)]
+    private fixed Byte _input_[2400];
+    [FieldOffset(3008)]
+    public BitSet20 PlayerLastConnectionState;
+    [FieldOffset(3024)]
     public UInt16 BigStarSpawnTimer;
-    [FieldOffset(1872)]
+    [FieldOffset(3072)]
     public EntityRef MainBigStar;
-    [FieldOffset(1864)]
+    [FieldOffset(3064)]
     public BitSet64 UsedStarSpawns;
-    [FieldOffset(1896)]
+    [FieldOffset(3096)]
     public GameRules Rules;
-    [FieldOffset(1818)]
+    [FieldOffset(3018)]
     public GameState GameState;
-    [FieldOffset(1832)]
+    [FieldOffset(3032)]
     public Int32 StartFrame;
-    [FieldOffset(1836)]
+    [FieldOffset(3036)]
     public Int32 TotalGamesPlayed;
-    [FieldOffset(1826)]
+    [FieldOffset(3026)]
     public UInt16 GameStartFrames;
-    [FieldOffset(1828)]
+    [FieldOffset(3028)]
     public UInt16 PlayerLoadFrames;
-    [FieldOffset(1820)]
+    [FieldOffset(3020)]
     public UInt16 AutomaticStageRefreshInterval;
-    [FieldOffset(1822)]
+    [FieldOffset(3022)]
     public UInt16 AutomaticStageRefreshTimer;
-    [FieldOffset(1952)]
-    [FramePrinter.FixedArrayAttribute(typeof(PlayerInformation), 10)]
-    private fixed Byte _PlayerInfo_[1200];
-    [FieldOffset(1816)]
+    [FieldOffset(3152)]
+    [FramePrinter.FixedArrayAttribute(typeof(PlayerInformation), 20)]
+    private fixed Byte _PlayerInfo_[2400];
+    [FieldOffset(3016)]
     public Byte RealPlayers;
-    [FieldOffset(1817)]
+    [FieldOffset(3017)]
     public Byte TotalMarios;
-    [FieldOffset(1840)]
+    [FieldOffset(3040)]
     public Int32 WinningTeam;
-    [FieldOffset(1848)]
+    [FieldOffset(3048)]
     public QBoolean HasWinner;
-    [FieldOffset(1880)]
+    [FieldOffset(3080)]
     public FP ManiaPowerupTimer;
-    [FieldOffset(1844)]
+    [FieldOffset(3044)]
     public PlayerRef Host;
-    [FieldOffset(1852)]
+    [FieldOffset(3052)]
     [AllocateOnComponentAdded()]
     public QDictionaryPtr<PlayerRef, EntityRef> PlayerDatas;
-    [FieldOffset(1856)]
+    [FieldOffset(3056)]
     [AllocateOnComponentAdded()]
     public QListPtr<BannedPlayerInfo> BannedPlayerIds;
-    [FieldOffset(1888)]
+    [FieldOffset(3088)]
     public FP Timer;
     public readonly FixedArray<Input> input {
       get {
-        fixed (byte* p = _input_) { return new FixedArray<Input>(p, 120, 10); }
+        fixed (byte* p = _input_) { return new FixedArray<Input>(p, 120, 20); }
       }
     }
     public readonly FixedArray<PlayerInformation> PlayerInfo {
       get {
-        fixed (byte* p = _PlayerInfo_) { return new FixedArray<PlayerInformation>(p, 120, 10); }
+        fixed (byte* p = _PlayerInfo_) { return new FixedArray<PlayerInformation>(p, 120, 20); }
       }
     }
     public override readonly Int32 GetHashCode() {
@@ -1428,7 +1428,7 @@ namespace Quantum {
         PhysicsSceneSettings.Serialize(&p->PhysicsSettings, serializer);
         serializer.Stream.Serialize(&p->PlayerConnectedCount);
         FixedArray.Serialize(p->input, serializer, Statics.SerializeInput);
-        Quantum.BitSet10.Serialize(&p->PlayerLastConnectionState, serializer);
+        Quantum.BitSet20.Serialize(&p->PlayerLastConnectionState, serializer);
         serializer.Stream.Serialize(&p->RealPlayers);
         serializer.Stream.Serialize(&p->TotalMarios);
         serializer.Stream.Serialize((Byte*)&p->GameState);
@@ -3540,7 +3540,7 @@ namespace Quantum {
     public const Int32 MaxStarSpawns = 64;
     public const Int32 EnemyMaxDistFromMario = 8;
     public const Int32 EnemyHomeBoxBuffer = 8;
-    public const Int32 MaxPlayers = 10;
+    public const Int32 MaxPlayers = 20;
     public const Int32 DamageInvincibilityFrames = 120;
     /// <summary>8.5</summary>
     public static FP _8_50 {
@@ -4407,9 +4407,9 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum.BetterPhysicsContact), Quantum.BetterPhysicsContact.SIZE);
       typeRegistry.Register(typeof(Quantum.BetterPhysicsObject), Quantum.BetterPhysicsObject.SIZE);
       typeRegistry.Register(typeof(Quantum.BigStar), Quantum.BigStar.SIZE);
-      typeRegistry.Register(typeof(Quantum.BitSet10), Quantum.BitSet10.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet1024), Quantum.BitSet1024.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet128), Quantum.BitSet128.SIZE);
+      typeRegistry.Register(typeof(Quantum.BitSet20), Quantum.BitSet20.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet2048), Quantum.BitSet2048.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet21), Quantum.BitSet21.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet256), Quantum.BitSet256.SIZE);
