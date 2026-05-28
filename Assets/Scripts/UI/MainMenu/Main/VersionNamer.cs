@@ -3,8 +3,16 @@ using TMPro;
 
 namespace NSMB.UI.MainMenu.Submenus.Main {
     public class VersionNamer : MonoBehaviour {
+
+        public bool UseRDPVersion;
+        public string RDPVersion;
         public void Start() {
-            GetComponent<TMP_Text>().text = "v" + Application.version;
+
+            if (UseRDPVersion) {
+                GetComponent<TMP_Text>().text = "RDP Version: v" + RDPVersion;
+            } else {
+                GetComponent<TMP_Text>().text = "Original Version: v" + Application.version;
+            }
         }
     }
 }
