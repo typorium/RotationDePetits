@@ -170,12 +170,14 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
         private void OnPlayerAdded(EventPlayerAdded e) {
             Frame f = e.Game.Frames.Verified;
             AddPlayerEntry(f, e.Player);
+            ReorderEntries();
             GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_PlayerConnect);
         }
 
         private void OnPlayerRemoved(EventPlayerRemoved e) {
             Frame f = e.Game.Frames.Verified;
             RemovePlayerEntry(f, e.Player);
+            ReorderEntries();
             GlobalController.Instance.sfx.PlayOneShot(SoundEffect.UI_PlayerDisconnect);
         }
 
