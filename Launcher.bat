@@ -12,7 +12,7 @@ echo Attends controle de police je regarde si y'a une mise a jour
 
 if not exist %LOCAL_VERSION_FILE% echo 0.0.0 > %LOCAL_VERSION_FILE%
 
-powershell -Command "Invoke-WebRequest %VERSION_URL% -OutFile %REMOTE_VERSION_FILE%"
+powershell -Command "$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest %VERSION_URL% -OutFile %REMOTE_VERSION_FILE%"
 
 set /p LOCAL_VERSION=<%LOCAL_VERSION_FILE%
 set /p REMOTE_VERSION=<%REMOTE_VERSION_FILE%
@@ -28,7 +28,7 @@ if "%LOCAL_VERSION%"=="%REMOTE_VERSION%" (
 ) else (
     echo Ah pas de chance y'a une mise a jour !!!
 
-    powershell -Command "Invoke-WebRequest %ZIP_URL% -OutFile %ZIP_FILE%"
+    powershell -Command "$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest %ZIP_URL% -OutFile %ZIP_FILE%"
 
     echo oh ma gaaaaaaad je télécharge le femboy furry update
 
