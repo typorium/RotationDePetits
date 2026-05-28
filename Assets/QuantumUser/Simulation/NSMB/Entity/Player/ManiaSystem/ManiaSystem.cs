@@ -1,10 +1,13 @@
 
-using UnityEngine;
+using Photon.Deterministic;
 using Quantum;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.IO;
-using Photon.Deterministic;
+using UnityEngine;
 
 
 namespace Quantum {
@@ -23,6 +26,55 @@ namespace Quantum {
             public Freezable* Freezable;
 
             public Input Inputs;
+        }
+
+        private int GetTotalWeights(Frame f, AssetRef<CoinItemAsset>[] allItems) {
+            int sum = 0;
+
+            // All items
+            foreach (AssetRef<CoinItemAsset> itemRef in allItems) {
+                sum += GetWeight(f.FindAsset(itemRef) as PowerupAsset);
+            }
+
+            // No powerup
+            sum += GetWeight(null);
+
+            return sum;
+        }
+
+        private int GetWeight(PowerupAsset powerup) {
+
+            // No powerup
+            int weight = -1;
+            if (powerup == null) {
+                weight = 3;
+                return weight;
+            }
+
+            // Normal powerups
+            switch (powerup.State) {
+                case PowerupState.Mushroom:
+                case PowerupState.FireFlower:
+                case PowerupState.BlueShell:
+                case PowerupState.IceFlower:
+                case PowerupState.PropellerMushroom:
+                case PowerupState.HammerSuit:
+                case PowerupState.MiniMushroom:
+                    weight = 3;
+                    break;
+            }
+
+            if (weight != -1) {
+                return weight;
+            }
+
+            // Special / Edgecases Powerups
+            if (powerup is StarmanPowerupAsset) {
+                weight = 1;
+                return weight;
+            }
+
+            return weight;
         }
 
         public void OnGameStarting(Frame f) {
@@ -73,84 +125,68 @@ namespace Quantum {
 
             // Get mario player
             var mario = filter.MarioPlayer;
-            var physics = f.FindAsset(mario->PhysicsAsset);
-            var oldState = mario->CurrentPowerupState;
+            var marioPhysics = f.FindAsset(mario->PhysicsAsset);
+            var marioOldState = mario->CurrentPowerupState;
 
             // Get random powerup
-            GamemodeAsset gamemode = f.FindAsset(f.Global->Rules.Gamemode);
-            int itempoolCount = gamemode.AllCoinItems.Count();
-            int itemIndex = f.RNG->Next(0, itempoolCount + 1); // We add one, so we can also have an option for "no powerup".
+            AssetRef<CoinItemAsset>[] items = f.FindAsset(f.Global->Rules.Gamemode).AllCoinItems;
 
-            // No powerup (little mario)
-            var wasMegaMushroom = mario->CurrentPowerupState == PowerupState.MegaMushroom;
-            SetPowerupState(mario, PowerupState.NoPowerup);
-            mario->InvincibilityFrames = 0;
+            int totalWeight = GetTotalWeights(f, items);
+            int currentWeight = f.RNG->Next(0, totalWeight);
 
-            if (itemIndex == itempoolCount) {
-                if (oldState != PowerupState.NoPowerup) {
-                    ResetFreezeSize(f, filter.Freezable, physics.IceBlockSmallSize);
+            PowerupAsset rolledItem = null;
+            foreach (AssetRef<CoinItemAsset> item in items) {
+                rolledItem = f.FindAsset(item) as PowerupAsset;
+                currentWeight -= GetWeight(rolledItem);
+                if (currentWeight < 0) {
+                    break;
+                }
+            }
+
+            if (currentWeight >= 0) {
+                rolledItem = null; // Null is for no powerup
+            }
+
+            // No powerup
+            if (rolledItem == null) {
+                if (marioOldState != PowerupState.NoPowerup) {
+                    SetPowerupState(mario, PowerupState.NoPowerup);
+                    ResetFreezeSize(f, filter.Freezable, marioPhysics.IceBlockSmallSize);
                 }
                 return;
             }
 
             // Etoile
-            PowerupAsset item = f.FindAsset(gamemode.AllCoinItems[itemIndex]) as PowerupAsset;
-            if (item is StarmanPowerupAsset) {
-                SetPowerup(f, filter.Entity, item);
+            else if (rolledItem is StarmanPowerupAsset) {
+                SetPowerupState(mario, PowerupState.NoPowerup);
+                SetPowerup(f, filter.Entity, rolledItem);
                 mario->InvincibilityFrames = (ushort)(f.UpdateRate * f.Global->ManiaPowerupTimer);
-            }
-
-            // Mega Mushroom
-            if (wasMegaMushroom) {
-                ResetMegaMushroomMario(mario, filter.PhysicsObject);
-            }
-            if (item is MegaMushroomPowerupAsset) {
-                SetPowerup(f, filter.Entity, item);
-                if (wasMegaMushroom) {
-                    mario->MegaMushroomStartFrames = 0;
-                    mario->MegaMushroomFrames = (ushort) (f.UpdateRate * f.Global->ManiaPowerupTimer);
-                }
-                else {
-                    mario->MegaMushroomStartFrames = (byte) (MegaMushroomPowerupAsset.GrowAnimationDuration * f.UpdateRate);
-                    mario->MegaMushroomFrames = (ushort) (f.UpdateRate * f.Global->ManiaPowerupTimer - mario->MegaMushroomStartFrames);
-                }
+                return;
             }
 
             // Autres powerups
-            if (item.State == oldState) {
+            else if (rolledItem.State == marioOldState) {
                 return;
             }
-            SetPowerup(f, filter.Entity, item);
+            SetPowerup(f, filter.Entity, rolledItem);
 
             // Reset ice size
-            if (oldState == PowerupState.NoPowerup) {
-                ResetFreezeSize(f, filter.Freezable, physics.IceBlockBigSize);
+            if (marioOldState == PowerupState.NoPowerup && mario->CurrentPowerupState != marioOldState) {
+                ResetFreezeSize(f, filter.Freezable, marioPhysics.IceBlockBigSize);
             }
 
         }
 
         private void ResetFreezeSize(Frame f, Freezable* freezable, FPVector2 size) {
 
-            if (! (freezable->IsFrozen(f)) ) {
+            if (! freezable->IsFrozen(f) ) {
                 return;
             }
-
             freezable->IceBlockSize = size;
         }
 
         private void SetPowerup(Frame f, EntityRef entity, PowerupAsset item) {
             item.Collect(f, entity);
-        }
-
-        private void ResetMegaMushroomMario(MarioPlayer* mario, PhysicsObject* physicsObject) {
-            mario->MegaMushroomStartFrames = 0;
-            mario->MegaMushroomFrames = 0;
-            mario->MegaMushroomEndFrames = 0;
-            mario->MegaMushroomStationaryEnd = false;
-
-            mario->DamageInvincibilityFrames = Constants.DamageInvincibilityFrames;
-            physicsObject->Velocity = FPVector2.Zero;
-            physicsObject->IsFrozen = false;
         }
 
         private void ResetMario(MarioPlayer* mario) {
