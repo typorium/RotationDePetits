@@ -2100,6 +2100,9 @@ namespace Quantum {
                 dropStars = ownerMario->GetTeam(f) != mario->GetTeam(f);
             }
 
+            mario->AttackerRef = ownerMario->PlayerRef;
+            mario->AttackedWith = AttackType.Projectile;
+
             bool damageable = !mario->IsInKnockback
                 && mario->CurrentPowerupState != PowerupState.MegaMushroom
                 && mario->IsDamageable
@@ -2170,6 +2173,12 @@ namespace Quantum {
             var marioBPhysics = f.Unsafe.GetPointer<PhysicsObject>(marioBEntity);
 
             // Hit players
+            marioA->AttackerRef = marioB->PlayerRef;
+            marioA->AttackedWith = AttackType.Classic;
+
+            marioB->AttackerRef = marioA->PlayerRef;
+            marioB->AttackedWith = AttackType.Classic;
+
             bool dropStars = marioA->GetTeam(f) != marioB->GetTeam(f);
 
             var stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
@@ -2200,6 +2209,7 @@ namespace Quantum {
                         marioB->IsGroundpounding = false;
                         marioB->IsDrilling = false;
                     } else {
+
                         bool knockbacked = false;
                         knockbacked |= marioA->DoKnockback(f, marioAEntity, fromRight, 0, KnockbackStrength.CollisionBump, marioBEntity, true);
                         knockbacked |= marioB->DoKnockback(f, marioBEntity, !fromRight, 0, KnockbackStrength.CollisionBump, marioAEntity, true);

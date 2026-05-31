@@ -35,6 +35,12 @@ enum JumpState : Byte {
     TripleJump,
 }
 
+enum AttackType : Byte {
+	Classic, // Physical contact
+	Projectile, // Projectile (Hammer, Fireball, ...)
+	Object // Koopas, spiked koopas, ...
+}
+
 component MarioPlayer {
 	AssetRef<MarioPlayerPhysicsInfo> PhysicsAsset;
 	AssetRef<CharacterAsset> CharacterAsset;
@@ -125,6 +131,9 @@ component MarioPlayer {
 	[ExcludeFromPrototype] byte PipeCooldownFrames;
 
 	[ExcludeFromPrototype] EntityRef CurrentSpinner;
+
+	[ExcludeFromPrototype] PlayerRef AttackerRef;
+	[ExcludeFromPrototype] AttackType AttackedWith;
 }
 
 struct StarChasersData {

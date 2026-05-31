@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using Quantum.Collections;
+using UnityEngine;
 
 namespace Quantum {
     public unsafe class KoopaSystem : SystemMainThreadEntityFilter<Koopa, KoopaSystem.Filter>, ISignalOnThrowHoldable, ISignalOnEnemyRespawned, ISignalOnEntityBumped,
@@ -290,6 +291,14 @@ namespace Quantum {
                     }
 
                 } else if (mario->IsDamageable && (koopaEnemy->IntangibilityFrames == 0 || koopa->IsInShell)) {
+                    
+                    if (f.Unsafe.TryGetPointer<MarioPlayer>(koopaHoldable->PreviousHolder, out MarioPlayer* attacker)) {
+                        Debug.Log("here2");
+                        mario->AttackerRef = attacker->PlayerRef;
+                        mario->AttackedWith = AttackType.Object;
+                    }
+                    
+
                     mario->Powerdown(f, marioEntity, false, koopaEntity);
                     if (!koopa->IsInShell) {
                         koopaEnemy->ChangeFacingRight(f, koopaEntity, damageDirection.X > 0);
