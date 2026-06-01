@@ -290,14 +290,7 @@ namespace Quantum {
                         }
                     }
 
-                } else if (mario->IsDamageable && (koopaEnemy->IntangibilityFrames == 0 || koopa->IsInShell)) {
-                    
-                    if (f.Unsafe.TryGetPointer<MarioPlayer>(koopaHoldable->PreviousHolder, out MarioPlayer* attacker)) {
-                        Debug.Log("here2");
-                        mario->AttackerRef = attacker->PlayerRef;
-                        mario->AttackedWith = AttackType.Object;
-                    }
-                    
+                } else if (mario->IsDamageable && (koopaEnemy->IntangibilityFrames == 0 || koopa->IsInShell)) {                   
 
                     mario->Powerdown(f, marioEntity, false, koopaEntity);
                     if (!koopa->IsInShell) {

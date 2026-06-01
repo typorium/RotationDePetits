@@ -250,6 +250,19 @@ namespace Quantum {
                 return;
             }
 
+            if (attacker != EntityRef.None) {
+
+                // Koopa
+                if (f.Unsafe.TryGetPointer<Koopa>(attacker, out Koopa* koopa)) {
+                    var koopaHoldable = f.Unsafe.GetPointer<Holdable>(attacker);
+                    if (f.Unsafe.TryGetPointer<MarioPlayer>(koopaHoldable->PreviousHolder, out MarioPlayer* marioAttacker)) {
+                        AttackerRef = marioAttacker->PlayerRef;
+                        AttackedWith = AttackType.Object;
+                    }
+                }
+
+            }
+
             var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
             int oldObjectiveCount = gamemode.GetObjectiveCount(f, f.Unsafe.GetPointer<MarioPlayer>(entity));
 
