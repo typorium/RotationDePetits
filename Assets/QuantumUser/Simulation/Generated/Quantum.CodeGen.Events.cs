@@ -576,10 +576,10 @@ namespace Quantum {
         _f.AddEvent(ev);
         return ev;
       }
-      public EventMarioPlayerKilled MarioPlayerKilled(PlayerRef Defender, PlayerRef Attacker, AttackType attack) {
+      public EventMarioPlayerKilled MarioPlayerKilled(PlayerRef Defender, AttackerType AttackerData, AttackType attack) {
         var ev = _f.Context.AcquireEvent<EventMarioPlayerKilled>(EventMarioPlayerKilled.ID);
         ev.Defender = Defender;
-        ev.Attacker = Attacker;
+        ev.AttackerData = AttackerData;
         ev.attack = attack;
         _f.AddEvent(ev);
         return ev;
@@ -2361,7 +2361,7 @@ namespace Quantum {
   public unsafe partial class EventMarioPlayerKilled : EventBase {
     public new const Int32 ID = 60;
     public PlayerRef Defender;
-    public PlayerRef Attacker;
+    public AttackerType AttackerData;
     public AttackType attack;
     protected EventMarioPlayerKilled(Int32 id, EventFlags flags) : 
         base(id, flags) {
@@ -2381,7 +2381,7 @@ namespace Quantum {
       unchecked {
         var hash = 359;
         hash = hash * 31 + Defender.GetHashCode();
-        hash = hash * 31 + Attacker.GetHashCode();
+        hash = hash * 31 + AttackerData.GetHashCode();
         hash = hash * 31 + attack.GetHashCode();
         return hash;
       }

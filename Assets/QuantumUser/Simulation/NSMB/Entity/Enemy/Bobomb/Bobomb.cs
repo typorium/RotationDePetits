@@ -11,6 +11,8 @@ namespace Quantum {
             holdable->PreviousHolder = default;
             holdable->IgnoreOwnerFrames = 0;
 
+            LastActualHolder = default;
+
             f.Unsafe.GetPointer<Interactable>(entity)->ColliderDisabled = false;
         }
 
@@ -30,6 +32,14 @@ namespace Quantum {
                 (Constants._4_50 + speed) * (enemy->FacingRight ? 1 : -1),
                 Constants._3_50
             );
+
+            if (f.Unsafe.TryGetPointer<Bobomb>(entity, out Bobomb* bobomb)) {
+                if (bobomb->LastActualHolder == default) {
+                    if (f.Unsafe.TryGetPointer<MarioPlayer>(initiator, out MarioPlayer* mario)) {
+                        bobomb->LastActualHolder = mario->PlayerRef;
+                    }
+                }
+            }
 
             f.Events.PlayComboSound(entity, 0);
         }

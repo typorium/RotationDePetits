@@ -41,6 +41,11 @@ enum AttackType : Byte {
 	Object // Koopas, spiked koopas, ...
 }
 
+struct AttackerType {
+	bool HasKiller;
+	PlayerRef Killer;
+}
+
 component MarioPlayer {
 	AssetRef<MarioPlayerPhysicsInfo> PhysicsAsset;
 	AssetRef<CharacterAsset> CharacterAsset;
@@ -132,7 +137,7 @@ component MarioPlayer {
 
 	[ExcludeFromPrototype] EntityRef CurrentSpinner;
 
-	[ExcludeFromPrototype] PlayerRef AttackerRef;
+	[ExcludeFromPrototype] AttackerType AttackerRef;
 	[ExcludeFromPrototype] AttackType AttackedWith;
 }
 
@@ -164,6 +169,7 @@ signal OnMarioPlayerTakeDamage(EntityRef entity, ref bool keepDamage);
 signal OnMarioPlayerGroundpoundedSolid(EntityRef mario, PhysicsContact contact, ref bool continueGroundpound);
 signal OnMarioPlayerGroundpoundEnded(EntityRef mario);
 signal OnMarioPlayerMegaMushroomFootstep();
+signal OnMarioPlayerPickedUpObject(EntityRef entity, EntityRef mario);
 
 event MarioPlayerJumped {
 	EntityRef Entity;
@@ -227,7 +233,7 @@ synced event MarioPlayerDied {
 
 event MarioPlayerKilled {
 	PlayerRef Defender;
-	PlayerRef Attacker;
+	AttackerType AttackerData;
 	AttackType attack;
 }
 

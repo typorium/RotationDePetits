@@ -57,23 +57,27 @@ namespace NSMB.Chat {
 
             var f = e.Game.Frames.Predicted;
 
-            var defenderData = f.GetPlayerData(e.Defender);
+            var defender = e.Defender;
+            var defenderData = f.GetPlayerData(defender);
             var defenderName = defenderData.PlayerNickname;
 
+            var attacker = e.AttackerData.Killer;
+            var wasKilled = e.AttackerData.HasKiller;
+
             // Suicide sans attaqueur (trou, ...)
-            if (e.Attacker == default) {
+            if (!wasKilled) {
                 AddSystemMessage("ui.inroom.chat.player.killed.suicide", color: color, "player", defenderName);
                 return;
             }
 
             // Suicide avec attaqueur (trou, ...)
-            if (e.Attacker == e.Defender) {
+            if (attacker == defender) {
                 AddSystemMessage("ui.inroom.chat.player.killed.suicide.external", color: color, "player", defenderName);
                 return;
             }
 
             // Tué par un autre joueur
-            var attackerData = f.GetPlayerData(e.Attacker);
+            var attackerData = f.GetPlayerData(attacker);
             var attackerName = attackerData.PlayerNickname;
             var attackType = e.attack;
 

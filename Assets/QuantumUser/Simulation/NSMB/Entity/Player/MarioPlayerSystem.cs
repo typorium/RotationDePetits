@@ -2100,7 +2100,10 @@ namespace Quantum {
                 dropStars = ownerMario->GetTeam(f) != mario->GetTeam(f);
             }
 
-            mario->AttackerRef = ownerMario->PlayerRef;
+            mario->AttackerRef = new() {
+                HasKiller = true,
+                Killer = ownerMario->PlayerRef
+            };
             mario->AttackedWith = AttackType.Projectile;
 
             bool damageable = !mario->IsInKnockback
@@ -2173,10 +2176,16 @@ namespace Quantum {
             var marioBPhysics = f.Unsafe.GetPointer<PhysicsObject>(marioBEntity);
 
             // Hit players
-            marioA->AttackerRef = marioB->PlayerRef;
+            marioA->AttackerRef = new() {
+                HasKiller = true,
+                Killer = marioB->PlayerRef
+            };
             marioA->AttackedWith = AttackType.Classic;
 
-            marioB->AttackerRef = marioA->PlayerRef;
+            marioB->AttackerRef = new() {
+                HasKiller = true,
+                Killer = marioA->PlayerRef
+            }; ;
             marioB->AttackedWith = AttackType.Classic;
 
             bool dropStars = marioA->GetTeam(f) != marioB->GetTeam(f);

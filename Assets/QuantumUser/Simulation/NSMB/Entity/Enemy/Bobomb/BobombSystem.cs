@@ -2,7 +2,7 @@ using Photon.Deterministic;
 
 namespace Quantum {
     public unsafe class BobombSystem : SystemMainThreadEntityFilter<Bobomb, BobombSystem.Filter>, ISignalOnEntityBumped, ISignalOnEnemyRespawned, ISignalOnThrowHoldable, 
-        ISignalOnBobombExplodeEntity, ISignalOnIceBlockBroken, ISignalOnEnemyKilledByStageReset, ISignalOnEntityCrushed, ISignalOnMarioPlayerBecameInvincible {
+        ISignalOnBobombExplodeEntity, ISignalOnIceBlockBroken, ISignalOnEnemyKilledByStageReset, ISignalOnEntityCrushed, ISignalOnMarioPlayerBecameInvincible, ISignalOnMarioPlayerPickedUpObject {
         
         public struct Filter {
             public EntityRef Entity;
@@ -129,6 +129,21 @@ namespace Quantum {
         }
 
         #region Interactions
+
+        public void OnMarioPlayerPickedUpObject(Frame f, EntityRef entity, EntityRef mario) {
+            
+            // Check if bobomb
+            if (!f.Unsafe.TryGetPointer<Bobomb>(entity, out Bobomb* bobomb)) {
+                return;
+            }
+
+            // Get mario entity
+            if (!f.Unsafe.TryGetPointer<MarioPlayer>(mario, out MarioPlayer* marioPlayer)) {
+                return;
+            }
+
+            bobomb->LastActualHolder = marioPlayer->PlayerRef;
+        }
         public void OnBobombBobombInteraction(Frame f, EntityRef bobombAEntity, EntityRef bobombBEntity) {
             var bobombA = f.Unsafe.GetPointer<Bobomb>(bobombAEntity);
             var bobombB = f.Unsafe.GetPointer<Bobomb>(bobombBEntity);

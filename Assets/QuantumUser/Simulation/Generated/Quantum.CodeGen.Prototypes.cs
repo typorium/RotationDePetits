@@ -50,6 +50,18 @@ namespace Quantum.Prototypes {
   #endif //;
   
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.AttackerType))]
+  public unsafe partial class AttackerTypePrototype : StructPrototype {
+    public QBoolean HasKiller;
+    public PlayerRef Killer;
+    partial void MaterializeUser(Frame frame, ref Quantum.AttackerType result, in PrototypeMaterializationContext context);
+    public void Materialize(Frame frame, ref Quantum.AttackerType result, in PrototypeMaterializationContext context = default) {
+        result.HasKiller = this.HasKiller;
+        result.Killer = this.Killer;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.BannedPlayerInfo))]
   public unsafe partial class BannedPlayerInfoPrototype : StructPrototype {
     [MaxStringByteCount(46, "Unicode")]

@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using UnityEngine;
 
@@ -305,8 +306,13 @@ namespace Quantum {
                 if (f.Unsafe.TryGetPointer<Koopa>(attacker, out Koopa* koopa)) {
                     if (koopa->IsKicked) {
                         var koopaHoldable = f.Unsafe.GetPointer<Holdable>(attacker);
-                        if (f.Unsafe.TryGetPointer<MarioPlayer>(koopaHoldable->PreviousHolder, out MarioPlayer* marioAttacker)) {
-                            AttackerRef = marioAttacker->PlayerRef;
+                        var holder = koopaHoldable->Holder == EntityRef.None ? koopaHoldable->PreviousHolder : koopaHoldable->Holder;
+
+                        if (f.Unsafe.TryGetPointer<MarioPlayer>(holder, out MarioPlayer* marioAttacker)) {
+                            AttackerRef = new() {
+                                HasKiller = true,
+                                Killer = marioAttacker->PlayerRef
+                            };
                             AttackedWith = AttackType.Object;
                         }
                     }
@@ -315,9 +321,13 @@ namespace Quantum {
                 //Bobomb
                 else if (f.Unsafe.TryGetPointer<Bobomb>(attacker, out Bobomb* bobomb)) {
                     if (bobomb->CurrentDetonationFrames <= 0) {
-                        var bobombHoldable = f.Unsafe.GetPointer<Holdable>(attacker);
-                        if (f.Unsafe.TryGetPointer<MarioPlayer>(bobombHoldable->PreviousHolder, out MarioPlayer* marioAttacker)) {
-                            AttackerRef = marioAttacker->PlayerRef;
+                        var holder = bobomb->LastActualHolder;
+
+                        if (holder != default) {
+                            AttackerRef = new() {
+                                HasKiller = true,
+                                Killer = holder
+                            };
                             AttackedWith = AttackType.Object;
                         }
                     }
@@ -327,12 +337,18 @@ namespace Quantum {
 
             // Technically not killed if was in star
             if (InvincibilityFrames > 0) {
-                AttackerRef = default;
+                AttackerRef = new() {
+                    HasKiller = false,
+                    Killer = default
+                };
             }
             
             // Send kill signal
             f.Events.MarioPlayerKilled(PlayerRef, AttackerRef, AttackedWith);
-            AttackerRef = default;
+            AttackerRef = new() {
+                HasKiller = false,
+                Killer = default
+            };
         }
 
         public bool Powerdown(Frame f, EntityRef entity, bool ignoreInvincible, EntityRef attacker) {
