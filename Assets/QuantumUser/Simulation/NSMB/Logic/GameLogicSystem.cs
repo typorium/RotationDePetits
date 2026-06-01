@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
+
 namespace Quantum {
     public unsafe class GameLogicSystem : SystemMainThread, ISignalOnPlayerAdded, ISignalOnPlayerRemoved, ISignalOnMarioPlayerDied,
         ISignalOnLoadingComplete, ISignalOnReturnToRoom, ISignalOnComponentRemoved<MarioPlayer> {
@@ -226,31 +228,6 @@ namespace Quantum {
         }
 
         public void OnMarioPlayerDied(Frame f, EntityRef entity) {
-
-            var marioPlayer = f.Unsafe.GetPointer<MarioPlayer>(entity);
-            var defenderData = f.GetPlayerData(marioPlayer->PlayerRef);
-
-            if (marioPlayer->AttackerRef != default) {
-                var attackerData = f.GetPlayerData(marioPlayer->AttackerRef);
-                
-                marioPlayer->AttackerRef = default;
-
-                var attackerName = attackerData.PlayerNickname;
-                var defenderName = defenderData.PlayerNickname;
-
-                switch (marioPlayer->AttackedWith) {
-                    case AttackType.Classic:
-                        Debug.Log(defenderName + " was killed by " + attackerName);
-                        break;
-                    case AttackType.Projectile:
-                        Debug.Log(defenderName + " was killed by " + attackerName + "using a projectile");
-                        break;
-                    case AttackType.Object:
-                        Debug.Log(defenderName + " was killed by " + attackerName + "using an object");
-                        break;
-                }
-            }
-
             CheckForGameEnd(f);
         }
 

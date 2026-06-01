@@ -49,6 +49,45 @@ namespace NSMB.Chat {
             QuantumEvent.Subscribe<EventPlayerKickedFromRoom>(this, OnPlayerKickedFromRoom, FilterOutReplay);
             QuantumEvent.Subscribe<EventPlayerUnbanned>(this, OnPlayerUnbanned, FilterOutReplay);
             QuantumEvent.Subscribe<EventPlayerTeamChangedByHost>(this, OnPlayerTeamChangedByHost, FilterOutReplay);
+            QuantumEvent.Subscribe<EventMarioPlayerKilled>(this, OnMarioPlayerKilled);
+        }
+
+        public void OnMarioPlayerKilled(EventMarioPlayerKilled e) {
+            Color color = Color.cyan;
+
+            var f = e.Game.Frames.Predicted;
+
+            var defenderData = f.GetPlayerData(e.Defender);
+            var defenderName = defenderData.PlayerNickname;
+
+            // Suicide sans attaqueur (trou, ...)
+            if (e.Attacker == default) {
+                AddSystemMessage("ui.inroom.chat.player.killed.suicide", color: color, "player", defenderName);
+                return;
+            }
+
+            // Suicide avec attaqueur (trou, ...)
+            if (e.Attacker == e.Defender) {
+                AddSystemMessage("ui.inroom.chat.player.killed.suicide.external", color: color, "player", defenderName);
+                return;
+            }
+
+            // Tué par un autre joueur
+            var attackerData = f.GetPlayerData(e.Attacker);
+            var attackerName = attackerData.PlayerNickname;
+            var attackType = e.attack;
+
+            switch (attackType) {
+                case AttackType.Classic:
+                    AddSystemMessage("ui.inroom.chat.player.killed.classic", color: color, "attacker", attackerName, "defender", defenderName);
+                    break;
+                case AttackType.Projectile:
+                    AddSystemMessage("ui.inroom.chat.player.killed.projectile", color: color, "attacker", attackerName, "defender", defenderName);
+                    break;
+                case AttackType.Object:
+                    AddSystemMessage("ui.inroom.chat.player.killed.object", color: color, "attacker", attackerName, "defender", defenderName);
+                    break;
+            }
         }
 
         private void OnUpdateView(CallbackUpdateView e) {

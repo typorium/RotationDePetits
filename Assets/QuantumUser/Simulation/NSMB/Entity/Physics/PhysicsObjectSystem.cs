@@ -791,7 +791,17 @@ namespace Quantum {
 
                 FP verticalDot = FPVector2.Dot(contact.Normal, FPVector2.Up);
                 if (verticalDot > Constants.PhysicsGroundMaxAngleCos) {
+
                     physicsObject->IsTouchingGround = true;
+
+                    // If entity is mario, make kill not count
+                    if (f.Unsafe.TryGetPointer<MarioPlayer>(physicsObject->Parent, out MarioPlayer* mario)) {
+                        if (f.Unsafe.TryGetPointer<Freezable>(physicsObject->Parent, out Freezable* marioFreezable)) {
+                            if (!marioFreezable->IsFrozen(f) && !mario->IsInKnockback) {
+                                mario->AttackerRef = default;
+                            }
+                        }
+                    }
 
                     FP angle = FPVector2.RadiansSignedSkipNormalize(contact.Normal, FPVector2.Up) * FP.Rad2Deg;
                     if (FPMath.Abs(physicsObject->FloorAngle) < FPMath.Abs(angle)) {

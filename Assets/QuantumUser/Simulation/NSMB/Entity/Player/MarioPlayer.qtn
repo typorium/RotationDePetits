@@ -225,6 +225,12 @@ synced event MarioPlayerDied {
 	EntityRef Attacker;
 }
 
+event MarioPlayerKilled {
+	PlayerRef Defender;
+	PlayerRef Attacker;
+	AttackType attack;
+}
+
 event MarioPlayerDeathUp {
 	EntityRef Entity;
 	bool FireDeath;
