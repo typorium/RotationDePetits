@@ -2,6 +2,7 @@ using Photon.Deterministic;
 using Quantum.Collections;
 using Quantum.Profiling;
 using System;
+using UnityEngine;
 
 namespace Quantum {
     public unsafe class MarioPlayerSystem : SystemMainThreadEntityFilter<MarioPlayer, MarioPlayerSystem.Filter>, ISignalOnComponentRemoved<Projectile>,
@@ -107,6 +108,34 @@ namespace Quantum {
             if (HandleHitbox(f, ref filter, physics)) {
                 // Attempt to eject if our hitbox changes
                 HandleStuckInBlock(f, ref filter, stage);
+            }
+
+            HandleResetKiller(f, ref filter);
+        }
+
+        public void HandleResetKiller(Frame f, ref Filter filter) {
+            var mario = filter.MarioPlayer;
+            var physicsObject = filter.PhysicsObject;
+
+            if (mario->IsDead) {
+                return;
+            }
+
+            var isKnockbacked = (
+                mario->IsInKnockback ||
+                mario->IsInWeakKnockback
+            );
+            var isTouchingGround = physicsObject->IsTouchingGround;
+            var isStarman = mario->InvincibilityFrames > 0;
+
+            if (
+                isStarman ||
+                (!isKnockbacked && isTouchingGround)
+            ) {
+                mario->AttackerRef = new() {
+                    HasKiller = false,
+                    Killer = default
+                };
             }
         }
 

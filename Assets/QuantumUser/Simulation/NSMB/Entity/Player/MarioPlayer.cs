@@ -334,14 +334,6 @@ namespace Quantum {
                 }
 
             }
-
-            // Technically not killed if was in star
-            if (InvincibilityFrames > 0) {
-                AttackerRef = new() {
-                    HasKiller = false,
-                    Killer = default
-                };
-            }
             
             // Send kill signal
             f.Events.MarioPlayerKilled(PlayerRef, AttackerRef, AttackedWith);
