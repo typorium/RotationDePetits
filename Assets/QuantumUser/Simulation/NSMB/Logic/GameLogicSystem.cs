@@ -2,6 +2,9 @@ using Photon.Deterministic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+
+
 
 namespace Quantum {
     public unsafe class GameLogicSystem : SystemMainThread, ISignalOnPlayerAdded, ISignalOnPlayerRemoved, ISignalOnMarioPlayerDied,
@@ -393,6 +396,11 @@ namespace Quantum {
                 EntityRef newPlayer = f.Create(character.Prototype);
                 var mario = f.Unsafe.GetPointer<MarioPlayer>(newPlayer);
                 mario->PlayerRef = data->PlayerRef;
+                mario->AttackerRef = new() {
+                    HasKiller = false,
+                    Killer = default
+                };
+                mario->AttackedWith = AttackType.Classic ;
                 mario->Lives = (byte) f.Global->Rules.Lives;
                 data->RealTeam = (byte) (f.Global->Rules.TeamsEnabled ? data->RequestedTeam : teamCount++);
 

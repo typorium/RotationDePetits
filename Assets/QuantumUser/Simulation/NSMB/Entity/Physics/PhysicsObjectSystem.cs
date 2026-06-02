@@ -791,6 +791,7 @@ namespace Quantum {
 
                 FP verticalDot = FPVector2.Dot(contact.Normal, FPVector2.Up);
                 if (verticalDot > Constants.PhysicsGroundMaxAngleCos) {
+
                     physicsObject->IsTouchingGround = true;
 
                     FP angle = FPVector2.RadiansSignedSkipNormalize(contact.Normal, FPVector2.Up) * FP.Rad2Deg;

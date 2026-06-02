@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using UnityEngine;
 
@@ -297,6 +298,49 @@ namespace Quantum {
 
             f.Signals.OnMarioPlayerDied(entity);
             f.Events.MarioPlayerDied(entity, fire, oldObjectiveCount, attacker);
+
+            // Killed by an enemy
+            if (attacker != EntityRef.None) {
+
+                // Koopa
+                if (f.Unsafe.TryGetPointer<Koopa>(attacker, out Koopa* koopa)) {
+                    if (koopa->IsKicked) {
+                        var koopaHoldable = f.Unsafe.GetPointer<Holdable>(attacker);
+                        var holder = koopaHoldable->Holder == EntityRef.None ? koopaHoldable->PreviousHolder : koopaHoldable->Holder;
+
+                        if (f.Unsafe.TryGetPointer<MarioPlayer>(holder, out MarioPlayer* marioAttacker)) {
+                            AttackerRef = new() {
+                                HasKiller = true,
+                                Killer = marioAttacker->PlayerRef
+                            };
+                            AttackedWith = AttackType.Object;
+                        }
+                    }
+                }
+            
+                //Bobomb
+                else if (f.Unsafe.TryGetPointer<Bobomb>(attacker, out Bobomb* bobomb)) {
+                    if (bobomb->CurrentDetonationFrames <= 0) {
+                        var holder = bobomb->LastActualHolder;
+
+                        if (holder != default) {
+                            AttackerRef = new() {
+                                HasKiller = true,
+                                Killer = holder
+                            };
+                            AttackedWith = AttackType.Object;
+                        }
+                    }
+                }
+
+            }
+            
+            // Send kill signal
+            f.Events.MarioPlayerKilled(PlayerRef, AttackerRef, AttackedWith);
+            AttackerRef = new() {
+                HasKiller = false,
+                Killer = default
+            };
         }
 
         public bool Powerdown(Frame f, EntityRef entity, bool ignoreInvincible, EntityRef attacker) {
@@ -563,7 +607,7 @@ namespace Quantum {
             CurrentKnockback = KnockbackStrength.None;
             IsInWeakKnockback = false;
             FacingRight = KnockbackWasOriginallyFacingRight;
-            LastAttacker = EntityRef.None;
+
             f.Events.MarioPlayerKnockbackOver(mario);
         }
 
