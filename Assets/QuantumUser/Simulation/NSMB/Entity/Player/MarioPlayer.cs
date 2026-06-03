@@ -607,6 +607,7 @@ namespace Quantum {
             CurrentKnockback = KnockbackStrength.None;
             IsInWeakKnockback = false;
             FacingRight = KnockbackWasOriginallyFacingRight;
+            LastAttacker = EntityRef.None;
 
             f.Events.MarioPlayerKnockbackOver(mario);
         }
