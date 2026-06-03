@@ -3,6 +3,8 @@ component Holdable {
 
 	[ExcludeFromPrototype] EntityRef Holder;
 	[ExcludeFromPrototype] EntityRef PreviousHolder;
+	[ExcludeFromPrototype] PlayerRef LastActualHolder;
+
 	[ExcludeFromPrototype] byte IgnoreOwnerFrames;
 }
 

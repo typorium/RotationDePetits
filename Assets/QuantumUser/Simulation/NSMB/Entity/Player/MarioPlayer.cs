@@ -302,35 +302,12 @@ namespace Quantum {
             // Killed by an enemy
             if (attacker != EntityRef.None) {
 
-                // Koopa
-                if (f.Unsafe.TryGetPointer<Koopa>(attacker, out Koopa* koopa)) {
-                    if (koopa->IsKicked) {
-                        var koopaHoldable = f.Unsafe.GetPointer<Holdable>(attacker);
-                        var holder = koopaHoldable->Holder == EntityRef.None ? koopaHoldable->PreviousHolder : koopaHoldable->Holder;
-
-                        if (f.Unsafe.TryGetPointer<MarioPlayer>(holder, out MarioPlayer* marioAttacker)) {
-                            AttackerRef = new() {
-                                HasKiller = true,
-                                Killer = marioAttacker->PlayerRef
-                            };
-                            AttackedWith = AttackType.Object;
-                        }
-                    }
-                }
-            
-                //Bobomb
-                else if (f.Unsafe.TryGetPointer<Bobomb>(attacker, out Bobomb* bobomb)) {
-                    if (bobomb->CurrentDetonationFrames <= 0) {
-                        var holder = bobomb->LastActualHolder;
-
-                        if (holder != default) {
-                            AttackerRef = new() {
-                                HasKiller = true,
-                                Killer = holder
-                            };
-                            AttackedWith = AttackType.Object;
-                        }
-                    }
+                if (f.Unsafe.TryGetPointer<Holdable>(attacker, out Holdable* attackerHoldable)) {
+                    AttackerRef = new() {
+                        HasKiller = true,
+                        Killer = attackerHoldable->LastActualHolder
+                    };
+                    AttackedWith = AttackType.Object;
                 }
 
             }

@@ -1708,9 +1708,6 @@ namespace Quantum {
     public FP Speed;
     [FieldOffset(2)]
     public UInt16 DetonationFrames;
-    [FieldOffset(4)]
-    [ExcludeFromPrototype()]
-    public PlayerRef LastActualHolder;
     [FieldOffset(0)]
     [ExcludeFromPrototype()]
     public UInt16 CurrentDetonationFrames;
@@ -1720,7 +1717,6 @@ namespace Quantum {
         hash = hash * 31 + ExplosionRadius.GetHashCode();
         hash = hash * 31 + Speed.GetHashCode();
         hash = hash * 31 + DetonationFrames.GetHashCode();
-        hash = hash * 31 + LastActualHolder.GetHashCode();
         hash = hash * 31 + CurrentDetonationFrames.GetHashCode();
         return hash;
       }
@@ -1729,7 +1725,6 @@ namespace Quantum {
         var p = (Bobomb*)ptr;
         serializer.Stream.Serialize(&p->CurrentDetonationFrames);
         serializer.Stream.Serialize(&p->DetonationFrames);
-        PlayerRef.Serialize(&p->LastActualHolder, serializer);
         FP.Serialize(&p->ExplosionRadius, serializer);
         FP.Serialize(&p->Speed, serializer);
     }
@@ -2339,16 +2334,19 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct Holdable : Quantum.IComponent {
-    public const Int32 SIZE = 24;
+    public const Int32 SIZE = 32;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(4)]
-    public QBoolean HoldAboveHead;
     [FieldOffset(8)]
-    [ExcludeFromPrototype()]
-    public EntityRef Holder;
+    public QBoolean HoldAboveHead;
     [FieldOffset(16)]
     [ExcludeFromPrototype()]
+    public EntityRef Holder;
+    [FieldOffset(24)]
+    [ExcludeFromPrototype()]
     public EntityRef PreviousHolder;
+    [FieldOffset(4)]
+    [ExcludeFromPrototype()]
+    public PlayerRef LastActualHolder;
     [FieldOffset(0)]
     [ExcludeFromPrototype()]
     public Byte IgnoreOwnerFrames;
@@ -2358,6 +2356,7 @@ namespace Quantum {
         hash = hash * 31 + HoldAboveHead.GetHashCode();
         hash = hash * 31 + Holder.GetHashCode();
         hash = hash * 31 + PreviousHolder.GetHashCode();
+        hash = hash * 31 + LastActualHolder.GetHashCode();
         hash = hash * 31 + IgnoreOwnerFrames.GetHashCode();
         return hash;
       }
@@ -2365,6 +2364,7 @@ namespace Quantum {
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (Holdable*)ptr;
         serializer.Stream.Serialize(&p->IgnoreOwnerFrames);
+        PlayerRef.Serialize(&p->LastActualHolder, serializer);
         QBoolean.Serialize(&p->HoldAboveHead, serializer);
         EntityRef.Serialize(&p->Holder, serializer);
         EntityRef.Serialize(&p->PreviousHolder, serializer);

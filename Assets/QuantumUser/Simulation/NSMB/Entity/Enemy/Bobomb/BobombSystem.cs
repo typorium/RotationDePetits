@@ -142,7 +142,9 @@ namespace Quantum {
                 return;
             }
 
-            bobomb->LastActualHolder = marioPlayer->PlayerRef;
+            if (f.Unsafe.TryGetPointer<Holdable>(entity, out Holdable* holdable)) {
+                holdable->LastActualHolder = marioPlayer->PlayerRef;
+            }
         }
         public void OnBobombBobombInteraction(Frame f, EntityRef bobombAEntity, EntityRef bobombBEntity) {
             var bobombA = f.Unsafe.GetPointer<Bobomb>(bobombAEntity);
