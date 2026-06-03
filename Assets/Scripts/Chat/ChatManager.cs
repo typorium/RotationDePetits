@@ -53,7 +53,7 @@ namespace NSMB.Chat {
         }
 
         public void OnMarioPlayerKilled(EventMarioPlayerKilled e) {
-            Color color = Color.cyan;
+            Color color = Color.darkRed;
 
             var f = e.Game.Frames.Predicted;
 
