@@ -8,8 +8,6 @@ component Bobomb {
 	FP Speed;
 	ushort DetonationFrames;
 
-	[ExcludeFromPrototype] PlayerRef LastActualHolder;
-
 	[ExcludeFromPrototype] ushort CurrentDetonationFrames;
 }
 
