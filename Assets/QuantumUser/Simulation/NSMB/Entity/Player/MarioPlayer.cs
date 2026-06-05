@@ -247,6 +247,7 @@ namespace Quantum {
         }
 
         public void Death(Frame f, EntityRef entity, bool fire, bool dropObjectives, EntityRef attacker) {
+
             if (IsDead) {
                 return;
             }
@@ -300,14 +301,31 @@ namespace Quantum {
             f.Events.MarioPlayerDied(entity, fire, oldObjectiveCount, attacker);
 
             // Killed by an enemy
-            if (attacker != EntityRef.None) {
+            if (attacker != EntityRef.None && attacker != entity) {
 
+                Debug.Log(attacker);
+
+                bool gotLastHolder = false;
                 if (f.Unsafe.TryGetPointer<Holdable>(attacker, out Holdable* attackerHoldable)) {
+                    if (attackerHoldable->LastActualHolder != default) {
+
+                        AttackerRef = new() {
+                            HasKiller = true,
+                            Killer = attackerHoldable->LastActualHolder
+                        };
+                        AttackedWith = AttackType.Object;
+
+                        gotLastHolder = true;
+
+                    }
+                }
+                
+                if (!gotLastHolder) {
                     AttackerRef = new() {
                         HasKiller = true,
-                        Killer = attackerHoldable->LastActualHolder
+                        Killer = PlayerRef
                     };
-                    AttackedWith = AttackType.Object;
+                    AttackedWith = AttackType.Classic;
                 }
 
             }
