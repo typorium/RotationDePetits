@@ -8,6 +8,7 @@ component Bobomb {
 	FP Speed;
 	ushort DetonationFrames;
 
+	[ExcludeFromPrototype] EntityRef Attacker;
 	[ExcludeFromPrototype] ushort CurrentDetonationFrames;
 }
 

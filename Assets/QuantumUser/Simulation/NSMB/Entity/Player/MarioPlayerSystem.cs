@@ -110,32 +110,29 @@ namespace Quantum {
                 HandleStuckInBlock(f, ref filter, stage);
             }
 
-            HandleResetKiller(f, ref filter);
+            HandleResetDeathInfo(f, ref filter);
         }
 
-        public void HandleResetKiller(Frame f, ref Filter filter) {
+        public void HandleResetDeathInfo(Frame f, ref Filter filter) {
             var mario = filter.MarioPlayer;
             var physicsObject = filter.PhysicsObject;
 
-            if (mario->IsDead) {
-                return;
-            }
+            DeathInfo deathInfo = new() {
+                DeathType = AttackType.Classic,
+                Killer = EntityRef.None
+            };
 
             var isKnockbacked = (
                 mario->IsInKnockback ||
                 mario->IsInWeakKnockback
             );
             var isTouchingGround = physicsObject->IsTouchingGround;
-            var isStarman = mario->InvincibilityFrames > 0;
+            var isFrozen = filter.Freezable->IsFrozen(f);
 
-            if (
-                isStarman ||
-                (!isKnockbacked && isTouchingGround)
-            ) {
-                mario->AttackerRef = new() {
-                    HasKiller = false,
-                    Killer = default
-                };
+            var shouldReset = !isFrozen && !mario->IsDead && !isKnockbacked && isTouchingGround;
+
+            if (shouldReset) {
+                mario->DeathInfo = deathInfo;
             }
         }
 
@@ -2128,12 +2125,10 @@ namespace Quantum {
             if (f.Unsafe.TryGetPointer(projectile->Owner, out MarioPlayer* ownerMario)) {
                 dropStars = ownerMario->GetTeam(f) != mario->GetTeam(f);
             }
-
-            mario->AttackerRef = new() {
-                HasKiller = true,
-                Killer = ownerMario->PlayerRef
+            mario->DeathInfo = new() {
+                DeathType = AttackType.Projectile,
+                Killer = projectile->Owner
             };
-            mario->AttackedWith = AttackType.Projectile;
 
             bool damageable = !mario->IsInKnockback
                 && mario->CurrentPowerupState != PowerupState.MegaMushroom
@@ -2199,23 +2194,13 @@ namespace Quantum {
                 return;
             }
 
+            marioA->DeathInfo.Killer = marioBEntity;
+            marioB->DeathInfo.Killer = marioAEntity;
+
             var marioATransform = f.Unsafe.GetPointer<Transform2D>(marioAEntity);
             var marioBTransform = f.Unsafe.GetPointer<Transform2D>(marioBEntity);
             var marioAPhysics = f.Unsafe.GetPointer<PhysicsObject>(marioAEntity);
             var marioBPhysics = f.Unsafe.GetPointer<PhysicsObject>(marioBEntity);
-
-            // Hit players
-            marioA->AttackerRef = new() {
-                HasKiller = true,
-                Killer = marioB->PlayerRef
-            };
-            marioA->AttackedWith = AttackType.Classic;
-
-            marioB->AttackerRef = new() {
-                HasKiller = true,
-                Killer = marioA->PlayerRef
-            }; ;
-            marioB->AttackedWith = AttackType.Classic;
 
             bool dropStars = marioA->GetTeam(f) != marioB->GetTeam(f);
 

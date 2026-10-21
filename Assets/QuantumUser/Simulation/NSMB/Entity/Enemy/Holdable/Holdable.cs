@@ -9,8 +9,6 @@ namespace Quantum {
             mario->HoldStartFrame = f.Number;
             f.Events.MarioPlayerPickedUpObject(marioEntity, entity, HoldAboveHead);
             f.Signals.OnMarioPlayerPickedUpObject(entity, marioEntity);
-
-            LastActualHolder = mario->PlayerRef;
         }
 
         public void DropWithoutThrowing(Frame f, EntityRef entity) {

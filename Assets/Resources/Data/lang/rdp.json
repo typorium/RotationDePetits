@@ -433,7 +433,7 @@
 
   "ui.inroom.chat.player.killed.suicide": "{player} s'est suicidé",
   "ui.inroom.chat.player.killed.suicide.external": "{player} s'est suicidé à l'aide un intermédiaire",
-  "ui.inroom.chat.player.killed.classic": "{attacker} a tué {defender}",
-  "ui.inroom.chat.player.killed.projectile": "{attacker} a tué {defender} par projectile",
+  "ui.inroom.chat.player.killed.classic": "{attacker} a tué {defender} ({powerupAttacker})",
+  "ui.inroom.chat.player.killed.projectile": "{attacker} a tué {defender} par projectile ({powerupAttacker})",
   "ui.inroom.chat.player.killed.object": "{attacker} a tué {defender} avec un objet"
 }

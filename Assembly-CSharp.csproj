@@ -166,6 +166,7 @@
     <Compile Include="Assets\Scripts\UI\Options\RebindCompositeOption.cs" />
     <Compile Include="Assets\Scripts\UI\SetDevBuildDate.cs" />
     <Compile Include="Assets\Scripts\UI\Elements\ShowOnHover.cs" />
+    <Compile Include="Assets\Scripts\Utilities\PowerupUtils.cs" />
     <Compile Include="Assets\Scripts\UI\Loading\LoadingLevelCreator.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu\InRoom\Room\ChangeableRule.cs" />
     <Compile Include="Assets\Scripts\Entity\World Elements\CloudAnimator.cs" />

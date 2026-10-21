@@ -190,6 +190,7 @@
     <None Include="Assets\QuantumUser\Simulation\NSMB\Map\GenericMover\GenericMover.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Culling\Cullable.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\Boo\Boo.qtn" />
+    <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Player\DeathInfo.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\ComboKeeper.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\ObjectiveCoin\StarCoin.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\Bobomb\Bobomb.qtn" />

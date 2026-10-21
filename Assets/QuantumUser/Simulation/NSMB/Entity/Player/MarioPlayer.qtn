@@ -41,9 +41,9 @@ enum AttackType : Byte {
 	Object // Koopas, spiked koopas, ...
 }
 
-struct AttackerType {
-	bool HasKiller;
-	PlayerRef Killer;
+struct DeathInfo {
+	AttackType DeathType;
+	EntityRef Killer;
 }
 
 component MarioPlayer {
@@ -137,8 +137,7 @@ component MarioPlayer {
 
 	[ExcludeFromPrototype] EntityRef CurrentSpinner;
 
-	[ExcludeFromPrototype] AttackerType AttackerRef;
-	[ExcludeFromPrototype] AttackType AttackedWith;
+	[ExcludeFromPrototype] DeathInfo DeathInfo;
 }
 
 struct StarChasersData {
@@ -231,10 +230,9 @@ synced event MarioPlayerDied {
 	EntityRef Attacker;
 }
 
-event MarioPlayerKilled {
-	PlayerRef Defender;
-	AttackerType AttackerData;
-	AttackType attack;
+event MarioPlayerDeathInfo {
+	PlayerRef Player;
+	DeathInfo DeathInfo;
 }
 
 event MarioPlayerDeathUp {
