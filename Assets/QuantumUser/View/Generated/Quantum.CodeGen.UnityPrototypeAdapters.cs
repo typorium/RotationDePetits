@@ -50,6 +50,19 @@ namespace Quantum.Prototypes.Unity {
   #endif //;
   
   [System.SerializableAttribute()]
+  public unsafe partial class DeathInfoPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.DeathInfoPrototype> {
+    public Quantum.QEnum8<AttackType> DeathType;
+    public Quantum.QuantumEntityPrototype Killer;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.DeathInfoPrototype prototype);
+    public override Quantum.Prototypes.DeathInfoPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.DeathInfoPrototype();
+      converter.Convert(this.DeathType, out result.DeathType);
+      converter.Convert(this.Killer, out result.Killer);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
+  [System.SerializableAttribute()]
   public unsafe partial class EnterablePipePrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.EnterablePipePrototype> {
     public Quantum.QuantumEntityPrototype OtherPipe;
     public QBoolean IsEnterable;
@@ -64,6 +77,19 @@ namespace Quantum.Prototypes.Unity {
       converter.Convert(this.IsCeilingPipe, out result.IsCeilingPipe);
       converter.Convert(this.IsMiniOnly, out result.IsMiniOnly);
       converter.Convert(this.TransitionOnlyPanning, out result.TransitionOnlyPanning);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
+  [System.SerializableAttribute()]
+  public unsafe partial class MarioPlayerPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.MarioPlayerPrototype> {
+    public AssetRef<MarioPlayerPhysicsInfo> PhysicsAsset;
+    public AssetRef<CharacterAsset> CharacterAsset;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.MarioPlayerPrototype prototype);
+    public override Quantum.Prototypes.MarioPlayerPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.MarioPlayerPrototype();
+      converter.Convert(this.PhysicsAsset, out result.PhysicsAsset);
+      converter.Convert(this.CharacterAsset, out result.CharacterAsset);
       ConvertUser(converter, ref result);
       return result;
     }

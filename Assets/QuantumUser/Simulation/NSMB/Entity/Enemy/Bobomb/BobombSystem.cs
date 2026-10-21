@@ -189,6 +189,7 @@ namespace Quantum {
                 if (mario->CanPickupItem(f, marioEntity, bobombEntity)) {
                     // Pickup by player
                     bobombHoldable->Pickup(f, bobombEntity, marioEntity);
+                    bobomb->Attacker = marioEntity;
                 } else {
                     // Kicked by player
                     bobomb->Kick(f, bobombEntity, marioEntity, FPMath.Abs(marioPhysicsObject->Velocity.X) / 3);

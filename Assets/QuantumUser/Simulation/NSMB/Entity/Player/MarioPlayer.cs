@@ -300,42 +300,64 @@ namespace Quantum {
             f.Signals.OnMarioPlayerDied(entity);
             f.Events.MarioPlayerDied(entity, fire, oldObjectiveCount, attacker);
 
-            // Killed by an enemy
-            if (attacker != EntityRef.None && attacker != entity) {
+            AnalyzeDeathCause(f, entity, attacker);
+            f.Events.MarioPlayerDeathInfo(PlayerRef, DeathInfo);
+        }
 
-                Debug.Log(attacker);
+        private void AnalyzeDeathCause(Frame f, EntityRef victim, EntityRef attacker) {
 
-                bool gotLastHolder = false;
-                if (f.Unsafe.TryGetPointer<Holdable>(attacker, out Holdable* attackerHoldable)) {
-                    if (attackerHoldable->LastActualHolder != default) {
-
-                        AttackerRef = new() {
-                            HasKiller = true,
-                            Killer = attackerHoldable->LastActualHolder
-                        };
-                        AttackedWith = AttackType.Object;
-
-                        gotLastHolder = true;
-
-                    }
-                }
-                
-                if (!gotLastHolder) {
-                    AttackerRef = new() {
-                        HasKiller = true,
-                        Killer = PlayerRef
-                    };
-                    AttackedWith = AttackType.Classic;
-                }
-
-            }
+            var wasAttackedPriorToDeath = (DeathInfo.Killer != EntityRef.None);
             
-            // Send kill signal
-            f.Events.MarioPlayerKilled(PlayerRef, AttackerRef, AttackedWith);
-            AttackerRef = new() {
-                HasKiller = false,
-                Killer = default
-            };
+            // Raisons externes
+            if (attacker == EntityRef.None) {
+                return;
+            }
+
+            // Suicide
+            if (victim == attacker) {
+                return;
+            }
+
+            // Koopa
+            if (f.Unsafe.TryGetPointer<Koopa>(attacker, out Koopa* koopa)) {
+                DeathInfo.DeathType = AttackType.Object;
+
+                if (!wasAttackedPriorToDeath)
+                    DeathInfo.Killer = koopa->Attacker;
+
+                return;
+            }
+
+            // Bobomb
+            if (f.Unsafe.TryGetPointer<Bobomb>(attacker, out Bobomb* bobomb)) {
+                DeathInfo.DeathType = AttackType.Object;
+
+                if (!wasAttackedPriorToDeath)
+                    DeathInfo.Killer = bobomb->Attacker;
+
+                return;
+            }
+
+            // Projectile
+            if (f.Unsafe.TryGetPointer<Projectile>(attacker, out Projectile* projectile)) {
+                DeathInfo.DeathType = AttackType.Projectile;
+                DeathInfo.Killer = projectile->Owner;
+
+                var projectileAsset = f.FindAsset(projectile->Asset);
+                return;
+            }
+
+            // Pirhana
+            if (f.Unsafe.TryGetPointer<PiranhaPlant>(attacker, out PiranhaPlant* piranhaPlant)) {
+                if (wasAttackedPriorToDeath) {
+                    DeathInfo.DeathType = AttackType.Object;
+                }
+                return;
+            }
+
+            // Other player
+            DeathInfo.DeathType = AttackType.Classic;
+            DeathInfo.Killer = attacker;
         }
 
         public bool Powerdown(Frame f, EntityRef entity, bool ignoreInvincible, EntityRef attacker) {
@@ -356,25 +378,25 @@ namespace Quantum {
             PreviousPowerupState = CurrentPowerupState;
 
             switch (CurrentPowerupState) {
-            case PowerupState.MiniMushroom:
-            case PowerupState.NoPowerup: {
-                Death(f, entity, false, true, attacker);
-                break;
-            }
-            case PowerupState.Mushroom: {
-                CurrentPowerupState = PowerupState.NoPowerup;
-                f.Signals.OnMarioPlayerDropObjective(entity, 1, attacker);
-                break;
-            }
-            case PowerupState.HammerSuit:
-            case PowerupState.FireFlower:
-            case PowerupState.IceFlower:
-            case PowerupState.PropellerMushroom:
-            case PowerupState.BlueShell: {
-                CurrentPowerupState = PowerupState.Mushroom;
-                f.Signals.OnMarioPlayerDropObjective(entity, 1, attacker);
-                break;
-            }
+                case PowerupState.MiniMushroom:
+                case PowerupState.NoPowerup: {
+                    Death(f, entity, false, true, attacker);
+                    break;
+                }
+                case PowerupState.Mushroom: {
+                    CurrentPowerupState = PowerupState.NoPowerup;
+                    f.Signals.OnMarioPlayerDropObjective(entity, 1, attacker);
+                    break;
+                }
+                case PowerupState.HammerSuit:
+                case PowerupState.FireFlower:
+                case PowerupState.IceFlower:
+                case PowerupState.PropellerMushroom:
+                case PowerupState.BlueShell: {
+                    CurrentPowerupState = PowerupState.Mushroom;
+                    f.Signals.OnMarioPlayerDropObjective(entity, 1, attacker);
+                    break;
+                }
             }
 
             IsDrilling &= !IsPropellerFlying;

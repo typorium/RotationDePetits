@@ -120,7 +120,7 @@ namespace Quantum {
           case EventMarioPlayerUsedPropeller.ID: result = typeof(EventMarioPlayerUsedPropeller); return;
           case EventMarioPlayerPropellerSpin.ID: result = typeof(EventMarioPlayerPropellerSpin); return;
           case EventMarioPlayerDied.ID: result = typeof(EventMarioPlayerDied); return;
-          case EventMarioPlayerKilled.ID: result = typeof(EventMarioPlayerKilled); return;
+          case EventMarioPlayerDeathInfo.ID: result = typeof(EventMarioPlayerDeathInfo); return;
           case EventMarioPlayerDeathUp.ID: result = typeof(EventMarioPlayerDeathUp); return;
           case EventMarioPlayerTookDamage.ID: result = typeof(EventMarioPlayerTookDamage); return;
           case EventMarioPlayerPreRespawned.ID: result = typeof(EventMarioPlayerPreRespawned); return;
@@ -576,11 +576,10 @@ namespace Quantum {
         _f.AddEvent(ev);
         return ev;
       }
-      public EventMarioPlayerKilled MarioPlayerKilled(PlayerRef Defender, AttackerType AttackerData, AttackType attack) {
-        var ev = _f.Context.AcquireEvent<EventMarioPlayerKilled>(EventMarioPlayerKilled.ID);
-        ev.Defender = Defender;
-        ev.AttackerData = AttackerData;
-        ev.attack = attack;
+      public EventMarioPlayerDeathInfo MarioPlayerDeathInfo(PlayerRef Player, DeathInfo DeathInfo) {
+        var ev = _f.Context.AcquireEvent<EventMarioPlayerDeathInfo>(EventMarioPlayerDeathInfo.ID);
+        ev.Player = Player;
+        ev.DeathInfo = DeathInfo;
         _f.AddEvent(ev);
         return ev;
       }
@@ -2358,15 +2357,14 @@ namespace Quantum {
       }
     }
   }
-  public unsafe partial class EventMarioPlayerKilled : EventBase {
+  public unsafe partial class EventMarioPlayerDeathInfo : EventBase {
     public new const Int32 ID = 60;
-    public PlayerRef Defender;
-    public AttackerType AttackerData;
-    public AttackType attack;
-    protected EventMarioPlayerKilled(Int32 id, EventFlags flags) : 
+    public PlayerRef Player;
+    public DeathInfo DeathInfo;
+    protected EventMarioPlayerDeathInfo(Int32 id, EventFlags flags) : 
         base(id, flags) {
     }
-    public EventMarioPlayerKilled() : 
+    public EventMarioPlayerDeathInfo() : 
         base(60, EventFlags.Server|EventFlags.Client) {
     }
     public new QuantumGame Game {
@@ -2380,9 +2378,8 @@ namespace Quantum {
     public override Int32 GetHashCode() {
       unchecked {
         var hash = 359;
-        hash = hash * 31 + Defender.GetHashCode();
-        hash = hash * 31 + AttackerData.GetHashCode();
-        hash = hash * 31 + attack.GetHashCode();
+        hash = hash * 31 + Player.GetHashCode();
+        hash = hash * 31 + DeathInfo.GetHashCode();
         return hash;
       }
     }

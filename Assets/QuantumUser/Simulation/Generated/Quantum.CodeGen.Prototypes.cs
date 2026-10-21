@@ -50,18 +50,6 @@ namespace Quantum.Prototypes {
   #endif //;
   
   [System.SerializableAttribute()]
-  [Quantum.Prototypes.Prototype(typeof(Quantum.AttackerType))]
-  public unsafe partial class AttackerTypePrototype : StructPrototype {
-    public QBoolean HasKiller;
-    public PlayerRef Killer;
-    partial void MaterializeUser(Frame frame, ref Quantum.AttackerType result, in PrototypeMaterializationContext context);
-    public void Materialize(Frame frame, ref Quantum.AttackerType result, in PrototypeMaterializationContext context = default) {
-        result.HasKiller = this.HasKiller;
-        result.Killer = this.Killer;
-        MaterializeUser(frame, ref result, in context);
-    }
-  }
-  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.BannedPlayerInfo))]
   public unsafe partial class BannedPlayerInfoPrototype : StructPrototype {
     [MaxStringByteCount(46, "Unicode")]
@@ -334,6 +322,16 @@ namespace Quantum.Prototypes {
         result.Offset = this.Offset;
         result.BroadRadius = this.BroadRadius;
         MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.DeathInfo))]
+  public unsafe class DeathInfoPrototype : StructPrototype {
+    public Quantum.QEnum8<AttackType> DeathType;
+    public MapEntityId Killer;
+    public void Materialize(Frame frame, ref Quantum.DeathInfo result, in PrototypeMaterializationContext context = default) {
+        result.DeathType = this.DeathType;
+        PrototypeValidator.FindMapEntity(this.Killer, in context, out result.Killer);
     }
   }
   [System.SerializableAttribute()]
@@ -690,10 +688,9 @@ namespace Quantum.Prototypes {
   }
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.MarioPlayer))]
-  public unsafe partial class MarioPlayerPrototype : ComponentPrototype<Quantum.MarioPlayer> {
+  public unsafe class MarioPlayerPrototype : ComponentPrototype<Quantum.MarioPlayer> {
     public AssetRef<MarioPlayerPhysicsInfo> PhysicsAsset;
     public AssetRef<CharacterAsset> CharacterAsset;
-    partial void MaterializeUser(Frame frame, ref Quantum.MarioPlayer result, in PrototypeMaterializationContext context);
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.MarioPlayer component = default;
         Materialize((Frame)f, ref component, in context);
@@ -702,7 +699,6 @@ namespace Quantum.Prototypes {
     public void Materialize(Frame frame, ref Quantum.MarioPlayer result, in PrototypeMaterializationContext context = default) {
         result.PhysicsAsset = this.PhysicsAsset;
         result.CharacterAsset = this.CharacterAsset;
-        MaterializeUser(frame, ref result, in context);
     }
   }
   [System.SerializableAttribute()]

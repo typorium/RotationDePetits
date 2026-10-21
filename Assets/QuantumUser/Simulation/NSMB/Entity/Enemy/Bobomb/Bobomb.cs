@@ -9,8 +9,11 @@ namespace Quantum {
             var holdable = f.Unsafe.GetPointer<Holdable>(entity);
             holdable->Holder = default;
             holdable->PreviousHolder = default;
-            holdable->LastActualHolder = default;
             holdable->IgnoreOwnerFrames = 0;
+
+            if (f.Unsafe.TryGetPointer(entity, out Bobomb* bobomb)) {
+                bobomb->Attacker = EntityRef.None;
+            }
 
             f.Unsafe.GetPointer<Interactable>(entity)->ColliderDisabled = false;
         }
@@ -32,6 +35,10 @@ namespace Quantum {
                 Constants._3_50
             );
 
+            if (f.Unsafe.TryGetPointer(entity, out Bobomb* bobomb)) {
+                bobomb->Attacker = initiator;
+            }
+
             f.Events.PlayComboSound(entity, 0);
         }
 
@@ -41,6 +48,10 @@ namespace Quantum {
             var bobombTransform = f.Unsafe.GetPointer<Transform2D>(bobombEntity);
 
             FPVector2 position = bobombTransform->Position;
+
+            if (f.Unsafe.TryGetPointer(bobombEntity, out Bobomb* bobomb)) {
+                bobomb->Attacker = EntityRef.None;
+            }
 
             if (reason.ShouldSpawnCoin()) {
                 // Spawn coin
@@ -80,7 +91,6 @@ namespace Quantum {
                 marioHolder->HeldEntity = default;
                 holdable->PreviousHolder = default;
                 holdable->Holder = default;
-                holdable->LastActualHolder = default;
             }
 
             f.Unsafe.GetPointer<Interactable>(bobombEntity)->ColliderDisabled = true;

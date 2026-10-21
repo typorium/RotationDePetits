@@ -49,47 +49,56 @@ namespace NSMB.Chat {
             QuantumEvent.Subscribe<EventPlayerKickedFromRoom>(this, OnPlayerKickedFromRoom, FilterOutReplay);
             QuantumEvent.Subscribe<EventPlayerUnbanned>(this, OnPlayerUnbanned, FilterOutReplay);
             QuantumEvent.Subscribe<EventPlayerTeamChangedByHost>(this, OnPlayerTeamChangedByHost, FilterOutReplay);
-            QuantumEvent.Subscribe<EventMarioPlayerKilled>(this, OnMarioPlayerKilled);
+            QuantumEvent.Subscribe<EventMarioPlayerDeathInfo>(this, OnMarioPlayerDeathInfo);
         }
 
-        public void OnMarioPlayerKilled(EventMarioPlayerKilled e) {
+        public void OnMarioPlayerDeathInfo(EventMarioPlayerDeathInfo e) {
             Color color = Color.darkRed;
 
             var f = e.Game.Frames.Predicted;
 
-            var defender = e.Defender;
-            var defenderData = f.GetPlayerData(defender);
-            var defenderName = defenderData.PlayerNickname;
+            var victim = e.Player;
+            var victimData = f.GetPlayerData(victim);
+            var victimName = victimData.PlayerNickname;
 
-            var attacker = e.AttackerData.Killer;
-            var wasKilled = e.AttackerData.HasKiller;
+            var attacker = e.DeathInfo.Killer;
 
-            // Suicide sans attaqueur (trou, ...)
-            if (!wasKilled) {
-                AddSystemMessage("ui.inroom.chat.player.killed.suicide", color: color, "player", defenderName);
+            // Suicide sans attaqueur
+            if (attacker == default) {
+                AddSystemMessage("ui.inroom.chat.player.killed.suicide", color: color, "player", victimName);
                 return;
             }
 
-            // Suicide avec attaqueur (trou, ...)
-            if (attacker == defender) {
-                AddSystemMessage("ui.inroom.chat.player.killed.suicide.external", color: color, "player", defenderName);
+            // Récupération du mario attaqueur
+            if (! f.Unsafe.TryGetPointer<MarioPlayer>(attacker, out MarioPlayer* marioAttacker)) {
+                return;
+            }
+
+            // Get powerup
+            var attackerPowerup = PowerupUtils.GetPowerupName(f, marioAttacker);
+
+            // Suicide avec attaqueur
+            if (marioAttacker->PlayerRef == victim) {
+                AddSystemMessage("ui.inroom.chat.player.killed.suicide.external", color: color, "player", victimName);
                 return;
             }
 
             // Tué par un autre joueur
-            var attackerData = f.GetPlayerData(attacker);
+            var attackerData = f.GetPlayerData(marioAttacker->PlayerRef);
             var attackerName = attackerData.PlayerNickname;
-            var attackType = e.attack;
+            var attackType = e.DeathInfo.DeathType;
 
             switch (attackType) {
-                case AttackType.Classic:
-                    AddSystemMessage("ui.inroom.chat.player.killed.classic", color: color, "attacker", attackerName, "defender", defenderName);
+                case AttackType.Classic: {
+                var powerupAttacker =
+                AddSystemMessage("ui.inroom.chat.player.killed.classic", color: color, "attacker", attackerName, "defender", victimName, "powerupAttacker", attackerPowerup);
                     break;
+                }
                 case AttackType.Projectile:
-                    AddSystemMessage("ui.inroom.chat.player.killed.projectile", color: color, "attacker", attackerName, "defender", defenderName);
+                    AddSystemMessage("ui.inroom.chat.player.killed.projectile", color: color, "attacker", attackerName, "defender", victimName, "powerupAttacker", attackerPowerup);
                     break;
                 case AttackType.Object:
-                    AddSystemMessage("ui.inroom.chat.player.killed.object", color: color, "attacker", attackerName, "defender", defenderName);
+                    AddSystemMessage("ui.inroom.chat.player.killed.object", color: color, "attacker", attackerName, "defender", victimName);
                     break;
             }
         }
