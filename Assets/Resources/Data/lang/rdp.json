@@ -352,6 +352,7 @@
   "level.custom.desert": "Désert",
   "level.custom.ghosthouse": "Ennui",
   "level.custom.beach": "Ennui 2",
+
   "level.header.none": "- No Category -",
   "level.header.rdp": "♡ Rotation De Parpaing ♡",
   "level.rdp.parpgdn": "Gare du Nord",
@@ -359,6 +360,8 @@
   "level.rdp.betterbricks": "Better Bricks",
   "level.rdp.chateau": "Chateau",
   "level.rdp.superspleef": "SUPER SPLEEF",
+  "level.rdp.bismiltnebre": "Bismil Tnebre",
+
   "team.red": "Red Team",
   "team.green": "Green Team",
   "team.blue": "Blue Team",

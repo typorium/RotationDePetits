@@ -19,8 +19,8 @@ MonoBehaviour:
   ShowAuthorAndComposer: 0
   StageAuthor: Xevyyy
   MusicComposer: DROcelot
-  TranslationKey: levels.custom.BismilTnebre
-  GroupingTranslationKey: 
+  TranslationKey: level.rdp.bismiltnebre
+  GroupingTranslationKey: level.header.rdp
   DiscordStageImage: 
   SortOrder: 0
   Icon: {fileID: 6268277884297706374, guid: b455056ca00f84e48a8040f94ae8170d, type: 3}
