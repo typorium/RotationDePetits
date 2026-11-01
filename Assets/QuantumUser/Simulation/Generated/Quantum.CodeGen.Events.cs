@@ -120,7 +120,7 @@ namespace Quantum {
           case EventMarioPlayerUsedPropeller.ID: result = typeof(EventMarioPlayerUsedPropeller); return;
           case EventMarioPlayerPropellerSpin.ID: result = typeof(EventMarioPlayerPropellerSpin); return;
           case EventMarioPlayerDied.ID: result = typeof(EventMarioPlayerDied); return;
-          case EventMarioPlayerDeathInfo.ID: result = typeof(EventMarioPlayerDeathInfo); return;
+          case EventMarioDied.ID: result = typeof(EventMarioDied); return;
           case EventMarioPlayerDeathUp.ID: result = typeof(EventMarioPlayerDeathUp); return;
           case EventMarioPlayerTookDamage.ID: result = typeof(EventMarioPlayerTookDamage); return;
           case EventMarioPlayerPreRespawned.ID: result = typeof(EventMarioPlayerPreRespawned); return;
@@ -576,10 +576,9 @@ namespace Quantum {
         _f.AddEvent(ev);
         return ev;
       }
-      public EventMarioPlayerDeathInfo MarioPlayerDeathInfo(PlayerRef Player, DeathInfo DeathInfo) {
-        var ev = _f.Context.AcquireEvent<EventMarioPlayerDeathInfo>(EventMarioPlayerDeathInfo.ID);
-        ev.Player = Player;
-        ev.DeathInfo = DeathInfo;
+      public EventMarioDied MarioDied(DeathMessageInfo messageInfo) {
+        var ev = _f.Context.AcquireEvent<EventMarioDied>(EventMarioDied.ID);
+        ev.messageInfo = messageInfo;
         _f.AddEvent(ev);
         return ev;
       }
@@ -2357,14 +2356,13 @@ namespace Quantum {
       }
     }
   }
-  public unsafe partial class EventMarioPlayerDeathInfo : EventBase {
+  public unsafe partial class EventMarioDied : EventBase {
     public new const Int32 ID = 60;
-    public PlayerRef Player;
-    public DeathInfo DeathInfo;
-    protected EventMarioPlayerDeathInfo(Int32 id, EventFlags flags) : 
+    public DeathMessageInfo messageInfo;
+    protected EventMarioDied(Int32 id, EventFlags flags) : 
         base(id, flags) {
     }
-    public EventMarioPlayerDeathInfo() : 
+    public EventMarioDied() : 
         base(60, EventFlags.Server|EventFlags.Client) {
     }
     public new QuantumGame Game {
@@ -2378,8 +2376,7 @@ namespace Quantum {
     public override Int32 GetHashCode() {
       unchecked {
         var hash = 359;
-        hash = hash * 31 + Player.GetHashCode();
-        hash = hash * 31 + DeathInfo.GetHashCode();
+        hash = hash * 31 + messageInfo.GetHashCode();
         return hash;
       }
     }

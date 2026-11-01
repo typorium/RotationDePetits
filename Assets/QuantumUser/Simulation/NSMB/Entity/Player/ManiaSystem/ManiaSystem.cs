@@ -60,7 +60,7 @@ namespace Quantum {
                 case PowerupState.PropellerMushroom:
                 case PowerupState.HammerSuit:
                 case PowerupState.MiniMushroom:
-                    weight = 3;
+                    weight = 5;
                     break;
             }
 

@@ -49,57 +49,88 @@ namespace NSMB.Chat {
             QuantumEvent.Subscribe<EventPlayerKickedFromRoom>(this, OnPlayerKickedFromRoom, FilterOutReplay);
             QuantumEvent.Subscribe<EventPlayerUnbanned>(this, OnPlayerUnbanned, FilterOutReplay);
             QuantumEvent.Subscribe<EventPlayerTeamChangedByHost>(this, OnPlayerTeamChangedByHost, FilterOutReplay);
-            QuantumEvent.Subscribe<EventMarioPlayerDeathInfo>(this, OnMarioPlayerDeathInfo);
+            QuantumEvent.Subscribe<EventMarioDied>(this, OnMarioDied);
         }
 
-        public void OnMarioPlayerDeathInfo(EventMarioPlayerDeathInfo e) {
-            Color color = Color.darkRed;
+        public void OnMarioDied(EventMarioDied e) {
 
+            // Constantes
+            Color color = Color.darkRed;
             var f = e.Game.Frames.Predicted;
 
-            var victim = e.Player;
-            var victimData = f.GetPlayerData(victim);
-            var victimName = victimData.PlayerNickname;
+            Debug.Log("yo 1");
 
-            var attacker = e.DeathInfo.Killer;
-
-            // Suicide sans attaqueur
-            if (attacker == default) {
-                AddSystemMessage("ui.inroom.chat.player.killed.suicide", color: color, "player", victimName);
+            // Récupération du nom de la victime
+            var marioVictimEntity = e.messageInfo.MarioVictim;
+            if (! f.Unsafe.TryGetPointer<MarioPlayer>(marioVictimEntity, out MarioPlayer* marioVictim)) {
                 return;
             }
 
-            // Récupération du mario attaqueur
-            if (! f.Unsafe.TryGetPointer<MarioPlayer>(attacker, out MarioPlayer* marioAttacker)) {
+            Debug.Log("yo 2");
+            var marioVictimData = f.GetPlayerData(marioVictim->PlayerRef);
+            if (marioVictimData == null) {
                 return;
             }
 
-            // Get powerup
-            var attackerPowerup = PowerupUtils.GetPowerupName(f, marioAttacker);
+            Debug.Log("yo 3");
+            var marioVictimName = marioVictimData.PlayerNickname;
 
-            // Suicide avec attaqueur
-            if (marioAttacker->PlayerRef == victim) {
-                AddSystemMessage("ui.inroom.chat.player.killed.suicide.external", color: color, "player", victimName);
-                return;
+            /*
+             Suicides
+            */
+
+            switch (e.messageInfo.Type) {
+                case DeathType.Suicide:
+                    Debug.Log("yo 4");
+                    AddSystemMessage("ui.inroom.chat.player.killed.suicide", color: color, "player", marioVictimName);
+                    return;
             }
 
-            // Tué par un autre joueur
-            var attackerData = f.GetPlayerData(marioAttacker->PlayerRef);
-            var attackerName = attackerData.PlayerNickname;
-            var attackType = e.DeathInfo.DeathType;
+            Debug.Log("yo 5");
 
-            switch (attackType) {
-                case AttackType.Classic: {
-                var powerupAttacker =
-                AddSystemMessage("ui.inroom.chat.player.killed.classic", color: color, "attacker", attackerName, "defender", victimName, "powerupAttacker", attackerPowerup);
-                    break;
-                }
-                case AttackType.Projectile:
-                    AddSystemMessage("ui.inroom.chat.player.killed.projectile", color: color, "attacker", attackerName, "defender", victimName, "powerupAttacker", attackerPowerup);
-                    break;
-                case AttackType.Object:
-                    AddSystemMessage("ui.inroom.chat.player.killed.object", color: color, "attacker", attackerName, "defender", victimName);
-                    break;
+            /*
+             Kills
+            */
+
+            // Récupération du nom de l'attaquant
+            var marioAttackerEntity = e.messageInfo.MarioAttacker;
+            if (!f.Unsafe.TryGetPointer<MarioPlayer>(marioAttackerEntity, out MarioPlayer* marioAttacker)) {
+                return;
+            }
+            var marioAttackerData = f.GetPlayerData(marioAttacker->PlayerRef);
+            if (marioAttackerData == null) {
+                return;
+            }
+            var marioAttackerName = marioAttackerData.PlayerNickname;
+
+            switch (e.messageInfo.Type) {
+                case DeathType.DirectKill:
+                    var marioAttackerPowerup = PowerupUtils.GetPowerupName(marioAttacker);
+                    AddSystemMessage(
+                        "ui.inroom.chat.player.killed.classic", color: color,
+                        "attacker", marioAttackerName,
+                        "defender", marioVictimName,
+                        "powerupAttacker", marioAttackerPowerup
+                    );
+                    return;
+
+                case DeathType.KillWithProjectile:
+                    var projectileType = e.messageInfo.ProjectileType;
+                    var projectilePowerup = PowerupUtils.GetPowerupNameFromPowerupState(projectileType);
+                    AddSystemMessage(
+                        "ui.inroom.chat.player.killed.projectile", color: color,
+                        "attacker", marioAttackerName,
+                        "defender", marioVictimName,
+                        "powerupAttacker", projectilePowerup
+                     );
+                    return;
+
+                case DeathType.KillWithObject:
+                    AddSystemMessage(
+                        "ui.inroom.chat.player.killed.object", color: color,
+                        "attacker", marioAttackerName,
+                        "defender", marioVictimName);
+                    return;
             }
         }
 

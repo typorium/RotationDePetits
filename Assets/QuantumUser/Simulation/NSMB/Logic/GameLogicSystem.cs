@@ -393,14 +393,12 @@ namespace Quantum {
                     character = f.Context.GetAllAssets<CharacterAsset>()[0];
                 }
 
-                DeathInfo deathInfo = new() {
-                    DeathType = AttackType.Classic,
-                    Killer = EntityRef.None
-                };
-
                 EntityRef newPlayer = f.Create(character.Prototype);
                 var mario = f.Unsafe.GetPointer<MarioPlayer>(newPlayer);
-                mario->DeathInfo = deathInfo;
+
+                mario->PowerupStateOnMarioInteraction = PowerupState.NoPowerup;
+                mario->LastInteractionType = InteractionType.None;
+
                 mario->PlayerRef = data->PlayerRef;
                 mario->Lives = (byte) f.Global->Rules.Lives;
                 data->RealTeam = (byte) (f.Global->Rules.TeamsEnabled ? data->RequestedTeam : teamCount++);

@@ -325,13 +325,17 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
-  [Quantum.Prototypes.Prototype(typeof(Quantum.DeathInfo))]
-  public unsafe class DeathInfoPrototype : StructPrototype {
-    public Quantum.QEnum8<AttackType> DeathType;
-    public MapEntityId Killer;
-    public void Materialize(Frame frame, ref Quantum.DeathInfo result, in PrototypeMaterializationContext context = default) {
-        result.DeathType = this.DeathType;
-        PrototypeValidator.FindMapEntity(this.Killer, in context, out result.Killer);
+  [Quantum.Prototypes.Prototype(typeof(Quantum.DeathMessageInfo))]
+  public unsafe class DeathMessageInfoPrototype : StructPrototype {
+    public Quantum.QEnum32<DeathType> Type;
+    public MapEntityId MarioVictim;
+    public MapEntityId MarioAttacker;
+    public Quantum.QEnum8<PowerupState> ProjectileType;
+    public void Materialize(Frame frame, ref Quantum.DeathMessageInfo result, in PrototypeMaterializationContext context = default) {
+        result.Type = this.Type;
+        PrototypeValidator.FindMapEntity(this.MarioVictim, in context, out result.MarioVictim);
+        PrototypeValidator.FindMapEntity(this.MarioAttacker, in context, out result.MarioAttacker);
+        result.ProjectileType = this.ProjectileType;
     }
   }
   [System.SerializableAttribute()]
@@ -591,6 +595,16 @@ namespace Quantum.Prototypes {
     public void Materialize(Frame frame, ref Quantum.Interactable result, in PrototypeMaterializationContext context = default) {
         result.ColliderDisabled = this.ColliderDisabled;
         MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.InteractionInfo))]
+  public unsafe class InteractionInfoPrototype : StructPrototype {
+    public MapEntityId Mario;
+    public Quantum.QEnum8<PowerupState> ProjectileType;
+    public void Materialize(Frame frame, ref Quantum.InteractionInfo result, in PrototypeMaterializationContext context = default) {
+        PrototypeValidator.FindMapEntity(this.Mario, in context, out result.Mario);
+        result.ProjectileType = this.ProjectileType;
     }
   }
   [System.SerializableAttribute()]

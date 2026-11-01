@@ -110,17 +110,12 @@ namespace Quantum {
                 HandleStuckInBlock(f, ref filter, stage);
             }
 
-            HandleResetDeathInfo(f, ref filter);
+            HandleResetInteraction(f, ref filter);
         }
 
-        public void HandleResetDeathInfo(Frame f, ref Filter filter) {
+        public void HandleResetInteraction(Frame f, ref Filter filter) {
             var mario = filter.MarioPlayer;
             var physicsObject = filter.PhysicsObject;
-
-            DeathInfo deathInfo = new() {
-                DeathType = AttackType.Classic,
-                Killer = EntityRef.None
-            };
 
             var isKnockbacked = (
                 mario->IsInKnockback ||
@@ -132,7 +127,7 @@ namespace Quantum {
             var shouldReset = !isFrozen && !mario->IsDead && !isKnockbacked && isTouchingGround;
 
             if (shouldReset) {
-                mario->DeathInfo = deathInfo;
+                mario->LastInteractionType = InteractionType.None;
             }
         }
 
@@ -1501,6 +1496,7 @@ namespace Quantum {
                 } else {
                     projectile = ShootNormalProjectile(f, ref filter, physics);
                 }
+                projectile->ProjectileType = mario->CurrentPowerupState;
                 f.Events.MarioPlayerShotProjectile(filter.Entity, *projectile);
 
                 // Weird interaction in the main game...
@@ -2125,10 +2121,10 @@ namespace Quantum {
             if (f.Unsafe.TryGetPointer(projectile->Owner, out MarioPlayer* ownerMario)) {
                 dropStars = ownerMario->GetTeam(f) != mario->GetTeam(f);
             }
-            mario->DeathInfo = new() {
-                DeathType = AttackType.Projectile,
-                Killer = projectile->Owner
-            };
+
+            mario->LastInteractionType = InteractionType.Projectile;
+            mario->LastInteractionInfo.Mario = projectile->Owner;
+            mario->LastInteractionInfo.ProjectileType = projectile->ProjectileType;
 
             bool damageable = !mario->IsInKnockback
                 && mario->CurrentPowerupState != PowerupState.MegaMushroom
@@ -2194,8 +2190,13 @@ namespace Quantum {
                 return;
             }
 
-            marioA->DeathInfo.Killer = marioBEntity;
-            marioB->DeathInfo.Killer = marioAEntity;
+            marioA->PowerupStateOnMarioInteraction = marioA->CurrentPowerupState;
+            marioA->LastInteractionType = InteractionType.Mario;
+            marioA->LastInteractionInfo.Mario = marioBEntity;
+
+            marioB->PowerupStateOnMarioInteraction = marioB->CurrentPowerupState;
+            marioB->LastInteractionType = InteractionType.Mario;
+            marioB->LastInteractionInfo.Mario = marioAEntity;
 
             var marioATransform = f.Unsafe.GetPointer<Transform2D>(marioAEntity);
             var marioBTransform = f.Unsafe.GetPointer<Transform2D>(marioBEntity);
