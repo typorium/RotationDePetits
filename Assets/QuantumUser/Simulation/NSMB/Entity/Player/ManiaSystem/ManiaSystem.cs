@@ -47,7 +47,7 @@ namespace Quantum {
             // No powerup
             int weight = -1;
             if (powerup == null) {
-                weight = 3;
+                weight = 5;
                 return weight;
             }
 
