@@ -47,7 +47,7 @@ namespace Quantum {
             // No powerup
             int weight = -1;
             if (powerup == null) {
-                weight = 3;
+                weight = 5;
                 return weight;
             }
 
@@ -60,7 +60,7 @@ namespace Quantum {
                 case PowerupState.PropellerMushroom:
                 case PowerupState.HammerSuit:
                 case PowerupState.MiniMushroom:
-                    weight = 3;
+                    weight = 5;
                     break;
             }
 

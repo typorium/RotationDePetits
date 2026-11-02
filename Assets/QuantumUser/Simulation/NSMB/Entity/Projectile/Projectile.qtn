@@ -6,6 +6,7 @@ component Projectile {
 	byte Lifetime;
 
 	[ExcludeFromPrototype] EntityRef Owner;
+	[ExcludeFromPrototype] PowerupState ProjectileType;
 	[ExcludeFromPrototype] bool FacingRight;
 	[ExcludeFromPrototype] bool HasBounced;
 	[ExcludeFromPrototype] bool CheckedCollision;
