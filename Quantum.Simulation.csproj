@@ -215,6 +215,7 @@
     <None Include="Assets\QuantumUser\Simulation\NSMB\Logic\GameLogic.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\BigStar\BigStar.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\Enemy.qtn" />
+    <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Player\DeathMessage\DeathMessage.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Map\InvisibleBlock\InvisibleBlock.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Map\VersusStageData.qtn" />
     <None Include="Assets\QuantumUser\Simulation\NSMB\Entity\Enemy\BulletBill\BulletBill.qtn" />

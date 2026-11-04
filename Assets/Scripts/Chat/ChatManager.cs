@@ -58,22 +58,31 @@ namespace NSMB.Chat {
             Color color = Color.darkRed;
             var f = e.Game.Frames.Predicted;
 
-            Debug.Log("yo 1");
-
             // Récupération du nom de la victime
             var marioVictimEntity = e.messageInfo.MarioVictim;
-            if (! f.Unsafe.TryGetPointer<MarioPlayer>(marioVictimEntity, out MarioPlayer* marioVictim)) {
+            if (!f.Unsafe.TryGetPointer<MarioPlayer>(marioVictimEntity, out MarioPlayer* marioVictim)) {
                 return;
             }
-
-            Debug.Log("yo 2");
             var marioVictimData = f.GetPlayerData(marioVictim->PlayerRef);
             if (marioVictimData == null) {
                 return;
             }
 
-            Debug.Log("yo 3");
             var marioVictimName = marioVictimData.PlayerNickname;
+
+            // Récupération du temps
+            var isTimeEnabled = e.messageInfo.TimeInfo.timeEnabled;
+            string timeFormatted;
+
+            if (isTimeEnabled) {
+                var minutes = e.messageInfo.TimeInfo.minutes;
+                var seconds = e.messageInfo.TimeInfo.seconds;
+                var milliseconds = e.messageInfo.TimeInfo.milliseconds;
+
+                timeFormatted = minutes.ToString() + ":" + seconds.ToString() + "." + milliseconds.ToString();
+            } else {
+                timeFormatted = GlobalController.Instance.translationManager.GetTranslation("ui.inroom.chat.player.killed.notimer");
+            }
 
             /*
              Suicides
@@ -81,12 +90,13 @@ namespace NSMB.Chat {
 
             switch (e.messageInfo.Type) {
                 case DeathType.Suicide:
-                    Debug.Log("yo 4");
-                    AddSystemMessage("ui.inroom.chat.player.killed.suicide", color: color, "player", marioVictimName);
+                    AddSystemMessage(
+                        "ui.inroom.chat.player.killed.suicide", color: color,
+                        "player", marioVictimName,
+                        "time", timeFormatted
+                    );
                     return;
             }
-
-            Debug.Log("yo 5");
 
             /*
              Kills
@@ -110,7 +120,8 @@ namespace NSMB.Chat {
                         "ui.inroom.chat.player.killed.classic", color: color,
                         "attacker", marioAttackerName,
                         "defender", marioVictimName,
-                        "powerupAttacker", marioAttackerPowerup
+                        "powerupAttacker", marioAttackerPowerup,
+                        "time", timeFormatted
                     );
                     return;
 
@@ -121,7 +132,8 @@ namespace NSMB.Chat {
                         "ui.inroom.chat.player.killed.projectile", color: color,
                         "attacker", marioAttackerName,
                         "defender", marioVictimName,
-                        "powerupAttacker", projectilePowerup
+                        "powerupAttacker", projectilePowerup,
+                        "time", timeFormatted
                      );
                     return;
 
@@ -129,7 +141,9 @@ namespace NSMB.Chat {
                     AddSystemMessage(
                         "ui.inroom.chat.player.killed.object", color: color,
                         "attacker", marioAttackerName,
-                        "defender", marioVictimName);
+                        "defender", marioVictimName,
+                        "time", timeFormatted
+                    );
                     return;
             }
         }

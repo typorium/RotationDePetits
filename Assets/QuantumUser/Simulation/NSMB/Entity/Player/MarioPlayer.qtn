@@ -35,12 +35,6 @@ enum JumpState : Byte {
     TripleJump,
 }
 
-enum AttackType : Byte {
-	Classic, // Physical contact
-	Projectile, // Projectile (Hammer, Fireball, ...)
-	Object // Koopas, spiked koopas, ...
-}
-
 // Interactions pour le système de kill
 enum InteractionType {
 	None,
@@ -50,21 +44,6 @@ enum InteractionType {
 
 struct InteractionInfo {
 	EntityRef Mario;
-	PowerupState ProjectileType;
-}
-
-// Informations pour le message de kill
-enum DeathType {
-	Suicide,
-	DirectKill,
-	KillWithProjectile,
-	KillWithObject
-}
-
-struct DeathMessageInfo {
-	DeathType Type;
-	EntityRef MarioVictim;
-	EntityRef MarioAttacker;
 	PowerupState ProjectileType;
 }
 	

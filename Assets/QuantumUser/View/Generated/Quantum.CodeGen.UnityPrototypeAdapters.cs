@@ -55,6 +55,7 @@ namespace Quantum.Prototypes.Unity {
     public Quantum.QuantumEntityPrototype MarioVictim;
     public Quantum.QuantumEntityPrototype MarioAttacker;
     public Quantum.QEnum8<PowerupState> ProjectileType;
+    public Quantum.Prototypes.DeathTimeInfoPrototype TimeInfo;
     partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.DeathMessageInfoPrototype prototype);
     public override Quantum.Prototypes.DeathMessageInfoPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
       var result = new Quantum.Prototypes.DeathMessageInfoPrototype();
@@ -62,6 +63,7 @@ namespace Quantum.Prototypes.Unity {
       converter.Convert(this.MarioVictim, out result.MarioVictim);
       converter.Convert(this.MarioAttacker, out result.MarioAttacker);
       converter.Convert(this.ProjectileType, out result.ProjectileType);
+      converter.Convert(this.TimeInfo, out result.TimeInfo);
       ConvertUser(converter, ref result);
       return result;
     }
