@@ -434,9 +434,11 @@
   "ui.inroom.settings.game.timeruntilmania.description": "Delai entre chaque changement de président",
   "ui.generic.random": "Aléatoire !!!!!!!!!!!!",
 
-  "ui.inroom.chat.player.killed.suicide": "{player} s'est suicidé",
-  "ui.inroom.chat.player.killed.suicide.external": "{player} s'est suicidé à l'aide un intermédiaire",
-  "ui.inroom.chat.player.killed.classic": "{attacker} a tué {defender} ({powerupAttacker})",
-  "ui.inroom.chat.player.killed.projectile": "{attacker} a tué {defender} par projectile ({powerupAttacker})",
-  "ui.inroom.chat.player.killed.object": "{attacker} a tué {defender} avec un objet"
+  "ui.inroom.chat.player.killed.suicide": "{player} s'est suicidé ({time})",
+  "ui.inroom.chat.player.killed.suicide.external": "{player} s'est suicidé par intermediaire ({time})",
+  "ui.inroom.chat.player.killed.classic": "{attacker} a tué {defender} ({powerupAttacker}) ({time})",
+  "ui.inroom.chat.player.killed.projectile": "{attacker} a tué {defender} par projectile ({powerupAttacker}) ({time})",
+  "ui.inroom.chat.player.killed.object": "{attacker} a tué {defender} par intérmediaire ({time})",
+
+  "ui.inroom.chat.player.killed.notimer": "No timer"
 }

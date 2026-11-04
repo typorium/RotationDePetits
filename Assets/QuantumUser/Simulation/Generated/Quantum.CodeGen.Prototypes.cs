@@ -331,11 +331,29 @@ namespace Quantum.Prototypes {
     public MapEntityId MarioVictim;
     public MapEntityId MarioAttacker;
     public Quantum.QEnum8<PowerupState> ProjectileType;
+    public Quantum.Prototypes.DeathTimeInfoPrototype TimeInfo;
     public void Materialize(Frame frame, ref Quantum.DeathMessageInfo result, in PrototypeMaterializationContext context = default) {
         result.Type = this.Type;
         PrototypeValidator.FindMapEntity(this.MarioVictim, in context, out result.MarioVictim);
         PrototypeValidator.FindMapEntity(this.MarioAttacker, in context, out result.MarioAttacker);
         result.ProjectileType = this.ProjectileType;
+        this.TimeInfo.Materialize(frame, ref result.TimeInfo, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.DeathTimeInfo))]
+  public unsafe partial class DeathTimeInfoPrototype : StructPrototype {
+    public QBoolean timeEnabled;
+    public Int32 minutes;
+    public Int32 seconds;
+    public Int32 milliseconds;
+    partial void MaterializeUser(Frame frame, ref Quantum.DeathTimeInfo result, in PrototypeMaterializationContext context);
+    public void Materialize(Frame frame, ref Quantum.DeathTimeInfo result, in PrototypeMaterializationContext context = default) {
+        result.timeEnabled = this.timeEnabled;
+        result.minutes = this.minutes;
+        result.seconds = this.seconds;
+        result.milliseconds = this.milliseconds;
+        MaterializeUser(frame, ref result, in context);
     }
   }
   [System.SerializableAttribute()]

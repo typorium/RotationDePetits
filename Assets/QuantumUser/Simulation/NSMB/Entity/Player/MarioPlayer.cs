@@ -306,12 +306,34 @@ namespace Quantum {
 
         private DeathMessageInfo AnalyzeDeathCause(Frame f, EntityRef victim, EntityRef attacker) {
 
+            // Création du temps de mort
+            var isTimerEnabled = f.Global->Rules.IsTimerEnabled;
+            DeathTimeInfo deathTime = new() {
+                timeEnabled = isTimerEnabled
+            };
+
+            if (isTimerEnabled) {
+                var time = f.Global->Timer;
+
+                var minutes = (int) time / 60;
+
+                var seconds = time % 60;
+                var secondsInt = (int) seconds;
+
+                var milliseconds = (int) ((seconds - (int) seconds) * 1000);
+
+                deathTime.minutes = minutes;
+                deathTime.seconds = secondsInt;
+                deathTime.milliseconds = milliseconds;
+            }
+
             // Création de l'info pour le message
             DeathMessageInfo messageInfo = new() {
                 Type = DeathType.Suicide,
                 MarioVictim = victim,
                 MarioAttacker = EntityRef.None,
-                ProjectileType = PowerupState.NoPowerup
+                ProjectileType = PowerupState.NoPowerup,
+                TimeInfo = deathTime
             };
 
             /*

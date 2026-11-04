@@ -49,11 +49,6 @@ namespace Quantum {
   using RuntimeInitializeOnLoadMethodAttribute = UnityEngine.RuntimeInitializeOnLoadMethodAttribute;
   #endif //;
   
-  public enum AttackType : byte {
-    Classic,
-    Projectile,
-    Object,
-  }
   [System.Flags()]
   public enum CoinType : byte {
     BakedInStage = 1,
@@ -1005,7 +1000,7 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct DeathMessageInfo {
-    public const Int32 SIZE = 24;
+    public const Int32 SIZE = 40;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(4)]
     public DeathType Type;
@@ -1015,6 +1010,8 @@ namespace Quantum {
     public EntityRef MarioAttacker;
     [FieldOffset(0)]
     public PowerupState ProjectileType;
+    [FieldOffset(24)]
+    public DeathTimeInfo TimeInfo;
     public override readonly Int32 GetHashCode() {
       unchecked { 
         var hash = 733;
@@ -1022,6 +1019,7 @@ namespace Quantum {
         hash = hash * 31 + MarioVictim.GetHashCode();
         hash = hash * 31 + MarioAttacker.GetHashCode();
         hash = hash * 31 + (Byte)ProjectileType;
+        hash = hash * 31 + TimeInfo.GetHashCode();
         return hash;
       }
     }
@@ -1031,6 +1029,37 @@ namespace Quantum {
         serializer.Stream.Serialize((Int32*)&p->Type);
         EntityRef.Serialize(&p->MarioAttacker, serializer);
         EntityRef.Serialize(&p->MarioVictim, serializer);
+        Quantum.DeathTimeInfo.Serialize(&p->TimeInfo, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct DeathTimeInfo {
+    public const Int32 SIZE = 16;
+    public const Int32 ALIGNMENT = 4;
+    [FieldOffset(12)]
+    public QBoolean timeEnabled;
+    [FieldOffset(4)]
+    public Int32 minutes;
+    [FieldOffset(8)]
+    public Int32 seconds;
+    [FieldOffset(0)]
+    public Int32 milliseconds;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 5279;
+        hash = hash * 31 + timeEnabled.GetHashCode();
+        hash = hash * 31 + minutes.GetHashCode();
+        hash = hash * 31 + seconds.GetHashCode();
+        hash = hash * 31 + milliseconds.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (DeathTimeInfo*)ptr;
+        serializer.Stream.Serialize(&p->milliseconds);
+        serializer.Stream.Serialize(&p->minutes);
+        serializer.Stream.Serialize(&p->seconds);
+        QBoolean.Serialize(&p->timeEnabled, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -4515,7 +4544,6 @@ namespace Quantum {
     static partial void RegisterSimulationTypesGen(TypeRegistry typeRegistry) {
       typeRegistry.Register(typeof(AssetGuid), AssetGuid.SIZE);
       typeRegistry.Register(typeof(AssetRef), AssetRef.SIZE);
-      typeRegistry.Register(typeof(Quantum.AttackType), 1);
       typeRegistry.Register(typeof(Quantum.BannedPlayerInfo), Quantum.BannedPlayerInfo.SIZE);
       typeRegistry.Register(typeof(Quantum.BetterPhysicsContact), Quantum.BetterPhysicsContact.SIZE);
       typeRegistry.Register(typeof(Quantum.BetterPhysicsObject), Quantum.BetterPhysicsObject.SIZE);
@@ -4550,6 +4578,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(ComponentTypeRef), ComponentTypeRef.SIZE);
       typeRegistry.Register(typeof(Quantum.Cullable), Quantum.Cullable.SIZE);
       typeRegistry.Register(typeof(Quantum.DeathMessageInfo), Quantum.DeathMessageInfo.SIZE);
+      typeRegistry.Register(typeof(Quantum.DeathTimeInfo), Quantum.DeathTimeInfo.SIZE);
       typeRegistry.Register(typeof(Quantum.DeathType), 4);
       typeRegistry.Register(typeof(DistanceJoint), DistanceJoint.SIZE);
       typeRegistry.Register(typeof(DistanceJoint3D), DistanceJoint3D.SIZE);
@@ -4716,7 +4745,6 @@ namespace Quantum {
     [Preserve()]
     public static void EnsureNotStrippedGen() {
       FramePrinter.EnsureNotStripped();
-      FramePrinter.EnsurePrimitiveNotStripped<Quantum.AttackType>();
       FramePrinter.EnsurePrimitiveNotStripped<CallbackFlags>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.CoinType>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.DeathType>();
