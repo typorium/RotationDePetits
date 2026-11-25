@@ -54,7 +54,7 @@ MonoBehaviour:
     X:
       RawValue: -65536000
     Y:
-      RawValue: -196608
+      RawValue: -131072
   CameraMaxPosition:
     X:
       RawValue: 65536000
@@ -10000,9 +10000,9 @@ MonoBehaviour:
     Flags: 0
   BigStarSpawnpoints:
   - X:
-      RawValue: 480378
+      RawValue: -278529
     Y:
-      RawValue: 468582
+      RawValue: 461373
   - X:
       RawValue: -278529
     Y:
@@ -10011,7 +10011,3 @@ MonoBehaviour:
       RawValue: 98304
     Y:
       RawValue: 326369
-  - X:
-      RawValue: 95027
-    Y:
-      RawValue: 864419

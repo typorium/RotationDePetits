@@ -498,8 +498,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 339334712390582279
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -600,8 +598,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 476332839009255431
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -704,8 +700,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 933052389886263303
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -806,8 +800,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 945195574544564231
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -910,8 +902,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 1421528888147705863
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -1012,8 +1002,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 1496054827807932423
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -1116,8 +1104,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 1926078640089464839
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -1218,8 +1204,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 2175685900061638663
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -1322,8 +1306,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 2455081270787440647
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -1424,8 +1406,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 2861143430459817991
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -1528,8 +1508,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 2896310541075087367
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -1630,8 +1608,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 3035656187296088071
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -1734,8 +1710,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 3181632678906560519
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -1836,8 +1810,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 3290348445881073671
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -1940,8 +1912,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 3303370780280094727
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -2042,8 +2012,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 3395475585143668743
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -2146,8 +2114,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 3447038490745765895
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -2248,8 +2214,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 3787582573585104903
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -2352,8 +2316,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 4280718226599444487
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -2454,8 +2416,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 4536247224270585863
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -2558,8 +2518,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 5043741060329635847
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -2660,8 +2618,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 5213274156920995847
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -2764,8 +2720,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 5484168657791614983
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -2866,8 +2820,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 5716922605680721927
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -2970,8 +2922,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 5833748464910991367
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -3072,8 +3022,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 6334756211010830343
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -3176,8 +3124,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 6414466779640233991
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -3278,8 +3224,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 6904682816965967879
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -3382,8 +3326,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 7486242900188069895
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -3484,8 +3426,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 7487371465122119687
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -3588,8 +3528,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 7817860129725874183
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -3690,8 +3628,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 8337710820771233799
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -3794,8 +3730,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 8430379977895051271
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -3896,8 +3830,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 8688066475077926919
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
@@ -4000,8 +3932,6 @@ MonoBehaviour:
           Value: 1
         IsWaterSolid:
           Value: 0
-        BreakMegaObjects:
-          Value: 0
     - rid: 8963485973102985223
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
       data:
@@ -4102,8 +4032,6 @@ MonoBehaviour:
         SlowInLiquids:
           Value: 1
         IsWaterSolid:
-          Value: 0
-        BreakMegaObjects:
           Value: 0
     - rid: 9211451288552734727
       type: {class: PowerupPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
