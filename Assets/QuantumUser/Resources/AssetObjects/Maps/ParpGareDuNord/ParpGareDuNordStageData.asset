@@ -23,7 +23,7 @@ MonoBehaviour:
   GroupingTranslationKey: level.header.rdp
   DiscordStageImage: 
   SortOrder: 0
-  Icon: {fileID: -8076493810415083928, guid: cc86bf6e3f7e4409daff6544085c8869, type: 3}
+  Icon: {fileID: -1689089759028760215, guid: d1ef5ad2b03ee484cb411952d97ecb8d, type: 3}
   MainMenuPreviewPrefab: {fileID: 1688521477505863443, guid: bc6ab68384db7497e83b125942425c70,
     type: 3}
   OverrideAutomaticTilemapSettings: 0

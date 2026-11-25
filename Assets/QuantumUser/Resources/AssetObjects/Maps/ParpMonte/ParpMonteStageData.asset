@@ -19,7 +19,7 @@ MonoBehaviour:
   ShowAuthorAndComposer: 0
   StageAuthor: Luden
   MusicComposer: "ma m\xE8re"
-  TranslationKey: level.rdp.monte2
+  TranslationKey: level.rdp.monte
   GroupingTranslationKey: level.header.rdp
   DiscordStageImage: 
   SortOrder: 0
