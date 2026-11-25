@@ -1,5 +1,6 @@
 using Photon.Deterministic;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace Quantum {
     public unsafe partial struct MarioPlayer {
@@ -565,6 +566,20 @@ namespace Quantum {
                 KnockbackStrength.CollisionBump => new(Constants._2_50, Constants._3_50),
                 KnockbackStrength.Normal or _ => new(Constants._3_75 / 2, Constants._3_50),
             };
+
+            // Knockback Multiplier
+            /*
+             Initial value is represented as an integer from 0 to 60.
+             To convert it into a multiplier, we divide it by 10 (0 to 6.0)
+             and add 1 to it (1.0 to 7.0).
+             */
+            FP knockbackMultiplier = FP.FromFloat_UNSAFE(f.Global->Rules.KnockbackMultiplier);
+            knockbackMultiplier /= 10;
+            knockbackMultiplier += 1;
+            Debug.Log(knockbackMultiplier.ToString());
+
+            // Then apply the multiplier
+            knockbackVelocity *= knockbackMultiplier;
 
             knockbackVelocity.X *= fromRight ? -1 : 1;
             if (CurrentPowerupState == PowerupState.MiniMushroom) {
