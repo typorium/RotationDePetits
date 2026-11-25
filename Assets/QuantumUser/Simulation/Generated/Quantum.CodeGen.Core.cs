@@ -1002,39 +1002,41 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct GameRules {
-    public const Int32 SIZE = 72;
+    public const Int32 SIZE = 80;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(64)]
+    [FieldOffset(72)]
     public AssetRef<Map> Stage;
     [FieldOffset(0)]
     public StageChooseMode ChooseMode;
-    [FieldOffset(48)]
-    public QHashSetPtr<AssetRef<Map>> RandomDisabledStages;
     [FieldOffset(56)]
+    public QHashSetPtr<AssetRef<Map>> RandomDisabledStages;
+    [FieldOffset(64)]
     public AssetRef<GamemodeAsset> Gamemode;
-    [FieldOffset(24)]
+    [FieldOffset(28)]
     public Int32 StarsToWin;
     [FieldOffset(8)]
     public Int32 CoinsForPowerup;
     [FieldOffset(16)]
     public Int32 Lives;
-    [FieldOffset(28)]
-    public Int32 TimerMinutes;
-    [FieldOffset(40)]
-    public QBoolean TeamsEnabled;
     [FieldOffset(32)]
-    public QBoolean CustomPowerupsEnabled;
+    public Int32 TimerMinutes;
+    [FieldOffset(44)]
+    public QBoolean TeamsEnabled;
     [FieldOffset(36)]
+    public QBoolean CustomPowerupsEnabled;
+    [FieldOffset(40)]
     public QBoolean DrawOnTimeUp;
     [FieldOffset(12)]
     public Int32 KnockbackMultiplier;
+    [FieldOffset(20)]
+    public Int32 ManiaTime;
     [FieldOffset(1)]
     public TeamAttackOptions TeamAttack;
-    [FieldOffset(20)]
+    [FieldOffset(24)]
     public Int32 StarFountain;
     [FieldOffset(4)]
     public Int32 CoinDeathPenalty;
-    [FieldOffset(44)]
+    [FieldOffset(48)]
     public QDictionaryPtr<AssetRef<CoinItemAsset>, FP> CoinItemCustomSpawnWeights;
     public override readonly Int32 GetHashCode() {
       unchecked { 
@@ -1051,6 +1053,7 @@ namespace Quantum {
         hash = hash * 31 + CustomPowerupsEnabled.GetHashCode();
         hash = hash * 31 + DrawOnTimeUp.GetHashCode();
         hash = hash * 31 + KnockbackMultiplier.GetHashCode();
+        hash = hash * 31 + ManiaTime.GetHashCode();
         hash = hash * 31 + (Byte)TeamAttack;
         hash = hash * 31 + StarFountain.GetHashCode();
         hash = hash * 31 + CoinDeathPenalty.GetHashCode();
@@ -1070,6 +1073,7 @@ namespace Quantum {
         serializer.Stream.Serialize(&p->CoinsForPowerup);
         serializer.Stream.Serialize(&p->KnockbackMultiplier);
         serializer.Stream.Serialize(&p->Lives);
+        serializer.Stream.Serialize(&p->ManiaTime);
         serializer.Stream.Serialize(&p->StarFountain);
         serializer.Stream.Serialize(&p->StarsToWin);
         serializer.Stream.Serialize(&p->TimerMinutes);
@@ -1357,7 +1361,7 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 3168;
+    public const Int32 SIZE = 3176;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
     public AssetRef<Map> Map;
@@ -1408,7 +1412,7 @@ namespace Quantum {
     public UInt16 AutomaticStageRefreshInterval;
     [FieldOffset(1822)]
     public UInt16 AutomaticStageRefreshTimer;
-    [FieldOffset(1968)]
+    [FieldOffset(1976)]
     [FramePrinter.FixedArrayAttribute(typeof(PlayerInformation), 10)]
     private fixed Byte _PlayerInfo_[1200];
     [FieldOffset(1816)]

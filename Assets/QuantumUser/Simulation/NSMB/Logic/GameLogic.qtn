@@ -51,6 +51,7 @@ struct GameRules {
 	bool CustomPowerupsEnabled;
 	bool DrawOnTimeUp;
 	int KnockbackMultiplier;
+	int ManiaTime;
 
 	// these are advanced rules
 	TeamAttackOptions TeamAttack;

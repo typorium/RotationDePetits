@@ -174,7 +174,8 @@ namespace NSMB.Replay {
                         CoinDeathPenalty = rules.CoinDeathPenalty,
                         TeamAttack = rules.TeamAttack,
                         CoinItemCustomSpawnWeights = customSpawnWeights,
-                        KnockbackMultiplier = rules.KnockbackMultiplier
+                        KnockbackMultiplier = rules.KnockbackMultiplier,
+                        ManiaTime = rules.ManiaTime
                     },
                     PlayerInformation = playerInformation,
                     WinningTeam = winner,

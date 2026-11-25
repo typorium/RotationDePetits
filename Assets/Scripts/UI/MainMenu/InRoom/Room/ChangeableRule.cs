@@ -212,6 +212,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 CommandChangeRules.Rules.TeamAttack => (int) rules.TeamAttack,
                 CommandChangeRules.Rules.StageChooseMode => (byte) rules.ChooseMode,
                 CommandChangeRules.Rules.KnockbackMultiplier => rules.KnockbackMultiplier,
+                CommandChangeRules.Rules.ManiaTime => rules.ManiaTime,
                 _ => null
             };
 

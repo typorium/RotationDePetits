@@ -44,6 +44,7 @@ namespace NSMB.Utilities {
                 StarRequirement = 10
             };
 
+            // ManiaTime :: Value ranges from 1 - 12: 4 bits
             // KnockbackMultiplier :: Value ranges from 0-63: 6 bits
             // Timer :: Value ranges from 0-99: 7 bits
             // Lives :: Value ranges from 1-25: 5 bits
@@ -51,15 +52,16 @@ namespace NSMB.Utilities {
             // StarRequirement :: Value ranges from 1-25: 5 bits
             // MaxPlayers :: Value ranges from 1-10: 4 bits
 
-            // 31....26                25.....19   18...14   13...9   8...4   3..0
-            // KnockbackMultiplier     Timer       Lives     Coins    Stars   Unused
-            public int KnockbackMultiplier, Timer, Lives, CoinRequirement, StarRequirement;
+            // 35....32    31....26                25.....19   18...14   13...9   8...4   3..0
+            // ManiaTime   KnockbackMultiplier     Timer       Lives     Coins    Stars   Unused
+            public int ManiaTime, KnockbackMultiplier, Timer, Lives, CoinRequirement, StarRequirement;
 
             public static implicit operator long(IntegerProperties props) {
                 long value = 0;
 
-                value |= ((long)props.KnockbackMultiplier & 0b111111) << 26;
-                value |= ((long)props.Timer & 0b1111111) << 19;
+                value |= ((long) props.ManiaTime & 0b1111) << 32;
+                value |= ((long) props.KnockbackMultiplier & 0b111111) << 26;
+                value |= ((long) props.Timer & 0b1111111) << 19;
                 value |= ((long) props.Lives & 0b11111) << 14;
                 value |= ((long) props.CoinRequirement & 0b11111) << 9;
                 value |= ((long) props.StarRequirement & 0b11111) << 4;
@@ -70,6 +72,7 @@ namespace NSMB.Utilities {
 
             public static implicit operator IntegerProperties(long bits) {
                 IntegerProperties ret = new() {
+                    ManiaTime = (int) ((bits >> 32) & 0b1111),
                     KnockbackMultiplier= (int) ((bits >> 26) & 0b111111),
                     Timer = (int) ((bits >> 19) & 0b1111111),
                     Lives = (int) ((bits >> 14) & 0b11111),

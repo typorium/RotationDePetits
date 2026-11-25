@@ -21,6 +21,7 @@ namespace Quantum {
         public int TeamAttack;
 
         public int KnockbackMultiplier;
+        public int ManiaTime;
 
         public override void Serialize(BitStream stream) {
             if (stream.Writing) {
@@ -41,6 +42,7 @@ namespace Quantum {
             stream.Serialize(ref StarFountain);
             stream.Serialize(ref CoinDeathPenalty);
             stream.Serialize(ref KnockbackMultiplier);
+            stream.Serialize(ref ManiaTime);
 
             if (stream.Writing) {
                 stream.WriteByte((byte) ChooseMode);
@@ -114,6 +116,9 @@ namespace Quantum {
             if (rulesChanges.HasFlag(Rules.KnockbackMultiplier)) {
                 rules.KnockbackMultiplier = KnockbackMultiplier;
             }
+            if (rulesChanges.HasFlag(Rules.ManiaTime)) {
+                rules.ManiaTime = ManiaTime;
+            }
 
             f.Global->Rules = rules;
             f.Events.RulesChanged(gamemodeChanged, levelChanged);
@@ -136,6 +141,7 @@ namespace Quantum {
             StageChooseMode = 1 << 11,
             TeamAttack = 1 << 12,
             KnockbackMultiplier = 1 << 13,
+            ManiaTime = 1 << 14
         }
     }
 }

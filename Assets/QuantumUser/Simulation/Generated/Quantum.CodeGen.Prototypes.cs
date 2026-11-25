@@ -475,6 +475,7 @@ namespace Quantum.Prototypes {
     public QBoolean CustomPowerupsEnabled;
     public QBoolean DrawOnTimeUp;
     public Int32 KnockbackMultiplier;
+    public Int32 ManiaTime;
     public Quantum.QEnum8<TeamAttackOptions> TeamAttack;
     public Int32 StarFountain;
     public Int32 CoinDeathPenalty;
@@ -504,6 +505,7 @@ namespace Quantum.Prototypes {
         result.CustomPowerupsEnabled = this.CustomPowerupsEnabled;
         result.DrawOnTimeUp = this.DrawOnTimeUp;
         result.KnockbackMultiplier = this.KnockbackMultiplier;
+        result.ManiaTime = this.ManiaTime;
         result.TeamAttack = this.TeamAttack;
         result.StarFountain = this.StarFountain;
         result.CoinDeathPenalty = this.CoinDeathPenalty;

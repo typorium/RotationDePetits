@@ -272,7 +272,8 @@ namespace NSMB.Networking {
                 CoinRequirement = rules.CoinsForPowerup,
                 Lives = rules.Lives,
                 Timer = rules.TimerMinutes,
-                KnockbackMultiplier = rules.KnockbackMultiplier
+                KnockbackMultiplier = rules.KnockbackMultiplier,
+                ManiaTime = rules.ManiaTime
             };
             BooleanProperties boolProperties = new() {
                 GameStarted = f.Global->GameState != GameState.PreGameRoom,

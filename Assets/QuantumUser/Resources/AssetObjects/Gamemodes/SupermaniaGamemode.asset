@@ -50,6 +50,7 @@ MonoBehaviour:
     DrawOnTimeUp:
       Value: 1
     KnockbackMultiplier: 0
+    ManiaTime: 1
     TeamAttack:
       Value: 1
     StarFountain: 100
