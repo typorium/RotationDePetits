@@ -576,7 +576,6 @@ namespace Quantum {
             FP knockbackMultiplier = FP.FromFloat_UNSAFE(f.Global->Rules.KnockbackMultiplier);
             knockbackMultiplier /= 10;
             knockbackMultiplier += 1;
-            Debug.Log(knockbackMultiplier.ToString());
 
             // Then apply the multiplier
             knockbackVelocity *= knockbackMultiplier;

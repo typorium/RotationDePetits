@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0a19e1b475a03b4896100af96bc031d, type: 3}
+  m_Name: SupermaniaGamemode
+  m_EditorClassIdentifier: Quantum.Simulation::Quantum.SupermaniaGamemode
+  Identifier:
+    Path: QuantumUser/Resources/AssetObjects/Gamemodes/SupermaniaGamemode
+    Guid:
+      Value: 512332606036010469
+  NamePrefix: '<sprite name=room_lives> '
+  TranslationKey: gamemode.supermania
+  DescriptionTranslationKey: gamemode.supermania.description
+  DiscordRpcKey: gamemode-supermania
+  ObjectiveSymbolPrefix: M
+  AllCoinItems: []
+  FallbackCoinItem:
+    Id:
+      Value: 390055422968795145
+  LooseCoinPrototype:
+    Id:
+      Value: 1464681621458001613
+  Order: 200
+  DefaultRules:
+    Stage:
+      Id:
+        Value: 438935048561577377
+    ChooseMode:
+      Value: 0
+    RandomDisabledStages: []
+    Gamemode:
+      Id:
+        Value: 512332606036010469
+    StarsToWin: 1
+    CoinsForPowerup: 999
+    Lives: 1
+    TimerMinutes: 1
+    TeamsEnabled:
+      Value: 0
+    CustomPowerupsEnabled:
+      Value: 0
+    DrawOnTimeUp:
+      Value: 1
+    KnockbackMultiplier: 0
+    TeamAttack:
+      Value: 1
+    StarFountain: 100
+    CoinDeathPenalty: 0
+    CoinItemCustomSpawnWeights: []
+  BigStarPrototype:
+    Id:
+      Value: 1295981493910502871
