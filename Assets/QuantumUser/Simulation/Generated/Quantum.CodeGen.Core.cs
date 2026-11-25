@@ -1012,27 +1012,29 @@ namespace Quantum {
     public QHashSetPtr<AssetRef<Map>> RandomDisabledStages;
     [FieldOffset(56)]
     public AssetRef<GamemodeAsset> Gamemode;
-    [FieldOffset(20)]
+    [FieldOffset(24)]
     public Int32 StarsToWin;
     [FieldOffset(8)]
     public Int32 CoinsForPowerup;
-    [FieldOffset(12)]
+    [FieldOffset(16)]
     public Int32 Lives;
-    [FieldOffset(24)]
-    public Int32 TimerMinutes;
-    [FieldOffset(36)]
-    public QBoolean TeamsEnabled;
     [FieldOffset(28)]
-    public QBoolean CustomPowerupsEnabled;
+    public Int32 TimerMinutes;
+    [FieldOffset(40)]
+    public QBoolean TeamsEnabled;
     [FieldOffset(32)]
+    public QBoolean CustomPowerupsEnabled;
+    [FieldOffset(36)]
     public QBoolean DrawOnTimeUp;
+    [FieldOffset(12)]
+    public Int32 KnockbackMultiplier;
     [FieldOffset(1)]
     public TeamAttackOptions TeamAttack;
-    [FieldOffset(16)]
+    [FieldOffset(20)]
     public Int32 StarFountain;
     [FieldOffset(4)]
     public Int32 CoinDeathPenalty;
-    [FieldOffset(40)]
+    [FieldOffset(44)]
     public QDictionaryPtr<AssetRef<CoinItemAsset>, FP> CoinItemCustomSpawnWeights;
     public override readonly Int32 GetHashCode() {
       unchecked { 
@@ -1048,6 +1050,7 @@ namespace Quantum {
         hash = hash * 31 + TeamsEnabled.GetHashCode();
         hash = hash * 31 + CustomPowerupsEnabled.GetHashCode();
         hash = hash * 31 + DrawOnTimeUp.GetHashCode();
+        hash = hash * 31 + KnockbackMultiplier.GetHashCode();
         hash = hash * 31 + (Byte)TeamAttack;
         hash = hash * 31 + StarFountain.GetHashCode();
         hash = hash * 31 + CoinDeathPenalty.GetHashCode();
@@ -1065,6 +1068,7 @@ namespace Quantum {
         serializer.Stream.Serialize((Byte*)&p->TeamAttack);
         serializer.Stream.Serialize(&p->CoinDeathPenalty);
         serializer.Stream.Serialize(&p->CoinsForPowerup);
+        serializer.Stream.Serialize(&p->KnockbackMultiplier);
         serializer.Stream.Serialize(&p->Lives);
         serializer.Stream.Serialize(&p->StarFountain);
         serializer.Stream.Serialize(&p->StarsToWin);

@@ -20,6 +20,8 @@ namespace Quantum {
         public StageChooseMode ChooseMode;
         public int TeamAttack;
 
+        public int KnockbackMultiplier;
+
         public override void Serialize(BitStream stream) {
             if (stream.Writing) {
                 stream.WriteUShort((ushort) EnabledChanges);
@@ -38,6 +40,7 @@ namespace Quantum {
             stream.Serialize(ref DrawOnTimeUp);
             stream.Serialize(ref StarFountain);
             stream.Serialize(ref CoinDeathPenalty);
+            stream.Serialize(ref KnockbackMultiplier);
 
             if (stream.Writing) {
                 stream.WriteByte((byte) ChooseMode);
@@ -108,6 +111,9 @@ namespace Quantum {
             if (rulesChanges.HasFlag(Rules.TeamAttack)) {
                 rules.TeamAttack = (TeamAttackOptions) TeamAttack;
             }
+            if (rulesChanges.HasFlag(Rules.KnockbackMultiplier)) {
+                rules.KnockbackMultiplier = KnockbackMultiplier;
+            }
 
             f.Global->Rules = rules;
             f.Events.RulesChanged(gamemodeChanged, levelChanged);
@@ -129,6 +135,7 @@ namespace Quantum {
             CoinDeathPenalty = 1 << 10, // only for Coin Runners
             StageChooseMode = 1 << 11,
             TeamAttack = 1 << 12,
+            KnockbackMultiplier = 1 << 13,
         }
     }
 }

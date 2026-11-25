@@ -211,6 +211,7 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
                 CommandChangeRules.Rules.CoinDeathPenalty => rules.CoinDeathPenalty,
                 CommandChangeRules.Rules.TeamAttack => (int) rules.TeamAttack,
                 CommandChangeRules.Rules.StageChooseMode => (byte) rules.ChooseMode,
+                CommandChangeRules.Rules.KnockbackMultiplier => rules.KnockbackMultiplier,
                 _ => null
             };
 

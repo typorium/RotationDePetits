@@ -2,6 +2,7 @@ using NSMB.Addons;
 using Photon.Client;
 using Photon.Realtime;
 using Quantum;
+using System;
 using System.Collections.Generic;
 
 namespace NSMB.Utilities {
@@ -43,36 +44,37 @@ namespace NSMB.Utilities {
                 StarRequirement = 10
             };
 
+            // KnockbackMultiplier :: Value ranges from 0-63: 6 bits
             // Timer :: Value ranges from 0-99: 7 bits
             // Lives :: Value ranges from 1-25: 5 bits
             // CoinRequirement :: Value ranges from 3-25: 5 bits
             // StarRequirement :: Value ranges from 1-25: 5 bits
             // MaxPlayers :: Value ranges from 1-10: 4 bits
 
-            // 31....26   25.....19   18...14   13...9   8...4   3..0
-            // Unused     Timer       Lives     Coins    Stars   Unused
-            public int Timer, Lives, CoinRequirement, StarRequirement;
+            // 31....26                25.....19   18...14   13...9   8...4   3..0
+            // KnockbackMultiplier     Timer       Lives     Coins    Stars   Unused
+            public int KnockbackMultiplier, Timer, Lives, CoinRequirement, StarRequirement;
 
-            public static implicit operator int(IntegerProperties props) {
-                int value = 0;
+            public static implicit operator long(IntegerProperties props) {
+                long value = 0;
 
-                //value |= (props.Level & 0b111111) << 26;
-                value |= (props.Timer & 0b1111111) << 19;
-                value |= (props.Lives & 0b11111) << 14;
-                value |= (props.CoinRequirement & 0b11111) << 9;
-                value |= (props.StarRequirement & 0b11111) << 4;
+                value |= ((long)props.KnockbackMultiplier & 0b111111) << 26;
+                value |= ((long)props.Timer & 0b1111111) << 19;
+                value |= ((long) props.Lives & 0b11111) << 14;
+                value |= ((long) props.CoinRequirement & 0b11111) << 9;
+                value |= ((long) props.StarRequirement & 0b11111) << 4;
                 // value |= (props.MaxPlayers & 0b1111) << 0;
 
                 return value;
             }
 
-            public static implicit operator IntegerProperties(int bits) {
+            public static implicit operator IntegerProperties(long bits) {
                 IntegerProperties ret = new() {
-                    //Level = (bits >> 26) & 0b111111,
-                    Timer = (bits >> 19) & 0b1111111,
-                    Lives = (bits >> 14) & 0b11111,
-                    CoinRequirement = (bits >> 9) & 0b11111,
-                    StarRequirement = (bits >> 4) & 0b11111,
+                    KnockbackMultiplier= (int) ((bits >> 26) & 0b111111),
+                    Timer = (int) ((bits >> 19) & 0b1111111),
+                    Lives = (int) ((bits >> 14) & 0b11111),
+                    CoinRequirement = (int) ((bits >> 9) & 0b11111),
+                    StarRequirement = (int) ((bits >> 4) & 0b11111),
                     // MaxPlayers = (bits >> 0) & 0b1111,
                 };
                 return ret;

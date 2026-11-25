@@ -63,6 +63,9 @@ namespace NSMB.UI.MainMenu.Submenus.InRoom {
             case CommandChangeRules.Rules.TeamAttack:
                 cmd.TeamAttack = (int) value;
                 break;
+            case CommandChangeRules.Rules.KnockbackMultiplier:
+                cmd.KnockbackMultiplier = (int) value;
+                break;
             }
 
             QuantumGame game = QuantumRunner.DefaultGame;
