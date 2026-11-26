@@ -48,6 +48,11 @@ namespace Quantum {
 
         public override void Update(Frame f) {
 
+            // If the game is still starting, don't update the powerup timer yet
+            if (f.Global->GameState != GameState.Playing) {
+                return;
+            }
+
             f.Global->ShouldMania -= f.DeltaTime;
             
             if (f.Global->ShouldMania <= 0) {
