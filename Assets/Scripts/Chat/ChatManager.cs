@@ -1,4 +1,5 @@
 using NSMB.UI.Translation;
+using NSMB.Utilities;
 using NSMB.Utilities.Extensions;
 using Quantum;
 using System;
@@ -50,7 +51,104 @@ namespace NSMB.Chat {
             QuantumEvent.Subscribe<EventPlayerKickedFromRoom>(this, OnPlayerKickedFromRoom, FilterOutReplay);
             QuantumEvent.Subscribe<EventPlayerUnbanned>(this, OnPlayerUnbanned, FilterOutReplay);
             QuantumEvent.Subscribe<EventPlayerTeamChangedByHost>(this, OnPlayerTeamChangedByHost, FilterOutReplay);
+            QuantumEvent.Subscribe<EventMarioDied>(this, OnMarioDied);
             QuantumEvent.Subscribe<EventPlayerTeamRandomized>(this, OnPlayerTeamRandomized, FilterOutReplay);
+        }
+
+        public void OnMarioDied(EventMarioDied e) {
+
+            // Constantes
+            Color color = Color.darkRed;
+            var f = e.Game.Frames.Predicted;
+
+            // Récupération du nom de la victime
+            var marioVictimEntity = e.messageInfo.MarioVictim;
+            if (!f.Unsafe.TryGetPointer<MarioPlayer>(marioVictimEntity, out MarioPlayer* marioVictim)) {
+                return;
+            }
+            var marioVictimData = f.GetPlayerData(marioVictim->PlayerRef);
+            if (marioVictimData == null) {
+                return;
+            }
+
+            var marioVictimName = marioVictimData.PlayerNickname;
+
+            // Récupération du temps
+            var isTimeEnabled = e.messageInfo.TimeInfo.timeEnabled;
+            string timeFormatted;
+
+            if (isTimeEnabled) {
+                var minutes = e.messageInfo.TimeInfo.minutes;
+                var seconds = e.messageInfo.TimeInfo.seconds;
+                var milliseconds = e.messageInfo.TimeInfo.milliseconds;
+
+                timeFormatted = minutes.ToString() + ":" + seconds.ToString() + "." + milliseconds.ToString();
+            } else {
+                timeFormatted = GlobalController.Instance.translationManager.GetTranslation("ui.inroom.chat.player.killed.notimer");
+            }
+
+            /*
+             Suicides
+            */
+
+            switch (e.messageInfo.Type) {
+            case DeathType.Suicide:
+                AddSystemMessage(
+                    "ui.inroom.chat.player.killed.suicide", color: color,
+                    "player", marioVictimName,
+                    "time", timeFormatted
+                );
+                return;
+            }
+
+            /*
+             Kills
+            */
+
+            // Récupération du nom de l'attaquant
+            var marioAttackerEntity = e.messageInfo.MarioAttacker;
+            if (!f.Unsafe.TryGetPointer<MarioPlayer>(marioAttackerEntity, out MarioPlayer* marioAttacker)) {
+                return;
+            }
+            var marioAttackerData = f.GetPlayerData(marioAttacker->PlayerRef);
+            if (marioAttackerData == null) {
+                return;
+            }
+            var marioAttackerName = marioAttackerData.PlayerNickname;
+
+            switch (e.messageInfo.Type) {
+            case DeathType.DirectKill:
+                var marioAttackerPowerup = PowerupUtils.GetPowerupName(marioAttacker);
+                AddSystemMessage(
+                    "ui.inroom.chat.player.killed.classic", color: color,
+                    "attacker", marioAttackerName,
+                    "defender", marioVictimName,
+                    "powerupAttacker", marioAttackerPowerup,
+                    "time", timeFormatted
+                );
+                return;
+
+            case DeathType.KillWithProjectile:
+                var projectileType = e.messageInfo.ProjectileType;
+                var projectilePowerup = PowerupUtils.GetPowerupNameFromPowerupState(projectileType);
+                AddSystemMessage(
+                    "ui.inroom.chat.player.killed.projectile", color: color,
+                    "attacker", marioAttackerName,
+                    "defender", marioVictimName,
+                    "powerupAttacker", projectilePowerup,
+                    "time", timeFormatted
+                 );
+                return;
+
+            case DeathType.KillWithObject:
+                AddSystemMessage(
+                    "ui.inroom.chat.player.killed.object", color: color,
+                    "attacker", marioAttackerName,
+                    "defender", marioVictimName,
+                    "time", timeFormatted
+                );
+                return;
+            }
         }
 
         private void OnUpdateView(CallbackUpdateView e) {

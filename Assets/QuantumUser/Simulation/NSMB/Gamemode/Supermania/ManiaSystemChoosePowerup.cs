@@ -1,6 +1,3 @@
-using UnityEngine;
-using static UnityEditor.Progress;
-
 namespace Quantum
 {
     public unsafe partial class ManiaSystem
