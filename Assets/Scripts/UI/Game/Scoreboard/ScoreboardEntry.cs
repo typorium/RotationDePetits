@@ -127,7 +127,12 @@ namespace NSMB.UI.Game.Scoreboard {
             if (f.Global->Rules.IsLivesEnabled) {
                 stringBuilder.Append(character.UiString).Append(Utils.GetSymbolString(lives.ToString(), padUpToNLength: 2));
             }
-            stringBuilder.Append(Utils.GetSymbolString(gamemode.ObjectiveSymbolPrefix)).Append(Utils.GetSymbolString(objective.ToString(), padUpToNLength: 2));
+
+            // TODO : Implement kill counter here
+            // For now, skipping if in supermania
+            if (gamemode is not SupermaniaGamemode) {
+                stringBuilder.Append(Utils.GetSymbolString(gamemode.ObjectiveSymbolPrefix)).Append(Utils.GetSymbolString(objective.ToString(), padUpToNLength: 2));
+            }
 
             scoreText.SetText(stringBuilder);
             updater.RequestSorting = true;
