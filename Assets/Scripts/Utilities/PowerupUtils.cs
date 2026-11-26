@@ -4,7 +4,17 @@ namespace NSMB.Utilities {
 
     public static class PowerupUtils {
 
-        public unsafe static string GetPowerupName(MarioPlayer* mario) {
+        public unsafe static string GetOnMarioInteractionPowerupName(MarioPlayer* mario) {
+
+            var isStarman = mario->InvincibilityFrames > 0;
+            if (isStarman) {
+                return "Starman";
+            }
+
+            return GetPowerupNameFromPowerupState(mario->PowerupStateOnMarioInteraction);
+        }
+
+        public unsafe static string GetCurrentPowerupName(MarioPlayer* mario) {
 
             var isStarman = mario->InvincibilityFrames > 0;
             if (isStarman) {

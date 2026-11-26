@@ -118,7 +118,7 @@ namespace NSMB.Chat {
 
             switch (e.messageInfo.Type) {
             case DeathType.DirectKill:
-                var marioAttackerPowerup = PowerupUtils.GetPowerupName(marioAttacker);
+                var marioAttackerPowerup = PowerupUtils.GetOnMarioInteractionPowerupName(marioAttacker);
                 AddSystemMessage(
                     "ui.inroom.chat.player.killed.classic", color: color,
                     "attacker", marioAttackerName,
