@@ -7,6 +7,7 @@ component Koopa {
 	FPVector2 IceBlockInShellSize;
 	FPVector2 IceBlockOutShellSize;
 
+	[ExcludeFromPrototype] EntityRef Attacker;
 	[ExcludeFromPrototype] FP CurrentSpeed;
 	[ExcludeFromPrototype] bool IsInShell;
 	[ExcludeFromPrototype] bool IsFlipped;

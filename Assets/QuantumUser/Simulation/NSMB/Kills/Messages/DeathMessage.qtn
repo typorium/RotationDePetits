@@ -1,0 +1,22 @@
+// Informations pour le message de kill
+enum DeathType {
+	Suicide,
+	DirectKill,
+	KillWithProjectile,
+	KillWithObject
+}
+
+struct DeathTimeInfo {
+	bool timeEnabled;
+	Int32 minutes;
+	Int32 seconds;
+	Int32 milliseconds;
+}
+
+struct DeathMessageInfo {
+	DeathType Type;
+	EntityRef MarioVictim;
+	EntityRef MarioAttacker;
+	PowerupState ProjectileType;
+	DeathTimeInfo TimeInfo;
+}

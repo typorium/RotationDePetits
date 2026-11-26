@@ -59,6 +59,7 @@ component MarioPlayer {
 
 	[ExcludeFromPrototype] PowerupState CurrentPowerupState;
 	[ExcludeFromPrototype] PowerupState PreviousPowerupState;
+	[ExcludeFromPrototype] PowerupState PowerupStateOnMarioInteraction;
 	[ExcludeFromPrototype] AssetRef<PowerupAsset> ReserveItem;
 	[ExcludeFromPrototype] RNGSession RNG;
 
@@ -138,6 +139,9 @@ component MarioPlayer {
 	[ExcludeFromPrototype] FPVector2 PipeDirection;
 	[ExcludeFromPrototype] byte PipeFrames;
 	[ExcludeFromPrototype] byte PipeCooldownFrames;
+
+	[ExcludeFromPrototype] MarioInteractionType LastInteractionType;
+	[ExcludeFromPrototype] MarioInteractionInfo LastInteractionInfo;
 
 	[ExcludeFromPrototype] byte TauntFrames;
 
@@ -237,6 +241,10 @@ synced event MarioPlayerDied {
 	bool IsLava;
 	int OldObjectiveCount;
 	EntityRef Attacker;
+}
+
+event MarioDied {
+	DeathMessageInfo messageInfo;
 }
 
 event MarioPlayerDeathUp {

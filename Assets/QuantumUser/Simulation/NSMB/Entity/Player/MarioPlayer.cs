@@ -383,8 +383,121 @@ namespace Quantum {
                 starChasers->DeathStarThreshold = (byte) (starChasers->Stars -  FPMath.FloorToInt(starChasers->Stars * starPercentage));
             }
 
+            DeathMessageInfo messageInfo = AnalyzeDeathCause(f, entity, attacker);
+            f.Events.MarioDied(messageInfo);
+
             f.Signals.OnMarioPlayerDied(entity);
             f.Events.MarioPlayerDied(entity, fire, oldObjectiveCount, attacker);
+        }
+
+        private DeathMessageInfo AnalyzeDeathCause(Frame f, EntityRef victim, EntityRef attacker) {
+
+            // Création du temps de mort
+            var isTimerEnabled = f.Global->Rules.IsTimerEnabled;
+            DeathTimeInfo deathTime = new() {
+                timeEnabled = isTimerEnabled
+            };
+
+            if (isTimerEnabled) {
+                var time = f.Global->Timer;
+
+                var minutesInt = (int) time / 60;
+
+                var secondsFloat = time % 60;
+                var secondsInt = (int) secondsFloat;
+
+                var milliseconds = (int) ((secondsFloat - secondsInt) * 1000);
+
+                deathTime.minutes = minutesInt;
+                deathTime.seconds = secondsInt;
+                deathTime.milliseconds = milliseconds;
+            }
+
+            // Création de l'info pour le message
+            DeathMessageInfo messageInfo = new() {
+                Type = DeathType.Suicide,
+                MarioVictim = victim,
+                MarioAttacker = EntityRef.None,
+                ProjectileType = PowerupState.NoPowerup,
+                TimeInfo = deathTime
+            };
+
+            /*
+             Detections de morts indirectes
+             */
+
+            var indirectMarioKiller = EntityRef.None;
+            if (LastInteractionType == MarioInteractionType.Mario || LastInteractionType == MarioInteractionType.Projectile) {
+                indirectMarioKiller = LastInteractionInfo.Mario;
+            }
+
+            /*
+             Morts par objets
+             */
+
+            // Mort d'une koopa
+            if (f.Unsafe.TryGetPointer<Koopa>(attacker, out Koopa* koopa)) {
+
+                if (indirectMarioKiller != EntityRef.None) {
+                    messageInfo.Type = DeathType.KillWithObject;
+                    messageInfo.MarioAttacker = indirectMarioKiller;
+                    return messageInfo;
+                }
+
+                if (koopa->Attacker != EntityRef.None && victim != koopa->Attacker) {
+                    messageInfo.Type = DeathType.KillWithObject;
+                    messageInfo.MarioAttacker = koopa->Attacker;
+                }
+                return messageInfo;
+            }
+
+            // Bobomb
+            if (f.Unsafe.TryGetPointer<Bobomb>(attacker, out Bobomb* bobomb)) {
+
+                if (indirectMarioKiller != EntityRef.None) {
+                    messageInfo.Type = DeathType.KillWithObject;
+                    messageInfo.MarioAttacker = indirectMarioKiller;
+                    return messageInfo;
+                }
+
+                if (bobomb->Attacker != EntityRef.None && victim != bobomb->Attacker) {
+                    messageInfo.Type = DeathType.KillWithObject;
+                    messageInfo.MarioAttacker = bobomb->Attacker;
+                }
+                return messageInfo;
+            }
+
+            // Other entities
+            var isAttackerGoomba = f.Unsafe.TryGetPointer<Goomba>(attacker, out Goomba* goomba);
+            var isAttackerBoo = f.Unsafe.TryGetPointer<Boo>(attacker, out Boo* boo);
+            var isAttackerPiranha = f.Unsafe.TryGetPointer<PiranhaPlant>(attacker, out PiranhaPlant* piranha);
+            var isAttackerBulletBill = f.Unsafe.TryGetPointer<BulletBill>(attacker, out BulletBill* bulletBill);
+            if (isAttackerGoomba || isAttackerBoo || isAttackerPiranha || isAttackerBulletBill) {
+                if (indirectMarioKiller != EntityRef.None) {
+                    messageInfo.Type = DeathType.KillWithObject;
+                    messageInfo.MarioAttacker = indirectMarioKiller;
+                }
+                return messageInfo;
+            }
+
+            /*
+             Mort indirectes
+             */
+
+            if (LastInteractionType == MarioInteractionType.Mario) {
+                messageInfo.Type = DeathType.DirectKill;
+                messageInfo.MarioAttacker = LastInteractionInfo.Mario;
+                return messageInfo;
+            }
+
+            if (LastInteractionType == MarioInteractionType.Projectile) {
+                messageInfo.Type = DeathType.KillWithProjectile;
+                messageInfo.MarioAttacker = LastInteractionInfo.Mario;
+                messageInfo.ProjectileType = LastInteractionInfo.ProjectileType;
+                return messageInfo;
+            }
+
+            return messageInfo;
         }
 
         public bool Powerdown(Frame f, EntityRef entity, bool ignoreInvincible, EntityRef attacker) {

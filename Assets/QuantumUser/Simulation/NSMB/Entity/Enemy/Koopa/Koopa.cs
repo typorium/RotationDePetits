@@ -13,6 +13,10 @@ namespace Quantum {
             holdable->Holder = default;
             holdable->PreviousHolder = default;
 
+            if (f.Unsafe.TryGetPointer(entity, out Koopa* koopa)) {
+                koopa->Attacker = EntityRef.None;
+            }
+
             f.Unsafe.GetPointer<Interactable>(entity)->ColliderDisabled = false;
             f.Unsafe.GetPointer<ComboKeeper>(entity)->Combo = 0;
         }
@@ -31,6 +35,10 @@ namespace Quantum {
             IsFlipped |= flipped;
             WakeupFrames = 15 * 60;
 
+            if (f.Unsafe.TryGetPointer(entity, out Koopa* koopa)) {
+                koopa->Attacker = initiator;
+            }
+
             f.Unsafe.GetPointer<ComboKeeper>(entity)->Combo = 0;
         }
 
@@ -43,6 +51,10 @@ namespace Quantum {
             IsInShell = true;
             CurrentSpeed = KickSpeed + speed;
             f.Unsafe.GetPointer<ComboKeeper>(entity)->Combo = 1;
+
+            if (f.Unsafe.TryGetPointer(entity, out Koopa* koopa)) {
+                koopa->Attacker = initiator;
+            }
 
             f.Events.PlayComboSound(entity, 0);
             f.Events.EnemyKicked(entity, false);
@@ -58,6 +70,10 @@ namespace Quantum {
                 holdable->PreviousHolder = holdable->Holder;
                 holdable->Holder = default;
                 holdable->IgnoreOwnerFrames = 15;
+            }
+
+            if (f.Unsafe.TryGetPointer(koopaEntity, out Koopa* koopa)) {
+                koopa->Attacker = EntityRef.None;
             }
 
             var koopaTransform = f.Unsafe.GetPointer<Transform2D>(koopaEntity);

@@ -50,6 +50,25 @@ namespace Quantum.Prototypes.Unity {
   #endif //;
   
   [System.SerializableAttribute()]
+  public unsafe partial class DeathMessageInfoPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.DeathMessageInfoPrototype> {
+    public Quantum.QEnum32<DeathType> Type;
+    public Quantum.QuantumEntityPrototype MarioVictim;
+    public Quantum.QuantumEntityPrototype MarioAttacker;
+    public Quantum.QEnum8<PowerupState> ProjectileType;
+    public Quantum.Prototypes.DeathTimeInfoPrototype TimeInfo;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.DeathMessageInfoPrototype prototype);
+    public override Quantum.Prototypes.DeathMessageInfoPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.DeathMessageInfoPrototype();
+      converter.Convert(this.Type, out result.Type);
+      converter.Convert(this.MarioVictim, out result.MarioVictim);
+      converter.Convert(this.MarioAttacker, out result.MarioAttacker);
+      converter.Convert(this.ProjectileType, out result.ProjectileType);
+      converter.Convert(this.TimeInfo, out result.TimeInfo);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
+  [System.SerializableAttribute()]
   public unsafe partial class EnterablePipePrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.EnterablePipePrototype> {
     public Quantum.QuantumEntityPrototype OtherPipe;
     public QBoolean IsEnterable;
@@ -64,6 +83,32 @@ namespace Quantum.Prototypes.Unity {
       converter.Convert(this.IsCeilingPipe, out result.IsCeilingPipe);
       converter.Convert(this.IsMiniOnly, out result.IsMiniOnly);
       converter.Convert(this.TransitionOnlyPanning, out result.TransitionOnlyPanning);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
+  [System.SerializableAttribute()]
+  public unsafe partial class MarioInteractionInfoPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.MarioInteractionInfoPrototype> {
+    public Quantum.QuantumEntityPrototype Mario;
+    public Quantum.QEnum8<PowerupState> ProjectileType;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.MarioInteractionInfoPrototype prototype);
+    public override Quantum.Prototypes.MarioInteractionInfoPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.MarioInteractionInfoPrototype();
+      converter.Convert(this.Mario, out result.Mario);
+      converter.Convert(this.ProjectileType, out result.ProjectileType);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
+  [System.SerializableAttribute()]
+  public unsafe partial class MarioPlayerPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.MarioPlayerPrototype> {
+    public AssetRef<MarioPlayerPhysicsInfo> PhysicsAsset;
+    public AssetRef<CharacterAsset> CharacterAsset;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.MarioPlayerPrototype prototype);
+    public override Quantum.Prototypes.MarioPlayerPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.MarioPlayerPrototype();
+      converter.Convert(this.PhysicsAsset, out result.PhysicsAsset);
+      converter.Convert(this.CharacterAsset, out result.CharacterAsset);
       ConvertUser(converter, ref result);
       return result;
     }

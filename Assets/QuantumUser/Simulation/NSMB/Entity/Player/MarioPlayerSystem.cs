@@ -116,9 +116,28 @@ namespace Quantum {
             HandleFacingDirection(f, ref filter, physics);
             HandlePipes(f, ref filter, physics, stage);
 
+            HandleResetInteraction(f, ref filter);
+
             if (HandleHitbox(f, ref filter, physics)) {
                 // Attempt to eject if our hitbox changes
                 HandleStuckInBlock(f, ref filter, stage);
+            }
+        }
+
+        public void HandleResetInteraction(Frame f, ref Filter filter) {
+            var mario = filter.MarioPlayer;
+            var physicsObject = filter.PhysicsObject;
+
+            var isKnockbacked = (
+                mario->IsInKnockback ||
+                mario->IsInWeakKnockback
+            );
+            var isTouchingGround = physicsObject->IsTouchingGround;
+            var isFrozen = filter.Freezable->IsFrozen(f);
+
+            var shouldReset = !isFrozen && !mario->IsDead && !isKnockbacked && isTouchingGround;
+            if (shouldReset) {
+                mario->LastInteractionType = MarioInteractionType.None;
             }
         }
 
@@ -1522,6 +1541,7 @@ namespace Quantum {
                 } else {
                     projectile = ShootNormalProjectile(f, ref filter, physics);
                 }
+                projectile->ProjectileType = mario->CurrentPowerupState;
                 f.Events.MarioPlayerShotProjectile(filter.Entity, *projectile);
 
                 // Weird interaction in the main game...
@@ -2167,6 +2187,10 @@ namespace Quantum {
 
             bool dropStars = false;
 
+            mario->LastInteractionType = MarioInteractionType.Projectile;
+            mario->LastInteractionInfo.Mario = projectile->Owner;
+            mario->LastInteractionInfo.ProjectileType = projectile->ProjectileType;
+
             // Mario is "damageable" when he's...
             // not in knockback, not Mega
             // regular damageable checks (iframes is 0, not starman invincible)
@@ -2248,6 +2272,14 @@ namespace Quantum {
             if (!marioA->CheckTeamAttack(f, marioBEntity, out bool dropStars)) {
                 return;
             }
+
+            marioA->PowerupStateOnMarioInteraction = marioA->CurrentPowerupState;
+            marioA->LastInteractionType = MarioInteractionType.Mario;
+            marioA->LastInteractionInfo.Mario = marioBEntity;
+
+            marioB->PowerupStateOnMarioInteraction = marioB->CurrentPowerupState;
+            marioB->LastInteractionType = MarioInteractionType.Mario;
+            marioB->LastInteractionInfo.Mario = marioAEntity;
 
             var marioATransform = f.Unsafe.GetPointer<Transform2D>(marioAEntity);
             var marioBTransform = f.Unsafe.GetPointer<Transform2D>(marioBEntity);

@@ -1,0 +1,12 @@
+
+// Interactions pour le système de kill
+enum MarioInteractionType {
+	None,
+	Mario,
+	Projectile
+}
+
+struct MarioInteractionInfo {
+	EntityRef Mario;
+	PowerupState ProjectileType;
+}

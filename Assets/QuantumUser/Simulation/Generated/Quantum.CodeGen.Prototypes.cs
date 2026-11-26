@@ -334,6 +334,38 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.DeathMessageInfo))]
+  public unsafe class DeathMessageInfoPrototype : StructPrototype {
+    public Quantum.QEnum32<DeathType> Type;
+    public MapEntityId MarioVictim;
+    public MapEntityId MarioAttacker;
+    public Quantum.QEnum8<PowerupState> ProjectileType;
+    public Quantum.Prototypes.DeathTimeInfoPrototype TimeInfo;
+    public void Materialize(Frame frame, ref Quantum.DeathMessageInfo result, in PrototypeMaterializationContext context = default) {
+        result.Type = this.Type;
+        PrototypeValidator.FindMapEntity(this.MarioVictim, in context, out result.MarioVictim);
+        PrototypeValidator.FindMapEntity(this.MarioAttacker, in context, out result.MarioAttacker);
+        result.ProjectileType = this.ProjectileType;
+        this.TimeInfo.Materialize(frame, ref result.TimeInfo, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.DeathTimeInfo))]
+  public unsafe partial class DeathTimeInfoPrototype : StructPrototype {
+    public QBoolean timeEnabled;
+    public Int32 minutes;
+    public Int32 seconds;
+    public Int32 milliseconds;
+    partial void MaterializeUser(Frame frame, ref Quantum.DeathTimeInfo result, in PrototypeMaterializationContext context);
+    public void Materialize(Frame frame, ref Quantum.DeathTimeInfo result, in PrototypeMaterializationContext context = default) {
+        result.timeEnabled = this.timeEnabled;
+        result.minutes = this.minutes;
+        result.seconds = this.seconds;
+        result.milliseconds = this.milliseconds;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.DonutBlock))]
   public unsafe partial class DonutBlockPrototype : ComponentPrototype<Quantum.DonutBlock> {
     public UInt16 FramesUntilFall;
@@ -755,11 +787,20 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.MarioInteractionInfo))]
+  public unsafe class MarioInteractionInfoPrototype : StructPrototype {
+    public MapEntityId Mario;
+    public Quantum.QEnum8<PowerupState> ProjectileType;
+    public void Materialize(Frame frame, ref Quantum.MarioInteractionInfo result, in PrototypeMaterializationContext context = default) {
+        PrototypeValidator.FindMapEntity(this.Mario, in context, out result.Mario);
+        result.ProjectileType = this.ProjectileType;
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.MarioPlayer))]
-  public unsafe partial class MarioPlayerPrototype : ComponentPrototype<Quantum.MarioPlayer> {
+  public unsafe class MarioPlayerPrototype : ComponentPrototype<Quantum.MarioPlayer> {
     public AssetRef<MarioPlayerPhysicsInfo> PhysicsAsset;
     public AssetRef<CharacterAsset> CharacterAsset;
-    partial void MaterializeUser(Frame frame, ref Quantum.MarioPlayer result, in PrototypeMaterializationContext context);
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.MarioPlayer component = default;
         Materialize((Frame)f, ref component, in context);
@@ -768,7 +809,6 @@ namespace Quantum.Prototypes {
     public void Materialize(Frame frame, ref Quantum.MarioPlayer result, in PrototypeMaterializationContext context = default) {
         result.PhysicsAsset = this.PhysicsAsset;
         result.CharacterAsset = this.CharacterAsset;
-        MaterializeUser(frame, ref result, in context);
     }
   }
   [System.SerializableAttribute()]
