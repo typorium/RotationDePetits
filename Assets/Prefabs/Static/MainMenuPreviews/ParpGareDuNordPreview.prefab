@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 354759729035161655}
   m_Layer: 0
-  m_Name: 1v1GareDuNordPreview
+  m_Name: ParpGareDuNordPreview
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

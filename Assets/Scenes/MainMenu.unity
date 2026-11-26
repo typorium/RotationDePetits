@@ -17888,7 +17888,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 893153695}
   m_HandleRect: {fileID: 893153694}
   m_Direction: 2
-  m_Value: 0.99999976
+  m_Value: 1
   m_Size: 0.6197917
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -38997,7 +38997,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 7.999756}
+  m_AnchoredPosition: {x: 0, y: 7.999771}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &852866028
@@ -40196,7 +40196,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'RDP Version: 2.0.0.0'
+  m_text: 'RDP Version: 1.6.3.0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d42c556520644b148ada62f0b573e1a5, type: 2}
   m_sharedMaterial: {fileID: 6015020410494396785, guid: d42c556520644b148ada62f0b573e1a5,
