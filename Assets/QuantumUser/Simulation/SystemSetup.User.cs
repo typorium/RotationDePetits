@@ -57,6 +57,13 @@ namespace Quantum {
             systems.Add(new StageSystem());
             systems.Add(new EntityPrototypeSystem());
 
+            // RDP Systems
+            systems.Add(
+                new StartDisabledSystemGroup(
+                    new ManiaSystem()
+                )
+            );
+
             if (!gameConfig.IsRealGame) {
                 var debugSystem = DebugCommand.CreateSystem();
                 if (debugSystem != null) {

@@ -7,9 +7,11 @@ namespace Quantum {
         public AssetRef<EntityPrototype> BigStarPrototype;
 
         public override void EnableGamemode(Frame f) {
+            f.SystemEnable<ManiaSystem>();
         }
 
         public override void DisableGamemode(Frame f) {
+            f.SystemDisable<ManiaSystem>();
         }
 
         public override void OnReturnToRoom(Frame f) {

@@ -1361,7 +1361,7 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 3176;
+    public const Int32 SIZE = 3184;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
     public AssetRef<Map> Map;
@@ -1394,7 +1394,7 @@ namespace Quantum {
     public EntityRef MainBigStar;
     [FieldOffset(1872)]
     public BitSet64 UsedStarSpawns;
-    [FieldOffset(1896)]
+    [FieldOffset(1904)]
     public GameRules Rules;
     [FieldOffset(1818)]
     public GameState GameState;
@@ -1412,7 +1412,7 @@ namespace Quantum {
     public UInt16 AutomaticStageRefreshInterval;
     [FieldOffset(1822)]
     public UInt16 AutomaticStageRefreshTimer;
-    [FieldOffset(1976)]
+    [FieldOffset(1984)]
     [FramePrinter.FixedArrayAttribute(typeof(PlayerInformation), 10)]
     private fixed Byte _PlayerInfo_[1200];
     [FieldOffset(1816)]
@@ -1425,6 +1425,8 @@ namespace Quantum {
     public Int32 WinningTeam;
     [FieldOffset(1848)]
     public QBoolean HasWinner;
+    [FieldOffset(1888)]
+    public FP ShouldMania;
     [FieldOffset(1844)]
     public PlayerRef Host;
     [FieldOffset(1856)]
@@ -1433,7 +1435,7 @@ namespace Quantum {
     [FieldOffset(1860)]
     [AllocateOnComponentAdded()]
     public QListPtr<BannedPlayerInfo> BannedPlayerIds;
-    [FieldOffset(1888)]
+    [FieldOffset(1896)]
     public FP Timer;
     public readonly FixedArray<Input> input {
       get {
@@ -1478,6 +1480,7 @@ namespace Quantum {
         hash = hash * 31 + PreviousStage.GetHashCode();
         hash = hash * 31 + WinningTeam.GetHashCode();
         hash = hash * 31 + HasWinner.GetHashCode();
+        hash = hash * 31 + ShouldMania.GetHashCode();
         hash = hash * 31 + Host.GetHashCode();
         hash = hash * 31 + PlayerDatas.GetHashCode();
         hash = hash * 31 + BannedPlayerIds.GetHashCode();
@@ -1527,6 +1530,7 @@ namespace Quantum {
         AssetRef.Serialize(&p->PreviousStage, serializer);
         Quantum.BitSet64.Serialize(&p->UsedStarSpawns, serializer);
         EntityRef.Serialize(&p->MainBigStar, serializer);
+        FP.Serialize(&p->ShouldMania, serializer);
         FP.Serialize(&p->Timer, serializer);
         Quantum.GameRules.Serialize(&p->Rules, serializer);
         FixedArray.Serialize(p->PlayerInfo, serializer, Statics.SerializePlayerInformation);

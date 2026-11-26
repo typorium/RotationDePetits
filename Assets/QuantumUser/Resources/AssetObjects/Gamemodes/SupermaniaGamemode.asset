@@ -21,7 +21,23 @@ MonoBehaviour:
   DescriptionTranslationKey: gamemode.supermania.description
   DiscordRpcKey: gamemode-supermania
   ObjectiveSymbolPrefix: M
-  AllCoinItems: []
+  AllCoinItems:
+  - Id:
+      Value: 390055422968795145
+  - Id:
+      Value: 296548766860541996
+  - Id:
+      Value: 279725308049324760
+  - Id:
+      Value: 372382251364764784
+  - Id:
+      Value: 328877894917160747
+  - Id:
+      Value: 402398838204577684
+  - Id:
+      Value: 315844579913471239
+  - Id:
+      Value: 378514462062875007
   FallbackCoinItem:
     Id:
       Value: 390055422968795145

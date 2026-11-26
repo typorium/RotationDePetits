@@ -2,9 +2,10 @@ using NSMB.UI.Translation;
 
 namespace NSMB.UI.MainMenu.Submenus.InRoom {
     public class ManiaChangeableRule : NumberChangeableRule {
-        protected override void UpdateLabel() {
 
-            const int minuteDivider = 12;
+        private const int minuteDivider = 12;
+
+        protected override void UpdateLabel() {
 
             TranslationManager tm = GlobalController.Instance.translationManager;
             if (value is int intValue) {
