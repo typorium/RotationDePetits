@@ -359,7 +359,7 @@ namespace NSMB {
             generalChatFiltering = PlayerPrefs.GetInt("ChatFilter", 1) != 0;
             generalCharacter = Utils.IndexIntoOrDefault(AssetRepository<CharacterAsset>.AllAssetRefs, PlayerPrefs.GetInt("Character", 0), AssetRepository<CharacterAsset>.AllAssetRefs[0]);
             generalPalette = Utils.IndexIntoOrDefault(AssetRepository<PaletteSet>.AllAssets.Where(ps => ps.IsLegacy).ToList(), PlayerPrefs.GetInt("Skin", 0) - 1, default);
-            GeneralLocale = "en-US";
+            GeneralLocale = "rdp";
             generalUseNicknameColor = true;
             GeneralReplaysEnabled = true;
             generalMaxTempReplays = 20;
