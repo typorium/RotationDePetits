@@ -243,7 +243,7 @@ namespace NSMB.UI.Game {
             livesParent.SetActive(marioExists && f.Global->Rules.IsLivesEnabled);
             coinsParent.SetActive(marioExists && !isGamemodeSupermania);
             timerParent.SetActive(f.Global->Rules.IsTimerEnabled);
-            reserveItemBox.SetActive(marioExists);
+            reserveItemBox.SetActive(marioExists && !isGamemodeSupermania);
             maniaTimeParent.SetActive(maniaTimeParentActive);
         }
 

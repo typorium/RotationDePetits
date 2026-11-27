@@ -95,6 +95,8 @@ public unsafe class CoinItemAsset : AssetObject {
     }
 
     public virtual bool CanSpawn(Frame f, bool fromRouletteBlock) {
+        var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+
         if (!fromRouletteBlock && !Flags.HasFlag(TypeFlags.SpawnableFromCoins)) {
             return false;
         }
@@ -111,9 +113,16 @@ public unsafe class CoinItemAsset : AssetObject {
         if (secondsSinceStart < CanSpawnAfterSeconds) {
             return false;
         }
+
+        if (gamemode is SupermaniaGamemode) {
+            return false;
+        }
+
         if (MaxNumberOfItems > 0 && CountItemsExisting(f) >= MaxNumberOfItems) {
             return false;
         }
+
+
         return true;
     }
 

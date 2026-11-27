@@ -16,6 +16,12 @@ namespace Quantum {
             var collider = filter.Collider;
             var entity = filter.Entity;
 
+            var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+            if (gamemode is SupermaniaGamemode) {
+                f.Destroy(entity);
+                return;
+            }
+
             QuantumUtils.Decrement(ref coinItem->IgnorePlayerFrames);
 
             f.Unsafe.TryGetPointer(filter.Entity, out PhysicsObject* physicsObject);
