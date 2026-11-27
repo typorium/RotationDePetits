@@ -2138,6 +2138,12 @@ namespace Quantum {
             var mario = filter.MarioPlayer;
             var reserveItem = f.FindAsset(mario->ReserveItem);
 
+            var gamemode = f.FindAsset(f.Global->Rules.Gamemode);
+            if (gamemode is SupermaniaGamemode) {
+                // Don't use reserve in supermania
+                return;
+            }
+
             if (reserveItem == null || mario->IsDead || mario->MegaMushroomStartFrames > 0 || (mario->MegaMushroomStationaryEnd && mario->MegaMushroomEndFrames > 0)) {
                 f.Events.MarioPlayerUsedReserveItem(filter.Entity, false);
                 return;
