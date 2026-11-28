@@ -40,6 +40,7 @@ namespace Quantum
 
             // Starman
             if (powerup is StarmanPowerupAsset) {
+                ResetMario(f, mario);
                 SetMarioAsStarman(f, marioEntity, mario);
                 SetPowerupState(mario, PowerupState.NoPowerup);
                 return;
