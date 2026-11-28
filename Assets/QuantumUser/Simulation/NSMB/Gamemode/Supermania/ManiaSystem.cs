@@ -39,7 +39,7 @@ namespace Quantum {
             }
 
             // If timer is defined
-            f.Global->ShouldMania += f.Global->Rules.ManiaTime * _secondInterval;
+            f.Global->ShouldMania = f.Global->Rules.ManiaTime * _secondInterval;
         }
 
         public void OnGameStarting(Frame f) {
